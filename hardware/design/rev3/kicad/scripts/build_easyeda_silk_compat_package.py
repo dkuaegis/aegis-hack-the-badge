@@ -247,6 +247,55 @@ def fill_lib_symbol_default_footprints(text: str) -> tuple[str, int]:
     return "".join(pieces), updated
 
 
+def fill_legacy_cache_lib_footprints(text: str) -> tuple[str, int]:
+    """Add legacy F2 footprint fields to the copied KiCad cache library.
+
+    EasyEDA Pro may inspect the legacy `*-cache.lib` file even when the v10
+    schematic embeds its own lib_symbols.  The old cache format uses F2 for the
+    footprint field, so populate it in the derived package too.
+    """
+
+    lines = text.splitlines(keepends=True)
+    output: list[str] = []
+    current_symbol: str | None = None
+    has_f2 = False
+    inserted = 0
+
+    for line in lines:
+        def_match = re.match(r"DEF\s+(\S+)\s+", line)
+        if def_match:
+            current_symbol = def_match.group(1)
+            has_f2 = False
+            output.append(line)
+            continue
+
+        if current_symbol in LIB_SYMBOL_FOOTPRINT_DEFAULTS and line.startswith("F2 "):
+            has_f2 = True
+            footprint = LIB_SYMBOL_FOOTPRINT_DEFAULTS[current_symbol]
+            output.append(f'F2 "{footprint}" 0 0 50 H I C CNN\n')
+            continue
+
+        if (
+            current_symbol in LIB_SYMBOL_FOOTPRINT_DEFAULTS
+            and line.startswith("F1 ")
+            and not has_f2
+        ):
+            output.append(line)
+            footprint = LIB_SYMBOL_FOOTPRINT_DEFAULTS[current_symbol]
+            output.append(f'F2 "{footprint}" 0 0 50 H I C CNN\n')
+            has_f2 = True
+            inserted += 1
+            continue
+
+        if line.startswith("ENDDEF"):
+            current_symbol = None
+            has_f2 = False
+
+        output.append(line)
+
+    return "".join(output), inserted
+
+
 def copy_project_files() -> None:
     if COMPAT_ROOT.exists():
         shutil.rmtree(COMPAT_ROOT)
@@ -277,6 +326,14 @@ def write_compat_schematic() -> int:
     source = schematic.read_text(encoding="utf-8")
     converted, footprint_count = fill_lib_symbol_default_footprints(source)
     schematic.write_text(converted, encoding="utf-8")
+    return footprint_count
+
+
+def write_compat_cache_lib() -> int:
+    cache_lib = COMPAT_ROOT / "hacking_box_v2-cache.lib"
+    source = cache_lib.read_text(encoding="utf-8")
+    converted, footprint_count = fill_legacy_cache_lib_footprints(source)
+    cache_lib.write_text(converted, encoding="utf-8")
     return footprint_count
 
 
@@ -330,6 +387,7 @@ def update_checksums() -> None:
 def main() -> None:
     copy_project_files()
     footprint_count = write_compat_schematic()
+    cache_footprint_count = write_compat_cache_lib()
     polygon_count, line_count, group_count = write_compat_pcb()
     zip_compat_project()
     update_checksums()
@@ -337,7 +395,8 @@ def main() -> None:
         f"Built EasyEDA silkscreen-compatible package: "
         f"{polygon_count} filled silk polygons -> {line_count} line segments, "
         f"removed {group_count} editor groups, "
-        f"filled {footprint_count} library symbol footprints"
+        f"filled {footprint_count} schematic symbol footprints, "
+        f"filled {cache_footprint_count} cache-lib footprints"
     )
     print(UPLOAD_ZIP)
 
