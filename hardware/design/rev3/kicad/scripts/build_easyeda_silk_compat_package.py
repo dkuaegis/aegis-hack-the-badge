@@ -29,6 +29,25 @@ CHECKSUMS = RELEASE_ROOT / "SHA256SUMS.txt"
 HATCH_PITCH_MM = 0.13
 HATCH_WIDTH_MM = 0.15
 MIN_SEGMENT_MM = 0.08
+HATCH_UUID_NAMESPACE = uuid.UUID("d62b73f1-b630-42c5-b4b6-2f33e8aa7e17")
+
+LIB_SYMBOL_FOOTPRINT_DEFAULTS = {
+    "HB_BUZZER": "HackingBox_V2:Buzzer_SMD5020_ZK",
+    "HB_C": "Capacitor_SMD:C_0603_1608Metric",
+    "HB_CONN4": "Connector_PinHeader_2.54mm:PinHeader_1x04_P2.54mm_Vertical",
+    "HB_DIODE": "Diode_SMD:D_SOD-123",
+    "HB_ESD6": "Package_TO_SOT_SMD:SOT-23-6",
+    "HB_ESP32": "RF_Module:ESP32-S3-WROOM-1",
+    "HB_FET3": "Package_TO_SOT_SMD:SOT-23",
+    "HB_LED": "LED_SMD:LED_0603_1608Metric",
+    "HB_MECH": "MountingHole:MountingHole_2.7mm",
+    "HB_OLED": "HackingBox_V2:OLED_HS96L03W2C03",
+    "HB_R": "Resistor_SMD:R_0603_1608Metric",
+    "HB_REG3": "Package_TO_SOT_SMD:SOT-223-3_TabPin2",
+    "HB_SW": "Button_Switch_SMD:SW_SPST_TS-1088-xR020",
+    "HB_TP": "TestPoint:TestPoint_Pad_D1.5mm",
+    "HB_USB": "Connector_USB:USB_C_Receptacle_HRO_TYPE-C-31-M-12",
+}
 
 
 @dataclass(frozen=True)
@@ -129,6 +148,7 @@ def scanline_segments(
 def line_text(
     segment: tuple[float, float, float, float],
     layer: str,
+    stable_id: str,
 ) -> str:
     x1, y1, x2, y2 = segment
     return (
@@ -140,7 +160,7 @@ def line_text(
         "\t\t\t(type solid)\n"
         "\t\t)\n"
         f"\t\t(layer \"{layer}\")\n"
-        f"\t\t(uuid \"{uuid.uuid4()}\")\n"
+        f"\t\t(uuid \"{uuid.uuid5(HATCH_UUID_NAMESPACE, stable_id)}\")\n"
         "\t)"
     )
 
@@ -150,10 +170,19 @@ def convert_pcb_silkscreen(text: str) -> tuple[str, int, int]:
     pieces: list[str] = []
     cursor = 0
     line_count = 0
-    for polygon in polygons:
+    for polygon_index, polygon in enumerate(polygons):
         pieces.append(text[cursor:polygon.start])
         segments = scanline_segments(polygon.points)
-        pieces.append("\n".join(line_text(segment, polygon.layer) for segment in segments))
+        pieces.append(
+            "\n".join(
+                line_text(
+                    segment,
+                    polygon.layer,
+                    f"{polygon_index}:{segment_index}:{polygon.layer}:{segment}",
+                )
+                for segment_index, segment in enumerate(segments)
+            )
+        )
         line_count += len(segments)
         cursor = polygon.end
     pieces.append(text[cursor:])
@@ -182,6 +211,42 @@ def remove_editor_groups(text: str) -> tuple[str, int]:
     return "".join(pieces), group_count
 
 
+def fill_lib_symbol_default_footprints(text: str) -> tuple[str, int]:
+    """Populate custom library symbol default footprints for EasyEDA import.
+
+    KiCad allows the library symbol template to have an empty Footprint field
+    while each placed schematic symbol overrides it.  EasyEDA Pro's KiCad
+    importer can report these blank library-template fields as fatal component
+    errors.  This only touches the derived EasyEDA package.
+    """
+
+    pieces: list[str] = []
+    cursor = 0
+    updated = 0
+    pattern = r'\n\t\t\(symbol "hacking_box_v2-rescue:([^"]+)"'
+    for match in re.finditer(pattern, text):
+        symbol_name = match.group(1)
+        footprint = LIB_SYMBOL_FOOTPRINT_DEFAULTS.get(symbol_name)
+        if footprint is None:
+            continue
+        start = match.start() + 1
+        end = find_matching_paren(text, start + 2)
+        block = text[start:end]
+        patched = block.replace(
+            '(property "Footprint" ""',
+            f'(property "Footprint" "{footprint}"',
+            1,
+        )
+        if patched == block:
+            continue
+        pieces.append(text[cursor:start])
+        pieces.append(patched)
+        cursor = end
+        updated += 1
+    pieces.append(text[cursor:])
+    return "".join(pieces), updated
+
+
 def copy_project_files() -> None:
     if COMPAT_ROOT.exists():
         shutil.rmtree(COMPAT_ROOT)
@@ -205,6 +270,14 @@ def copy_project_files() -> None:
         PROJECT_ROOT / "hardware" / "design" / "rev3" / "reference" / "datasheets" / "HS96L03W2C03.pdf",
         datasheet_dir / "HS96L03W2C03.pdf",
     )
+
+
+def write_compat_schematic() -> int:
+    schematic = COMPAT_ROOT / "hacking_box_v2.kicad_sch"
+    source = schematic.read_text(encoding="utf-8")
+    converted, footprint_count = fill_lib_symbol_default_footprints(source)
+    schematic.write_text(converted, encoding="utf-8")
+    return footprint_count
 
 
 def write_compat_pcb() -> tuple[int, int, int]:
@@ -256,13 +329,15 @@ def update_checksums() -> None:
 
 def main() -> None:
     copy_project_files()
+    footprint_count = write_compat_schematic()
     polygon_count, line_count, group_count = write_compat_pcb()
     zip_compat_project()
     update_checksums()
     print(
         f"Built EasyEDA silkscreen-compatible package: "
         f"{polygon_count} filled silk polygons -> {line_count} line segments, "
-        f"removed {group_count} editor groups"
+        f"removed {group_count} editor groups, "
+        f"filled {footprint_count} library symbol footprints"
     )
     print(UPLOAD_ZIP)
 
