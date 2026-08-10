@@ -1,0 +1,13 @@
+PASS
+Board: hardware/kicad/hacking_box_v2/hacking_box_v2.kicad_pcb
+BOM rows: 16 total (15 populated groups + 1 OLED DNP)
+Assembled designators: 44
+Centroid placements: 44
+Assembly sides: Top only
+BOM/centroid populated designators: exact match
+OLED1: BOM DNP; excluded from centroid
+Workbook formula errors: none
+BOM inspect bytes: 3315
+Centroid inspect bytes: 2568
+Coordinate units: millimeters
+Rotation: degrees counter-clockwise, normalized to 0-359

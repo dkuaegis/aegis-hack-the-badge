@@ -1,0 +1,4 @@
+(sym_lib_table
+	(version 7)
+	(lib (name "hacking_box_v2-rescue") (type "Legacy") (uri "${KIPRJMOD}/hacking_box_v2-cache.lib") (options "") (descr "Production schematic symbols recovered from the Hacking Badge V3 PCB"))
+)

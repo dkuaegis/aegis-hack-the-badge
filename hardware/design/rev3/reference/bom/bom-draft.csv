@@ -1,0 +1,17 @@
+Reference,Quantity,Value,Package,Assembly,LCSC/JLCPCB Part,Status,Notes
+U1,1,ESP32-S3-WROOM-1-N8R8,ESP32-S3-WROOM-1,JLCPCB,C2913201,Production,Keep antenna at board edge
+U2,1,AMS1117-3.3,SOT-223,JLCPCB,C6186,Production,3.3 V regulator
+J1,1,TYPE-C-31-M-12,USB-C 16P,JLCPCB,C165948,Production,USB2 device port
+D1,1,USBLC6-2SC6,SOT-23-6,JLCPCB,C2827654,Production,USB D+/D- ESD
+BZ1,1,SMD5020-ZK,SMD 5.3x5.3mm,JLCPCB,C49246955,Production,3 V passive buzzer
+Q_BZ,1,AO3400A,SOT-23,JLCPCB,C20917,Production,Buzzer low-side MOSFET
+D_BZ,1,1N4148W,SOD-123,JLCPCB,C917030,Production,Buzzer flyback diode
+C1 C3 C4 C5 C7 C9,6,10uF,0805,JLCPCB,C15850,Production,Bulk capacitors
+C2 C6 C8 C_OLED,4,100nF,0603,JLCPCB,C14663,Production,Decoupling capacitors
+C_EN,1,1uF,0603,JLCPCB,C15849,Production,EN timing capacitor
+R1 R2,2,5.1k,0603,JLCPCB,C23186,Production,USB-C CC pulldowns
+R_BOOT R_BZ_PD R_EN R_SCL R_SDA,5,10k,0603,JLCPCB,C25804,Production,Pull-up and pulldown resistors
+R_BZ R_CHAL0 R_CHAL1 R_CHAL2 R_LED1 R_LED2 R_LED3 R_LED4 R_LED5 R_UART_RX R_UART_TX,11,1k,0603,JLCPCB,C21190,Production,LED and exposed-signal series resistors
+LED1 LED2 LED3 LED4 LED5,5,KT-0603R red,LED 0603,JLCPCB,C2286,Production,Status indicators
+SW_ADMIN SW_BOOT SW_EN,3,TS-1088-AR02016,SMD 4x3mm,JLCPCB,C720477,Production,Left OK and right game controls
+OLED1,1,HS96L03W2C03 0.96in white SSD1315 I2C OLED,27.3x27.8mm module,Hand solder,DeviceMart 15963242,Manual,Pin order GND VCC SCL SDA; add straight 1x4 2.54mm header if required

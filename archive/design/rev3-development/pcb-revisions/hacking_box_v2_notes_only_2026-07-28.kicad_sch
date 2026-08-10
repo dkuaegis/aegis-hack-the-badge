@@ -1,0 +1,90 @@
+(kicad_sch
+	(version 20260306)
+	(generator "eeschema")
+	(generator_version "10.0")
+	(uuid "ad55e22c-8186-4773-9a20-6347d2aa1f5a")
+	(paper "A4")
+	(title_block
+		(title "Hacking Box V2-A")
+		(date "2026-07-27")
+		(rev "A0")
+		(company "Aegis x MSG CTF")
+		(comment 1 "Preliminary ESP32-S3-WROOM circuit capture notes")
+		(comment 2 "Player: USB Serial + UART only; Admin: Wi-Fi/BLE")
+		(comment 3 "Populate five challenge status LEDs")
+	)
+	(lib_symbols)
+	(text "Player and admin access policy\nPlayer-facing: USB Serial challenge shell and UART pads only\nUART pads: GND, 3V3, PLAYER_UART_TX, PLAYER_UART_RX\nUse 3.3 V logic labels and series resistors on TX/RX\nChallenge GPIO pads: CHAL_0 GPIO6, CHAL_1 GPIO7, CHAL_2 GPIO8 through 499R\n\nAdmin-facing: Wi-Fi/BLE management only\nAdmin actions: status, reset progress, demo/player/idle mode, OLED hints\nSensitive admin actions require software credential plus physical unlock/gesture"
+		(exclude_from_sim no)
+		(at 115 120 0)
+		(effects
+			(font
+				(size 1.45 1.45)
+			)
+			(justify left top)
+		)
+		(uuid "66ab7fdf-d88e-4811-bbba-e355573a8875")
+	)
+	(text "User interface\nJ_OLED: 4-pin 128x64 I2C OLED connector\nPin order: GND, 3V3, SCL, SDA\nI2C pullups: 4.7k to 3V3, DNP if OLED module already has pullups\n\nFive populated status LEDs:\nLED1 GPIO13, LED2 GPIO14, LED3 GPIO15, LED4 GPIO16, LED5 GPIO17\nConnection: GPIO -> 1k resistor -> LED anode, LED cathode -> GND\n\nButtons:\nBTN_A GPIO10, BTN_B GPIO11, BTN_C GPIO12 optional\nActive-low to GND with firmware pullups or 10k external pullups"
+		(exclude_from_sim no)
+		(at 20 120 0)
+		(effects
+			(font
+				(size 1.45 1.45)
+			)
+			(justify left top)
+		)
+		(uuid "7489bc0b-4053-4526-8f7d-88d3f2c3a20c")
+	)
+	(text "USB-C and power\nJ1: USB-C receptacle, USB 2.0 device\nCC1/CC2: 5.1k pulldown to GND\nD1: USB ESD array on D+/D-\nU2: 3.3 V regulator, >=600 mA recommended\nVBUS_USB -> U2.IN\n3V3 -> ESP32, OLED, LEDs, buttons\nBattery charging: excluded from first spin"
+		(exclude_from_sim no)
+		(at 115 30 0)
+		(effects
+			(font
+				(size 1.45 1.45)
+			)
+			(justify left top)
+		)
+		(uuid "b4a05ec4-7e55-4559-8ca7-399e48aacb4a")
+	)
+	(text "Hacking Box V2-A circuit baseline"
+		(exclude_from_sim no)
+		(at 20 18 0)
+		(effects
+			(font
+				(size 3 3)
+				(bold yes)
+			)
+			(justify left)
+		)
+		(uuid "ba6a511e-618d-48d0-b8d3-e8caa0ec44df")
+	)
+	(text "Controller\nU1: ESP32-S3-WROOM-1 module\nFootprint: RF_Module:ESP32-S3-WROOM-1\nUse JLCPCB/LCSC stocked module variant.\nRespect antenna keep-out on PCB edge.\n\nRequired nets:\n3V3, GND, EN, BOOT_GPIO0\nUSB_D_N -> GPIO19\nUSB_D_P -> GPIO20\nOLED_SDA -> GPIO4\nOLED_SCL -> GPIO5\nBTN_A -> GPIO10\nBTN_B -> GPIO11\nBTN_C -> GPIO12 optional\nSTATUS_LED_0..4 -> GPIO13..GPIO17\nBUZZER -> GPIO18 optional\nCHAL_0..2 -> GPIO6..GPIO8\nPLAYER_UART_TX -> GPIO43\nPLAYER_UART_RX -> GPIO44"
+		(exclude_from_sim no)
+		(at 20 30 0)
+		(effects
+			(font
+				(size 1.45 1.45)
+			)
+			(justify left top)
+		)
+		(uuid "efe15ded-b1f3-4385-b516-592684375267")
+	)
+	(text "Next schematic pass:\n1. Replace these notes with actual KiCad symbols.\n2. Assign exact JLCPCB/LCSC part numbers.\n3. Run ERC after full symbol wiring.\n4. Update PCB from schematic and quote JLCPCB assembly."
+		(exclude_from_sim no)
+		(at 20 245 0)
+		(effects
+			(font
+				(size 1.4 1.4)
+				(italic yes)
+			)
+			(justify left top)
+		)
+		(uuid "ff763d67-64dd-4347-b935-dce64914b533")
+	)
+	(sheet_instances
+		(path "/"
+			(page "1")
+		)
+	)
+)

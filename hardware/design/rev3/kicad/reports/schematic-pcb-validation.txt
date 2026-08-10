@@ -1,0 +1,16 @@
+Hacking Badge V3 schematic-to-PCB validation
+================================================
+Result: PASS
+PCB components: 60
+Schematic components: 60
+PCB named nets: 37
+Schematic named nets: 37
+Connected component-pin pairs checked: 149
+Intentional no-connect pins checked: 20
+
+Checks
+------
+Reference set: PASS
+Component values: PASS
+Named pin-to-net mapping: PASS
+Intentional no-connect mapping: PASS

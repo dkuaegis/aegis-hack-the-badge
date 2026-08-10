@@ -1,0 +1,1999 @@
+** Drc report for hacking_box_v2.kicad_pcb **
+** Created on 2026-07-28T11:33:15 **
+** Report includes: Errors, Warnings, Exclusions **
+
+** Found 469 DRC violations **
+[clearance]: 공간거리 위반 (네트클래스 'Default' 공간거리 0.2000 mm; 실제값 0.1475 mm)
+    Rule: 네트클래스 'Default'; error
+    @(91.5000 mm, 43.2500 mm): 배선 [BUZZER_SW] on F.Cu, 길이 1.0000 mm
+    @(90.0525 mm, 43.2500 mm): 패드 1 [3V3]의 BZ1 위F.Cu
+[clearance]: 공간거리 위반 (네트클래스 'Default' 공간거리 0.2000 mm; 실제값 0.1475 mm)
+    Rule: 네트클래스 'Default'; error
+    @(94.0000 mm, 43.2500 mm): 배선 [BUZZER_SW] on F.Cu, 길이 2.5000 mm
+    @(90.0525 mm, 43.2500 mm): 패드 1 [3V3]의 BZ1 위F.Cu
+[clearance]: 공간거리 위반 (네트클래스 'Default' 공간거리 0.2000 mm; 실제값 0.1850 mm)
+    Rule: 네트클래스 'Default'; error
+    @(91.5000 mm, 42.2500 mm): 배선 [BUZZER_SW] on F.Cu, 길이 3.0000 mm
+    @(90.0525 mm, 43.2500 mm): 패드 1 [3V3]의 BZ1 위F.Cu
+[clearance]: 공간거리 위반 (네트클래스 'Default' 공간거리 0.2000 mm; 실제값 0.1750 mm)
+    Rule: 네트클래스 'Default'; error
+    @(91.7500 mm, 47.7500 mm): 배선 [3V3] on F.Cu, 길이 2.0000 mm
+    @(91.0000 mm, 47.0625 mm): 배선 [BUZZER_SW] on F.Cu, 길이 0.0625 mm
+[clearance]: 공간거리 위반 (네트클래스 'Default' 공간거리 0.2000 mm; 실제값 0.1850 mm)
+    Rule: 네트클래스 'Default'; error
+    @(91.4900 mm, 62.2500 mm): 배선 [3V3] on F.Cu, 길이 0.0100 mm
+    @(92.7600 mm, 62.2500 mm): 패드 1 [GND]의 U1 위F.Cu
+[clearance]: 공간거리 위반 (네트클래스 'Default' 공간거리 0.2000 mm; 실제값 0.1090 mm)
+    Rule: 네트클래스 'Default'; error
+    @(79.0000 mm, 58.0000 mm): 배선 [3V3] on F.Cu, 길이 0.2500 mm
+    @(78.5000 mm, 58.2500 mm): 배선 [STATUS_LED_3_MCU] on F.Cu, 길이 3.7500 mm
+[clearance]: 공간거리 위반 (네트클래스 'Default' 공간거리 0.2000 mm; 실제값 0.1750 mm)
+    Rule: 네트클래스 'Default'; error
+    @(91.7500 mm, 47.7500 mm): 배선 [3V3] on F.Cu, 길이 2.0000 mm
+    @(88.5000 mm, 47.0000 mm): 배선 [BUZZER_SW] on F.Cu, 길이 2.5000 mm
+[clearance]: 공간거리 위반 (네트클래스 'Default' 공간거리 0.2000 mm; 실제값 0.0500 mm)
+    Rule: 네트클래스 'Default'; error
+    @(75.2500 mm, 56.5000 mm): 배선 [3V3] on F.Cu, 길이 14.0000 mm
+    @(62.5000 mm, 57.0000 mm): 배선 [STATUS_LED_3_MCU] on F.Cu, 길이 2.0000 mm
+[clearance]: 공간거리 위반 (네트클래스 'Default' 공간거리 0.2000 mm; 실제값 0.1000 mm)
+    Rule: 네트클래스 'Default'; error
+    @(86.0000 mm, 61.2500 mm): 배선 [3V3] on F.Cu, 길이 1.5000 mm
+    @(85.2500 mm, 61.2500 mm): 비아 [CHAL_1_MCU] on F.Cu - B.Cu
+[shorting_items]: 두 개의 네트를 단락시키는 개체 (네트 STATUS_LED_4_MCU 와 OLED_SDA)
+    Local override; error
+    @(67.7500 mm, 63.2500 mm): 비아 [STATUS_LED_4_MCU] on F.Cu - B.Cu
+    @(68.2500 mm, 63.2500 mm): 비아 [OLED_SDA] on F.Cu - B.Cu
+[clearance]: 공간거리 위반 (네트클래스 'Default' 공간거리 0.2000 mm; 실제값 0.0500 mm)
+    Rule: 네트클래스 'Default'; error
+    @(44.7500 mm, 52.0000 mm): 배선 [EN] on B.Cu, 길이 35.5000 mm
+    @(45.2500 mm, 54.7500 mm): 비아 [OLED_SDA] on F.Cu - B.Cu
+[clearance]: 공간거리 위반 (네트클래스 'Default' 공간거리 0.2000 mm; 실제값 0.1250 mm)
+    Rule: 네트클래스 'Default'; error
+    @(43.2500 mm, 56.5000 mm): 배선 [3V3] on F.Cu, 길이 1.2500 mm
+    @(42.0000 mm, 55.5500 mm): 패드 2 [GND]의 C5 위F.Cu
+[shorting_items]: 두 개의 네트를 단락시키는 개체 (네트 OLED_SCL 와 STATUS_LED_3_A)
+    Local override; error
+    @(63.7500 mm, 59.7500 mm): 비아 [OLED_SCL] on F.Cu - B.Cu
+    @(63.3250 mm, 59.7500 mm): 배선 [STATUS_LED_3_A] on F.Cu, 길이 0.0375 mm
+[clearance]: 공간거리 위반 (네트클래스 'Default' 공간거리 0.2000 mm; 실제값 0.0500 mm)
+    Rule: 네트클래스 'Default'; error
+    @(78.7500 mm, 58.5000 mm): 배선 [STATUS_LED_3_MCU] on F.Cu, 길이 0.2500 mm
+    @(79.2500 mm, 60.0000 mm): 배선 [3V3] on F.Cu, 길이 2.0000 mm
+[clearance]: 공간거리 위반 (네트클래스 'Default' 공간거리 0.2000 mm; 실제값 0.0500 mm)
+    Rule: 네트클래스 'Default'; error
+    @(80.5000 mm, 61.7500 mm): 배선 [UART_TX_MCU] on B.Cu, 길이 15.7500 mm
+    @(80.0000 mm, 46.0000 mm): 비아 [BUZZER_GPIO] on F.Cu - B.Cu
+[clearance]: 공간거리 위반 (네트클래스 'Default' 공간거리 0.2000 mm; 실제값 0.1000 mm)
+    Rule: 네트클래스 'Default'; error
+    @(89.0000 mm, 55.5000 mm): 배선 [3V3] on F.Cu, 길이 1.0000 mm
+    @(89.0000 mm, 54.6750 mm): 패드 2 [EN]의 R_EN 위F.Cu
+[shorting_items]: 두 개의 네트를 단락시키는 개체 (네트 STATUS_LED_4_MCU 와 OLED_SDA)
+    Local override; error
+    @(67.7500 mm, 63.2500 mm): 비아 [STATUS_LED_4_MCU] on F.Cu - B.Cu
+    @(68.2500 mm, 63.2500 mm): 비아 [OLED_SDA] on F.Cu - B.Cu
+[clearance]: 공간거리 위반 (네트클래스 'Default' 공간거리 0.2000 mm; 실제값 0.0125 mm)
+    Rule: 네트클래스 'Default'; error
+    @(63.7500 mm, 59.7500 mm): 비아 [OLED_SCL] on F.Cu - B.Cu
+    @(63.2875 mm, 59.7500 mm): 배선 [STATUS_LED_3_A] on F.Cu, 길이 1.7500 mm
+[clearance]: 공간거리 위반 (네트클래스 'Default' 공간거리 0.2000 mm; 실제값 0.0500 mm)
+    Rule: 네트클래스 'Default'; error
+    @(85.2500 mm, 61.2500 mm): 비아 [CHAL_1_MCU] on F.Cu - B.Cu
+    @(88.5000 mm, 61.7500 mm): 배선 [UART_TX_MCU] on B.Cu, 길이 8.0000 mm
+[clearance]: 공간거리 위반 (네트클래스 'Default' 공간거리 0.2000 mm; 실제값 0.0500 mm)
+    Rule: 네트클래스 'Default'; error
+    @(80.0000 mm, 46.0000 mm): 비아 [BUZZER_GPIO] on F.Cu - B.Cu
+    @(80.5000 mm, 46.0000 mm): 배선 [UART_TX_MCU] on F.Cu, 길이 0.5000 mm
+[shorting_items]: 두 개의 네트를 단락시키는 개체 (네트 UART_RX_MCU 와 UART_TX_MCU)
+    Local override; error
+    @(87.6800 mm, 79.7500 mm): 패드 36 [UART_RX_MCU]의 U1 위F.Cu
+    @(88.5000 mm, 79.7500 mm): 배선 [UART_TX_MCU] on F.Cu, 길이 0.5000 mm
+[clearance]: 공간거리 위반 (네트클래스 'Default' 공간거리 0.2000 mm; 실제값 0.0500 mm)
+    Rule: 네트클래스 'Default'; error
+    @(88.5000 mm, 79.2500 mm): 배선 [UART_TX_MCU] on B.Cu, 길이 17.5000 mm
+    @(88.0000 mm, 62.2500 mm): 비아 [OLED_SDA] on F.Cu - B.Cu
+[shorting_items]: 두 개의 네트를 단락시키는 개체 (네트 UART_RX_MCU 와 UART_TX_MCU)
+    Local override; error
+    @(87.6800 mm, 79.7500 mm): 패드 36 [UART_RX_MCU]의 U1 위F.Cu
+    @(89.0000 mm, 79.7500 mm): 배선 [UART_TX_MCU] on F.Cu, 길이 0.5000 mm
+[shorting_items]: 두 개의 네트를 단락시키는 개체 (네트 OLED_SCL 와 STATUS_LED_3_A)
+    Local override; error
+    @(63.7500 mm, 59.7500 mm): 비아 [OLED_SCL] on F.Cu - B.Cu
+    @(63.3250 mm, 61.5000 mm): 배선 [STATUS_LED_3_A] on F.Cu, 길이 1.7500 mm
+[shorting_items]: 두 개의 네트를 단락시키는 개체 (네트 UART_TX_MCU 와 UART_RX_MCU)
+    Local override; error
+    @(88.5000 mm, 79.2500 mm): 비아 [UART_TX_MCU] on F.Cu - B.Cu
+    @(87.6800 mm, 79.7500 mm): 패드 36 [UART_RX_MCU]의 U1 위F.Cu
+[clearance]: 공간거리 위반 (네트클래스 'Default' 공간거리 0.2000 mm; 실제값 0.0500 mm)
+    Rule: 네트클래스 'Default'; error
+    @(80.5000 mm, 45.5000 mm): 배선 [UART_TX_MCU] on F.Cu, 길이 33.5000 mm
+    @(79.5000 mm, 46.0000 mm): 비아 [EN] on F.Cu - B.Cu
+[clearance]: 공간거리 위반 (네트클래스 'Default' 공간거리 0.2000 mm; 실제값 0.0500 mm)
+    Rule: 네트클래스 'Default'; error
+    @(70.2500 mm, 79.2500 mm): 비아 [CHAL_1_MCU] on F.Cu - B.Cu
+    @(69.7500 mm, 79.7500 mm): 배선 [UART_RX_MCU] on B.Cu, 길이 16.0000 mm
+[clearance]: 공간거리 위반 (네트클래스 'Default' 공간거리 0.2000 mm; 실제값 0.0500 mm)
+    Rule: 네트클래스 'Default'; error
+    @(34.5000 mm, 73.5000 mm): 비아 [CHAL_0_MCU] on F.Cu - B.Cu
+    @(34.0000 mm, 81.7500 mm): 배선 [BOOT_GPIO0] on F.Cu, 길이 19.5000 mm
+[clearance]: 공간거리 위반 (네트클래스 'Default' 공간거리 0.2000 mm; 실제값 0.0500 mm)
+    Rule: 네트클래스 'Default'; error
+    @(67.7500 mm, 59.0000 mm): 배선 [UART_RX_MCU] on B.Cu, 길이 10.0000 mm
+    @(68.2500 mm, 55.7500 mm): 비아 [CHAL_2_MCU] on F.Cu - B.Cu
+[clearance]: 공간거리 위반 (네트클래스 'Default' 공간거리 0.2000 mm; 실제값 0.0500 mm)
+    Rule: 네트클래스 'Default'; error
+    @(70.2500 mm, 79.2500 mm): 비아 [CHAL_1_MCU] on F.Cu - B.Cu
+    @(86.7500 mm, 79.7500 mm): 배선 [UART_RX_MCU] on B.Cu, 길이 17.0000 mm
+[clearance]: 공간거리 위반 (네트클래스 'Default' 공간거리 0.2000 mm; 실제값 0.0500 mm)
+    Rule: 네트클래스 'Default'; error
+    @(70.2500 mm, 73.5000 mm): 비아 [CHAL_0_MCU] on F.Cu - B.Cu
+    @(75.0000 mm, 73.0000 mm): 배선 [STATUS_LED_2_MCU] on F.Cu, 길이 18.5000 mm
+[clearance]: 공간거리 위반 (네트클래스 'Default' 공간거리 0.2000 mm; 실제값 0.0500 mm)
+    Rule: 네트클래스 'Default'; error
+    @(75.0000 mm, 71.7500 mm): 배선 [STATUS_LED_1_MCU] on F.Cu, 길이 17.7500 mm
+    @(69.2500 mm, 71.2500 mm): 비아 [ADMIN_UNLOCK] on F.Cu - B.Cu
+[clearance]: 공간거리 위반 (네트클래스 'Default' 공간거리 0.2000 mm; 실제값 0.0850 mm)
+    Rule: 네트클래스 'Default'; error
+    @(86.7500 mm, 79.7500 mm): 비아 [UART_RX_MCU] on F.Cu - B.Cu
+    @(86.4100 mm, 79.7500 mm): 패드 35 [<no net>]의 U1 위F.Cu
+[clearance]: 공간거리 위반 (네트클래스 'Default' 공간거리 0.2000 mm; 실제값 0.0500 mm)
+    Rule: 네트클래스 'Default'; error
+    @(70.2500 mm, 59.0000 mm): 비아 [UART_RX_MCU] on F.Cu - B.Cu
+    @(70.7500 mm, 58.5000 mm): 배선 [CHAL_2_MCU] on B.Cu, 길이 2.5000 mm
+[clearance]: 공간거리 위반 (네트클래스 'Default' 공간거리 0.2000 mm; 실제값 0.1090 mm)
+    Rule: 네트클래스 'Default'; error
+    @(70.2500 mm, 59.0000 mm): 비아 [UART_RX_MCU] on F.Cu - B.Cu
+    @(78.0000 mm, 58.7500 mm): 배선 [CHAL_2_MCU] on B.Cu, 길이 7.2500 mm
+[shorting_items]: 두 개의 네트를 단락시키는 개체 (네트 UART_RX_MCU 와 )
+    Local override; error
+    @(87.7500 mm, 79.7500 mm): 배선 [UART_RX_MCU] on F.Cu, 길이 1.0000 mm
+    @(86.4100 mm, 79.7500 mm): 패드 35 [<no net>]의 U1 위F.Cu
+[clearance]: 공간거리 위반 (네트클래스 'Default' 공간거리 0.2000 mm; 실제값 0.1090 mm)
+    Rule: 네트클래스 'Default'; error
+    @(70.7500 mm, 58.7500 mm): 배선 [CHAL_2_MCU] on B.Cu, 길이 0.2500 mm
+    @(70.2500 mm, 59.0000 mm): 비아 [UART_RX_MCU] on F.Cu - B.Cu
+[shorting_items]: 두 개의 네트를 단락시키는 개체 (네트 CHAL_2_MCU 와 USB_D_N)
+    Local override; error
+    @(78.2500 mm, 61.7500 mm): 비아 [CHAL_2_MCU] on F.Cu - B.Cu
+    @(77.5200 mm, 62.2500 mm): 패드 13 [USB_D_N]의 U1 위F.Cu
+[clearance]: 공간거리 위반 (네트클래스 'Default' 공간거리 0.2000 mm; 실제값 0.0500 mm)
+    Rule: 네트클래스 'Default'; error
+    @(62.0000 mm, 55.7500 mm): 배선 [CHAL_2_MCU] on B.Cu, 길이 16.7500 mm
+    @(45.2500 mm, 55.2500 mm): 비아 [OLED_SCL] on F.Cu - B.Cu
+[clearance]: 공간거리 위반 (네트클래스 'Default' 공간거리 0.2000 mm; 실제값 0.0500 mm)
+    Rule: 네트클래스 'Default'; error
+    @(45.2500 mm, 55.7500 mm): 배선 [CHAL_2_MCU] on B.Cu, 길이 18.2500 mm
+    @(45.2500 mm, 55.2500 mm): 비아 [OLED_SCL] on F.Cu - B.Cu
+[shorting_items]: 두 개의 네트를 단락시키는 개체 (네트 BUZZER_GPIO 와 UART_TX_MCU)
+    Local override; error
+    @(80.0000 mm, 46.0000 mm): 비아 [BUZZER_GPIO] on F.Cu - B.Cu
+    @(80.5000 mm, 46.0000 mm): 비아 [UART_TX_MCU] on F.Cu - B.Cu
+[shorting_items]: 두 개의 네트를 단락시키는 개체 (네트 CHAL_2_MCU 와 USB_D_N)
+    Local override; error
+    @(78.7500 mm, 62.2500 mm): 배선 [CHAL_2_MCU] on F.Cu, 길이 0.5000 mm
+    @(77.5200 mm, 62.2500 mm): 패드 13 [USB_D_N]의 U1 위F.Cu
+[clearance]: 공간거리 위반 (네트클래스 'Default' 공간거리 0.2000 mm; 실제값 0.1377 mm)
+    Rule: 네트클래스 'Default'; error
+    @(80.0000 mm, 61.7500 mm): 비아 [BUZZER_GPIO] on F.Cu - B.Cu
+    @(78.7900 mm, 62.2500 mm): 패드 12 [CHAL_2_MCU]의 U1 위F.Cu
+[clearance]: 공간거리 위반 (네트클래스 'Default' 공간거리 0.2000 mm; 실제값 0.0500 mm)
+    Rule: 네트클래스 'Default'; error
+    @(80.0000 mm, 61.7500 mm): 배선 [BUZZER_GPIO] on B.Cu, 길이 15.7500 mm
+    @(79.5000 mm, 46.0000 mm): 비아 [EN] on F.Cu - B.Cu
+[shorting_items]: 두 개의 네트를 단락시키는 개체 (네트 CHAL_2_MCU 와 USB_D_N)
+    Local override; error
+    @(78.2500 mm, 62.2500 mm): 배선 [CHAL_2_MCU] on F.Cu, 길이 0.5000 mm
+    @(77.5200 mm, 62.2500 mm): 패드 13 [USB_D_N]의 U1 위F.Cu
+[shorting_items]: 두 개의 네트를 단락시키는 개체 (네트 BUZZER_GPIO 와 UART_TX_MCU)
+    Local override; error
+    @(80.0000 mm, 46.0000 mm): 비아 [BUZZER_GPIO] on F.Cu - B.Cu
+    @(80.5000 mm, 46.0000 mm): 비아 [UART_TX_MCU] on F.Cu - B.Cu
+[clearance]: 공간거리 위반 (네트클래스 'Default' 공간거리 0.2000 mm; 실제값 0.0500 mm)
+    Rule: 네트클래스 'Default'; error
+    @(80.0000 mm, 46.0000 mm): 배선 [BUZZER_GPIO] on F.Cu, 길이 0.5000 mm
+    @(79.5000 mm, 46.0000 mm): 비아 [EN] on F.Cu - B.Cu
+[clearance]: 공간거리 위반 (네트클래스 'Default' 공간거리 0.2000 mm; 실제값 0.0500 mm)
+    Rule: 네트클래스 'Default'; error
+    @(80.0000 mm, 61.7500 mm): 비아 [BUZZER_GPIO] on F.Cu - B.Cu
+    @(81.0000 mm, 61.2500 mm): 배선 [STATUS_LED_5_MCU] on F.Cu, 길이 2.7500 mm
+[shorting_items]: 두 개의 네트를 단락시키는 개체 (네트 STATUS_LED_4_MCU 와 STATUS_LED_5_MCU)
+    Local override; error
+    @(81.7500 mm, 62.2500 mm): 비아 [STATUS_LED_4_MCU] on F.Cu - B.Cu
+    @(81.3300 mm, 62.2500 mm): 배선 [STATUS_LED_5_MCU] on F.Cu, 길이 0.0800 mm
+[clearance]: 공간거리 위반 (네트클래스 'Default' 공간거리 0.2000 mm; 실제값 0.0500 mm)
+    Rule: 네트클래스 'Default'; error
+    @(80.0000 mm, 46.5000 mm): 배선 [BUZZER_GPIO] on F.Cu, 길이 4.7500 mm
+    @(80.5000 mm, 46.0000 mm): 비아 [UART_TX_MCU] on F.Cu - B.Cu
+[clearance]: 공간거리 위반 (네트클래스 'Default' 공간거리 0.2000 mm; 실제값 0.0500 mm)
+    Rule: 네트클래스 'Default'; error
+    @(81.2500 mm, 62.2500 mm): 배선 [STATUS_LED_5_MCU] on F.Cu, 길이 0.2500 mm
+    @(81.7500 mm, 62.2500 mm): 비아 [STATUS_LED_4_MCU] on F.Cu - B.Cu
+[clearance]: 공간거리 위반 (네트클래스 'Default' 공간거리 0.2000 mm; 실제값 0.0500 mm)
+    Rule: 네트클래스 'Default'; error
+    @(67.7500 mm, 62.2500 mm): 배선 [STATUS_LED_4_MCU] on B.Cu, 길이 1.0000 mm
+    @(67.7500 mm, 63.7500 mm): 비아 [OLED_SCL] on F.Cu - B.Cu
+[clearance]: 공간거리 위반 (네트클래스 'Default' 공간거리 0.2000 mm; 실제값 0.0050 mm)
+    Rule: 네트클래스 'Default'; error
+    @(81.7500 mm, 62.2500 mm): 비아 [STATUS_LED_4_MCU] on F.Cu - B.Cu
+    @(81.3300 mm, 62.2500 mm): 패드 10 [STATUS_LED_5_MCU]의 U1 위F.Cu
+[clearance]: 공간거리 위반 (네트클래스 'Default' 공간거리 0.2000 mm; 실제값 0.0500 mm)
+    Rule: 네트클래스 'Default'; error
+    @(78.2500 mm, 61.7500 mm): 비아 [CHAL_2_MCU] on F.Cu - B.Cu
+    @(78.2500 mm, 61.2500 mm): 배선 [STATUS_LED_5_MCU] on F.Cu, 길이 2.2500 mm
+[clearance]: 공간거리 위반 (네트클래스 'Default' 공간거리 0.2000 mm; 실제값 0.0500 mm)
+    Rule: 네트클래스 'Default'; error
+    @(68.2500 mm, 63.2500 mm): 비아 [OLED_SDA] on F.Cu - B.Cu
+    @(67.7500 mm, 63.2500 mm): 배선 [STATUS_LED_4_MCU] on F.Cu, 길이 0.7500 mm
+[clearance]: 공간거리 위반 (네트클래스 'Default' 공간거리 0.2000 mm; 실제값 0.0650 mm)
+    Rule: 네트클래스 'Default'; error
+    @(81.0000 mm, 62.2500 mm): 배선 [STATUS_LED_5_MCU] on F.Cu, 길이 1.0000 mm
+    @(80.0600 mm, 62.2500 mm): 패드 11 [BUZZER_GPIO]의 U1 위F.Cu
+[clearance]: 공간거리 위반 (네트클래스 'Default' 공간거리 0.2000 mm; 실제값 0.1700 mm)
+    Rule: 네트클래스 'Default'; error
+    @(81.3300 mm, 62.2500 mm): 배선 [STATUS_LED_5_MCU] on F.Cu, 길이 0.0800 mm
+    @(82.5000 mm, 62.2500 mm): 배선 [STATUS_LED_4_MCU] on F.Cu, 길이 0.7500 mm
+[clearance]: 공간거리 위반 (네트클래스 'Default' 공간거리 0.2000 mm; 실제값 0.0250 mm)
+    Rule: 네트클래스 'Default'; error
+    @(83.7500 mm, 62.2500 mm): 배선 [STATUS_LED_3_MCU] on F.Cu, 길이 0.2500 mm
+    @(82.6000 mm, 62.2500 mm): 패드 9 [STATUS_LED_4_MCU]의 U1 위F.Cu
+[clearance]: 공간거리 위반 (네트클래스 'Default' 공간거리 0.2000 mm; 실제값 0.0500 mm)
+    Rule: 네트클래스 'Default'; error
+    @(78.2500 mm, 61.7500 mm): 비아 [CHAL_2_MCU] on F.Cu - B.Cu
+    @(81.7500 mm, 62.2500 mm): 배선 [STATUS_LED_4_MCU] on B.Cu, 길이 14.0000 mm
+[clearance]: 공간거리 위반 (네트클래스 'Default' 공간거리 0.2000 mm; 실제값 0.0500 mm)
+    Rule: 네트클래스 'Default'; error
+    @(69.7500 mm, 63.7500 mm): 비아 [UART_RX_MCU] on F.Cu - B.Cu
+    @(83.2500 mm, 63.7500 mm): 배선 [CHAL_0_MCU] on B.Cu, 길이 13.0000 mm
+[clearance]: 공간거리 위반 (네트클래스 'Default' 공간거리 0.2000 mm; 실제값 0.0250 mm)
+    Rule: 네트클래스 'Default'; error
+    @(83.5000 mm, 62.2500 mm): 배선 [STATUS_LED_3_MCU] on F.Cu, 길이 1.0000 mm
+    @(82.6000 mm, 62.2500 mm): 패드 9 [STATUS_LED_4_MCU]의 U1 위F.Cu
+[clearance]: 공간거리 위반 (네트클래스 'Default' 공간거리 0.2000 mm; 실제값 0.0500 mm)
+    Rule: 네트클래스 'Default'; error
+    @(69.7500 mm, 63.7500 mm): 비아 [UART_RX_MCU] on F.Cu - B.Cu
+    @(70.2500 mm, 63.7500 mm): 배선 [CHAL_0_MCU] on B.Cu, 길이 9.7500 mm
+[clearance]: 공간거리 위반 (네트클래스 'Default' 공간거리 0.2000 mm; 실제값 0.0500 mm)
+    Rule: 네트클래스 'Default'; error
+    @(45.2500 mm, 74.0000 mm): 비아 [CHAL_2_MCU] on F.Cu - B.Cu
+    @(70.2500 mm, 73.5000 mm): 배선 [CHAL_0_MCU] on F.Cu, 길이 35.7500 mm
+[shorting_items]: 두 개의 네트를 단락시키는 개체 (네트 BUZZER_GPIO 와 EN)
+    Local override; error
+    @(80.0000 mm, 46.0000 mm): 비아 [BUZZER_GPIO] on F.Cu - B.Cu
+    @(79.5000 mm, 46.0000 mm): 비아 [EN] on F.Cu - B.Cu
+[shorting_items]: 두 개의 네트를 단락시키는 개체 (네트 BUZZER_GPIO 와 EN)
+    Local override; error
+    @(80.0000 mm, 46.0000 mm): 비아 [BUZZER_GPIO] on F.Cu - B.Cu
+    @(79.5000 mm, 46.0000 mm): 비아 [EN] on F.Cu - B.Cu
+[clearance]: 공간거리 위반 (네트클래스 'Default' 공간거리 0.2000 mm; 실제값 0.0500 mm)
+    Rule: 네트클래스 'Default'; error
+    @(80.0000 mm, 46.0000 mm): 비아 [BUZZER_GPIO] on F.Cu - B.Cu
+    @(90.2500 mm, 45.5000 mm): 배선 [EN] on B.Cu, 길이 10.7500 mm
+[clearance]: 공간거리 위반 (네트클래스 'Default' 공간거리 0.2000 mm; 실제값 0.1650 mm)
+    Rule: 네트클래스 'Default'; error
+    @(90.2500 mm, 62.0000 mm): 비아 [EN] on F.Cu - B.Cu
+    @(91.4900 mm, 62.2500 mm): 패드 2 [3V3]의 U1 위F.Cu
+[clearance]: 공간거리 위반 (네트클래스 'Default' 공간거리 0.2000 mm; 실제값 0.0500 mm)
+    Rule: 네트클래스 'Default'; error
+    @(80.0000 mm, 46.0000 mm): 비아 [BUZZER_GPIO] on F.Cu - B.Cu
+    @(79.5000 mm, 45.5000 mm): 배선 [EN] on B.Cu, 길이 0.5000 mm
+[clearance]: 공간거리 위반 (네트클래스 'Default' 공간거리 0.2000 mm; 실제값 0.0500 mm)
+    Rule: 네트클래스 'Default'; error
+    @(79.5000 mm, 52.0000 mm): 배선 [EN] on F.Cu, 길이 34.7500 mm
+    @(45.7500 mm, 51.5000 mm): 비아 [OLED_SCL] on F.Cu - B.Cu
+[clearance]: 공간거리 위반 (네트클래스 'Default' 공간거리 0.2000 mm; 실제값 0.0500 mm)
+    Rule: 네트클래스 'Default'; error
+    @(86.7500 mm, 79.7500 mm): 비아 [UART_RX_MCU] on F.Cu - B.Cu
+    @(87.2500 mm, 79.2500 mm): 배선 [CHAL_1_MCU] on B.Cu, 길이 17.0000 mm
+[clearance]: 공간거리 위반 (네트클래스 'Default' 공간거리 0.2000 mm; 실제값 0.0500 mm)
+    Rule: 네트클래스 'Default'; error
+    @(89.0000 mm, 79.7500 mm): 배선 [CHAL_1_MCU] on B.Cu, 길이 1.7500 mm
+    @(86.7500 mm, 79.7500 mm): 비아 [UART_RX_MCU] on F.Cu - B.Cu
+[clearance]: 공간거리 위반 (네트클래스 'Default' 공간거리 0.2000 mm; 실제값 0.0500 mm)
+    Rule: 네트클래스 'Default'; error
+    @(80.0000 mm, 46.0000 mm): 비아 [BUZZER_GPIO] on F.Cu - B.Cu
+    @(79.5000 mm, 46.0000 mm): 배선 [EN] on F.Cu, 길이 8.7500 mm
+[clearance]: 공간거리 위반 (네트클래스 'Default' 공간거리 0.2000 mm; 실제값 0.0500 mm)
+    Rule: 네트클래스 'Default'; error
+    @(86.7500 mm, 79.7500 mm): 비아 [UART_RX_MCU] on F.Cu - B.Cu
+    @(87.2500 mm, 79.7500 mm): 배선 [CHAL_1_MCU] on B.Cu, 길이 0.5000 mm
+[clearance]: 공간거리 위반 (네트클래스 'Default' 공간거리 0.2000 mm; 실제값 0.0500 mm)
+    Rule: 네트클래스 'Default'; error
+    @(70.2500 mm, 79.2500 mm): 배선 [CHAL_1_MCU] on F.Cu, 길이 34.2500 mm
+    @(42.0000 mm, 79.7500 mm): 비아 [CHAL_2] on F.Cu - B.Cu
+[shorting_items]: 두 개의 네트를 단락시키는 개체 (네트  와 USB_CC2)
+    Local override; error
+    @(63.7500 mm, 100.4550 mm): 패드 A8 [<no net>]의 J1 위F.Cu
+    @(64.2500 mm, 100.4550 mm): 배선 [USB_CC2] on F.Cu, 길이 0.0450 mm
+[shorting_items]: 두 개의 네트를 단락시키는 개체 (네트 USB_CC2 와 )
+    Local override; error
+    @(64.2500 mm, 100.5000 mm): 배선 [USB_CC2] on F.Cu, 길이 0.7500 mm
+    @(63.7500 mm, 100.4550 mm): 패드 A8 [<no net>]의 J1 위F.Cu
+[hole_clearance]: 홀 공간거리 위반 (기판의 홀 제약조건 설정 공간거리 0.2500 mm; 실제값 0.0000 mm)
+    Rule: 기판의 홀 제약조건 설정; error
+    @(62.7500 mm, 102.0000 mm): 배선 [USB_D_N] on B.Cu, 길이 2.7500 mm
+    @(59.6100 mm, 101.9000 mm): J1의 NPTH 패드
+[clearance]: 공간거리 위반 (네트클래스 'USB' 공간거리 0.2000 mm; 실제값 0.0750 mm)
+    Rule: 네트클래스 'USB'; error
+    @(60.5000 mm, 99.0000 mm): 비아 [VBUS] on F.Cu - B.Cu
+    @(60.0000 mm, 102.0000 mm): 배선 [USB_D_N] on B.Cu, 길이 3.5000 mm
+[clearance]: 공간거리 위반 (네트클래스 'USB' 공간거리 0.2000 mm; 실제값 0.0750 mm)
+    Rule: 네트클래스 'USB'; error
+    @(60.5000 mm, 99.0000 mm): 비아 [VBUS] on F.Cu - B.Cu
+    @(60.0000 mm, 98.5000 mm): 배선 [USB_D_N] on F.Cu, 길이 0.7500 mm
+[shorting_items]: 두 개의 네트를 단락시키는 개체 (네트 USB_D_P 와 USB_D_N)
+    Local override; error
+    @(62.2500 mm, 100.4550 mm): 패드 A6 [USB_D_P]의 J1 위F.Cu
+    @(62.7500 mm, 100.4550 mm): 배선 [USB_D_N] on F.Cu, 길이 1.5450 mm
+[clearance]: 공간거리 위반 (네트클래스 'USB' 공간거리 0.2000 mm; 실제값 0.1340 mm)
+    Rule: 네트클래스 'USB'; error
+    @(60.7500 mm, 98.5000 mm): 배선 [USB_D_N] on F.Cu, 길이 4.4500 mm
+    @(60.5000 mm, 99.0000 mm): 비아 [VBUS] on F.Cu - B.Cu
+[clearance]: 공간거리 위반 (네트클래스 'Default' 공간거리 0.2000 mm; 실제값 0.0500 mm)
+    Rule: 네트클래스 'Default'; error
+    @(88.5000 mm, 79.2500 mm): 비아 [UART_TX_MCU] on F.Cu - B.Cu
+    @(89.0000 mm, 61.2500 mm): 배선 [CHAL_1_MCU] on B.Cu, 길이 18.5000 mm
+[clearance]: 공간거리 위반 (네트클래스 'USB' 공간거리 0.2000 mm; 실제값 0.0750 mm)
+    Rule: 네트클래스 'USB'; error
+    @(66.5000 mm, 93.5000 mm): 배선 [USB_D_N] on B.Cu, 길이 34.0000 mm
+    @(66.0000 mm, 59.7500 mm): 비아 [OLED_SDA] on F.Cu - B.Cu
+[clearance]: 공간거리 위반 (네트클래스 'USB' 공간거리 0.2000 mm; 실제값 0.0750 mm)
+    Rule: 네트클래스 'USB'; error
+    @(67.2500 mm, 96.5000 mm): 배선 [USB_D_P] on B.Cu, 길이 36.0000 mm
+    @(67.7500 mm, 63.7500 mm): 비아 [OLED_SCL] on F.Cu - B.Cu
+[clearance]: 공간거리 위반 (네트클래스 'USB' 공간거리 0.2000 mm; 실제값 0.0750 mm)
+    Rule: 네트클래스 'USB'; error
+    @(70.2500 mm, 59.0000 mm): 비아 [UART_RX_MCU] on F.Cu - B.Cu
+    @(66.5000 mm, 59.5000 mm): 배선 [USB_D_N] on B.Cu, 길이 11.0000 mm
+[clearance]: 공간거리 위반 (네트클래스 'USB' 공간거리 0.2000 mm; 실제값 0.1228 mm)
+    Rule: 네트클래스 'USB'; error
+    @(63.6375 mm, 94.0500 mm): 배선 [USB_D_N] on F.Cu, 길이 2.9149 mm
+    @(65.5000 mm, 94.2500 mm): 비아 [VBUS] on F.Cu - B.Cu
+[clearance]: 공간거리 위반 (네트클래스 'USB' 공간거리 0.2000 mm; 실제값 0.1750 mm)
+    Rule: 네트클래스 'USB'; error
+    @(61.2500 mm, 100.4550 mm): 패드 A5 [USB_CC1]의 J1 위F.Cu
+    @(62.2500 mm, 100.4550 mm): 배선 [USB_D_P] on F.Cu, 길이 1.2050 mm
+[shorting_items]: 두 개의 네트를 단락시키는 개체 (네트 USB_D_N 와 USB_CC1)
+    Local override; error
+    @(61.7500 mm, 100.4550 mm): 배선 [USB_D_N] on F.Cu, 길이 0.9550 mm
+    @(61.2500 mm, 100.4550 mm): 패드 A5 [USB_CC1]의 J1 위F.Cu
+[clearance]: 공간거리 위반 (네트클래스 'USB' (차동 쌍) 공간거리 0.1500 mm; 실제값 0.0500 mm)
+    Rule: 네트클래스 'USB' (차동 쌍); error
+    @(64.0000 mm, 97.0000 mm): 배선 [USB_D_P] on F.Cu, 길이 3.0000 mm
+    @(60.7500 mm, 98.5000 mm): 배선 [USB_D_N] on F.Cu, 길이 4.4500 mm
+[clearance]: 공간거리 위반 (네트클래스 'USB' (차동 쌍) 공간거리 0.1500 mm; 실제값 0.0500 mm)
+    Rule: 네트클래스 'USB' (차동 쌍); error
+    @(60.7500 mm, 98.5000 mm): 배선 [USB_D_N] on F.Cu, 길이 4.4500 mm
+    @(61.0000 mm, 97.0000 mm): 배선 [USB_D_P] on F.Cu, 길이 1.1108 mm
+[shorting_items]: 두 개의 네트를 단락시키는 개체 (네트 USB_D_N 와 USB_D_P)
+    Local override; error
+    @(62.7500 mm, 100.4550 mm): 패드 A7 [USB_D_N]의 J1 위F.Cu
+    @(63.2500 mm, 100.4550 mm): 배선 [USB_D_P] on F.Cu, 길이 1.2050 mm
+[clearance]: 공간거리 위반 (네트클래스 'USB' 공간거리 0.2000 mm; 실제값 0.1053 mm)
+    Rule: 네트클래스 'USB'; error
+    @(60.5000 mm, 99.0000 mm): 비아 [VBUS] on F.Cu - B.Cu
+    @(61.7500 mm, 99.5000 mm): 배선 [USB_D_N] on F.Cu, 길이 1.4142 mm
+[clearance]: 공간거리 위반 (네트클래스 'Default' 공간거리 0.2000 mm; 실제값 0.1000 mm)
+    Rule: 네트클래스 'Default'; error
+    @(40.0000 mm, 60.0000 mm): 패드 1 [PLAYER_UART_TX]의 TP_UART_TX 위B.Cu
+    @(40.0000 mm, 53.0000 mm): 배선 [VBUS] on B.Cu, 길이 5.7500 mm
+[shorting_items]: 두 개의 네트를 단락시키는 개체 (네트 USB_CC1 와 USB_D_N)
+    Local override; error
+    @(61.2500 mm, 100.5000 mm): 배선 [USB_CC1] on F.Cu, 길이 0.5000 mm
+    @(61.7500 mm, 100.4550 mm): 패드 B7 [USB_D_N]의 J1 위F.Cu
+[clearance]: 공간거리 위반 (네트클래스 'Default' 공간거리 0.2000 mm; 실제값 0.0250 mm)
+    Rule: 네트클래스 'Default'; error
+    @(41.2500 mm, 58.7500 mm): 배선 [VBUS] on B.Cu, 길이 35.5000 mm
+    @(40.5000 mm, 62.5000 mm): 비아 [OLED_SCL] on F.Cu - B.Cu
+[shorting_items]: 두 개의 네트를 단락시키는 개체 (네트 USB_CC1 와 USB_D_N)
+    Local override; error
+    @(61.2500 mm, 100.4550 mm): 배선 [USB_CC1] on F.Cu, 길이 0.0450 mm
+    @(61.7500 mm, 100.4550 mm): 패드 B7 [USB_D_N]의 J1 위F.Cu
+[clearance]: 공간거리 위반 (네트클래스 'Default' 공간거리 0.2000 mm; 실제값 0.1000 mm)
+    Rule: 네트클래스 'Default'; error
+    @(35.2500 mm, 53.0000 mm): 배선 [VBUS] on B.Cu, 길이 4.7500 mm
+    @(34.0000 mm, 53.0000 mm): 패드 1 [GND]의 TP_GND 위B.Cu
+[clearance]: 공간거리 위반 (네트클래스 'Default' 공간거리 0.2000 mm; 실제값 0.1000 mm)
+    Rule: 네트클래스 'Default'; error
+    @(40.0000 mm, 58.7500 mm): 배선 [VBUS] on B.Cu, 길이 1.2500 mm
+    @(40.0000 mm, 60.0000 mm): 패드 1 [PLAYER_UART_TX]의 TP_UART_TX 위B.Cu
+[clearance]: 공간거리 위반 (네트클래스 'USB' 공간거리 0.2000 mm; 실제값 0.1500 mm)
+    Rule: 네트클래스 'USB'; error
+    @(61.7500 mm, 100.4550 mm): 패드 B7 [USB_D_N]의 J1 위F.Cu
+    @(60.7500 mm, 100.5000 mm): 배선 [USB_CC1] on F.Cu, 길이 0.7500 mm
+[clearance]: 공간거리 위반 (네트클래스 'Default' 공간거리 0.2000 mm; 실제값 0.1000 mm)
+    Rule: 네트클래스 'Default'; error
+    @(27.7500 mm, 54.2500 mm): 배선 [VBUS] on B.Cu, 길이 7.5000 mm
+    @(34.0000 mm, 53.0000 mm): 패드 1 [GND]의 TP_GND 위B.Cu
+[clearance]: 공간거리 위반 (네트클래스 'USB' 공간거리 0.2000 mm; 실제값 0.0571 mm)
+    Rule: 네트클래스 'USB'; error
+    @(60.5000 mm, 99.0000 mm): 비아 [VBUS] on F.Cu - B.Cu
+    @(60.0000 mm, 98.5000 mm): 비아 [USB_D_N] on F.Cu - B.Cu
+[shorting_items]: 두 개의 네트를 단락시키는 개체 (네트 VBUS 와 USB_D_N)
+    Local override; error
+    @(65.0000 mm, 99.0000 mm): 배선 [VBUS] on B.Cu, 길이 4.5000 mm
+    @(60.0000 mm, 98.5000 mm): 비아 [USB_D_N] on F.Cu - B.Cu
+[clearance]: 공간거리 위반 (네트클래스 'USB' 공간거리 0.2000 mm; 실제값 0.0571 mm)
+    Rule: 네트클래스 'USB'; error
+    @(60.5000 mm, 99.0000 mm): 비아 [VBUS] on F.Cu - B.Cu
+    @(60.0000 mm, 98.5000 mm): 비아 [USB_D_N] on F.Cu - B.Cu
+[clearance]: 공간거리 위반 (네트클래스 'Default' 공간거리 0.2000 mm; 실제값 0.1500 mm)
+    Rule: 네트클래스 'Default'; error
+    @(27.0000 mm, 59.0500 mm): 패드 2 [GND]의 C3 위F.Cu
+    @(28.2500 mm, 58.0000 mm): 배선 [VBUS] on F.Cu, 길이 1.2500 mm
+[shorting_items]: 두 개의 네트를 단락시키는 개체 (네트 USB_D_N 와 VBUS)
+    Local override; error
+    @(63.6375 mm, 94.0500 mm): 패드 6 [USB_D_N]의 D1 위F.Cu
+    @(64.7500 mm, 94.7500 mm): 배선 [VBUS] on F.Cu, 길이 1.0000 mm
+[clearance]: 공간거리 위반 (네트클래스 'Default' 공간거리 0.2000 mm; 실제값 0.1000 mm)
+    Rule: 네트클래스 'Default'; error
+    @(35.2500 mm, 54.2500 mm): 배선 [VBUS] on B.Cu, 길이 1.2500 mm
+    @(34.0000 mm, 53.0000 mm): 패드 1 [GND]의 TP_GND 위B.Cu
+[clearance]: 공간거리 위반 (네트클래스 'Default' 공간거리 0.2000 mm; 실제값 0.1266 mm)
+    Rule: 네트클래스 'Default'; error
+    @(27.0000 mm, 59.0500 mm): 패드 2 [GND]의 C3 위F.Cu
+    @(28.2500 mm, 58.7500 mm): 배선 [VBUS] on F.Cu, 길이 0.7500 mm
+[clearance]: 공간거리 위반 (네트클래스 'Default' 공간거리 0.2000 mm; 실제값 0.1250 mm)
+    Rule: 네트클래스 'Default'; error
+    @(27.0000 mm, 55.7250 mm): 패드 2 [GND]의 C2 위F.Cu
+    @(27.0000 mm, 54.7500 mm): 배선 [VBUS] on F.Cu, 길이 0.7500 mm
+[clearance]: 공간거리 위반 (네트클래스 'Default' 공간거리 0.2000 mm; 실제값 0.1764 mm)
+    Rule: 네트클래스 'Default'; error
+    @(64.2500 mm, 100.5000 mm): 배선 [USB_CC2] on F.Cu, 길이 0.7500 mm
+    @(64.9500 mm, 100.4550 mm): 배선 [VBUS] on F.Cu, 길이 0.0673 mm
+[clearance]: 공간거리 위반 (네트클래스 'USB' 공간거리 0.2000 mm; 실제값 0.0521 mm)
+    Rule: 네트클래스 'USB'; error
+    @(63.6375 mm, 94.0500 mm): 패드 6 [USB_D_N]의 D1 위F.Cu
+    @(65.5000 mm, 94.2500 mm): 배선 [VBUS] on F.Cu, 길이 0.7500 mm
+[clearance]: 공간거리 위반 (네트클래스 'Default' 공간거리 0.2000 mm; 실제값 0.1500 mm)
+    Rule: 네트클래스 'Default'; error
+    @(27.0000 mm, 59.0500 mm): 패드 2 [GND]의 C3 위F.Cu
+    @(27.0000 mm, 58.0000 mm): 배선 [VBUS] on F.Cu, 길이 0.7500 mm
+[clearance]: 공간거리 위반 (네트클래스 'Default' 공간거리 0.2000 mm; 실제값 0.0500 mm)
+    Rule: 네트클래스 'Default'; error
+    @(27.0000 mm, 59.0500 mm): 패드 2 [GND]의 C3 위F.Cu
+    @(27.0000 mm, 60.0000 mm): 배선 [VBUS] on F.Cu, 길이 1.0000 mm
+[clearance]: 공간거리 위반 (네트클래스 'USB' 공간거리 0.2000 mm; 실제값 0.0521 mm)
+    Rule: 네트클래스 'USB'; error
+    @(64.7500 mm, 94.2500 mm): 배선 [VBUS] on F.Cu, 길이 0.5000 mm
+    @(63.6375 mm, 94.0500 mm): 패드 6 [USB_D_N]의 D1 위F.Cu
+[clearance]: 공간거리 위반 (네트클래스 'Default' 공간거리 0.2000 mm; 실제값 0.0500 mm)
+    Rule: 네트클래스 'Default'; error
+    @(27.0000 mm, 59.0500 mm): 패드 2 [GND]의 C3 위F.Cu
+    @(28.2500 mm, 60.0000 mm): 배선 [VBUS] on F.Cu, 길이 1.2500 mm
+[clearance]: 공간거리 위반 (네트클래스 'Default' 공간거리 0.2000 mm; 실제값 0.1266 mm)
+    Rule: 네트클래스 'Default'; error
+    @(27.0000 mm, 59.0500 mm): 패드 2 [GND]의 C3 위F.Cu
+    @(31.2500 mm, 58.7500 mm): 배선 [VBUS] on F.Cu, 길이 3.0000 mm
+[clearance]: 공간거리 위반 (네트클래스 'Default' 공간거리 0.2000 mm; 실제값 0.1250 mm)
+    Rule: 네트클래스 'Default'; error
+    @(63.7500 mm, 100.4550 mm): 패드 A8 [<no net>]의 J1 위F.Cu
+    @(65.0000 mm, 99.0000 mm): 배선 [VBUS] on F.Cu, 길이 1.5000 mm
+[clearance]: 공간거리 위반 (네트클래스 'Default' 공간거리 0.2000 mm; 실제값 0.0250 mm)
+    Rule: 네트클래스 'Default'; error
+    @(28.0000 mm, 58.0000 mm): 배선 [VBUS] on F.Cu, 길이 3.2500 mm
+    @(28.7500 mm, 56.5000 mm): 비아 [3V3] on F.Cu - B.Cu
+[clearance]: 공간거리 위반 (네트클래스 'Default' 공간거리 0.2000 mm; 실제값 0.1250 mm)
+    Rule: 네트클래스 'Default'; error
+    @(27.0000 mm, 59.0500 mm): 패드 2 [GND]의 C3 위F.Cu
+    @(28.2500 mm, 58.7500 mm): 배선 [VBUS] on F.Cu, 길이 1.2500 mm
+[clearance]: 공간거리 위반 (네트클래스 'Default' 공간거리 0.2000 mm; 실제값 0.1250 mm)
+    Rule: 네트클래스 'Default'; error
+    @(60.0000 mm, 99.2500 mm): 배선 [VBUS] on F.Cu, 길이 1.2500 mm
+    @(61.2500 mm, 100.4550 mm): 패드 A5 [USB_CC1]의 J1 위F.Cu
+[clearance]: 공간거리 위반 (네트클래스 'Default' 공간거리 0.2000 mm; 실제값 0.1250 mm)
+    Rule: 네트클래스 'Default'; error
+    @(27.0000 mm, 55.7250 mm): 패드 2 [GND]의 C2 위F.Cu
+    @(28.0000 mm, 54.7500 mm): 배선 [VBUS] on F.Cu, 길이 1.0000 mm
+[shorting_items]: 두 개의 네트를 단락시키는 개체 (네트 VBUS 와 USB_D_N)
+    Local override; error
+    @(63.7500 mm, 94.7500 mm): 배선 [VBUS] on F.Cu, 길이 0.2500 mm
+    @(63.6375 mm, 94.0500 mm): 패드 6 [USB_D_N]의 D1 위F.Cu
+[clearance]: 공간거리 위반 (네트클래스 'Default' 공간거리 0.2000 mm; 실제값 0.1764 mm)
+    Rule: 네트클래스 'Default'; error
+    @(61.2500 mm, 100.5000 mm): 배선 [USB_CC1] on F.Cu, 길이 0.5000 mm
+    @(60.0500 mm, 100.4550 mm): 배선 [VBUS] on F.Cu, 길이 0.0673 mm
+[clearance]: 공간거리 위반 (네트클래스 'Default' 공간거리 0.2000 mm; 실제값 0.0500 mm)
+    Rule: 네트클래스 'Default'; error
+    @(67.7500 mm, 63.2500 mm): 비아 [STATUS_LED_4_MCU] on F.Cu - B.Cu
+    @(68.2500 mm, 62.7500 mm): 배선 [OLED_SDA] on B.Cu, 길이 0.5000 mm
+[clearance]: 공간거리 위반 (네트클래스 'Default' 공간거리 0.2000 mm; 실제값 0.0500 mm)
+    Rule: 네트클래스 'Default'; error
+    @(45.2500 mm, 49.0000 mm): 배선 [OLED_SDA] on B.Cu, 길이 5.7500 mm
+    @(45.7500 mm, 51.5000 mm): 비아 [OLED_SCL] on F.Cu - B.Cu
+[clearance]: 공간거리 위반 (네트클래스 'Default' 공간거리 0.2000 mm; 실제값 0.0500 mm)
+    Rule: 네트클래스 'Default'; error
+    @(81.7500 mm, 62.2500 mm): 비아 [STATUS_LED_4_MCU] on F.Cu - B.Cu
+    @(82.2500 mm, 62.2500 mm): 배선 [OLED_SDA] on B.Cu, 길이 0.5000 mm
+[clearance]: 공간거리 위반 (네트클래스 'Default' 공간거리 0.2000 mm; 실제값 0.1050 mm)
+    Rule: 네트클래스 'Default'; error
+    @(87.6800 mm, 62.2500 mm): 패드 5 [OLED_SCL]의 U1 위F.Cu
+    @(88.0000 mm, 62.2500 mm): 비아 [OLED_SDA] on F.Cu - B.Cu
+[clearance]: 공간거리 위반 (네트클래스 'USB' 공간거리 0.2000 mm; 실제값 0.0590 mm)
+    Rule: 네트클래스 'USB'; error
+    @(60.5000 mm, 99.0000 mm): 배선 [VBUS] on F.Cu, 길이 0.2500 mm
+    @(60.7500 mm, 98.5000 mm): 배선 [USB_D_N] on F.Cu, 길이 4.4500 mm
+[shorting_items]: 두 개의 네트를 단락시키는 개체 (네트 OLED_SCL 와 OLED_SDA)
+    Local override; error
+    @(87.6800 mm, 62.2500 mm): 패드 5 [OLED_SCL]의 U1 위F.Cu
+    @(89.0000 mm, 62.2500 mm): 배선 [OLED_SDA] on F.Cu, 길이 1.0000 mm
+[clearance]: 공간거리 위반 (네트클래스 'Default' 공간거리 0.2000 mm; 실제값 0.0500 mm)
+    Rule: 네트클래스 'Default'; error
+    @(45.2500 mm, 54.7500 mm): 배선 [OLED_SDA] on F.Cu, 길이 1.2500 mm
+    @(45.2500 mm, 55.2500 mm): 비아 [OLED_SCL] on F.Cu - B.Cu
+[clearance]: 공간거리 위반 (네트클래스 'Default' 공간거리 0.2000 mm; 실제값 0.0500 mm)
+    Rule: 네트클래스 'Default'; error
+    @(67.7500 mm, 63.2500 mm): 비아 [STATUS_LED_4_MCU] on F.Cu - B.Cu
+    @(68.2500 mm, 62.7500 mm): 배선 [OLED_SDA] on F.Cu, 길이 0.5000 mm
+[clearance]: 공간거리 위반 (네트클래스 'Default' 공간거리 0.2000 mm; 실제값 0.0500 mm)
+    Rule: 네트클래스 'Default'; error
+    @(40.0000 mm, 61.7500 mm): 배선 [OLED_SDA] on F.Cu, 길이 3.0000 mm
+    @(40.5000 mm, 62.5000 mm): 비아 [OLED_SCL] on F.Cu - B.Cu
+[clearance]: 공간거리 위반 (네트클래스 'Default' 공간거리 0.2000 mm; 실제값 0.0500 mm)
+    Rule: 네트클래스 'Default'; error
+    @(34.0000 mm, 62.2500 mm): 비아 [BOOT_GPIO0] on F.Cu - B.Cu
+    @(34.5000 mm, 62.7500 mm): 배선 [OLED_SCL] on B.Cu, 길이 0.5000 mm
+[clearance]: 공간거리 위반 (네트클래스 'Default' 공간거리 0.2000 mm; 실제값 0.0500 mm)
+    Rule: 네트클래스 'Default'; error
+    @(34.0000 mm, 62.2500 mm): 비아 [BOOT_GPIO0] on F.Cu - B.Cu
+    @(34.0000 mm, 62.7500 mm): 배선 [OLED_SCL] on B.Cu, 길이 4.2500 mm
+[clearance]: 공간거리 위반 (네트클래스 'USB' 공간거리 0.2000 mm; 실제값 0.0250 mm)
+    Rule: 네트클래스 'USB'; error
+    @(60.5000 mm, 99.2500 mm): 배선 [VBUS] on F.Cu, 길이 0.5000 mm
+    @(60.0000 mm, 98.5000 mm): 비아 [USB_D_N] on F.Cu - B.Cu
+[clearance]: 공간거리 위반 (네트클래스 'Default' 공간거리 0.2000 mm; 실제값 0.0500 mm)
+    Rule: 네트클래스 'Default'; error
+    @(69.7500 mm, 63.7500 mm): 비아 [UART_RX_MCU] on F.Cu - B.Cu
+    @(82.7500 mm, 63.2500 mm): 배선 [OLED_SCL] on B.Cu, 길이 14.0000 mm
+[clearance]: 공간거리 위반 (네트클래스 'Default' 공간거리 0.2000 mm; 실제값 0.0500 mm)
+    Rule: 네트클래스 'Default'; error
+    @(67.7500 mm, 63.2500 mm): 비아 [STATUS_LED_4_MCU] on F.Cu - B.Cu
+    @(68.2500 mm, 63.2500 mm): 배선 [OLED_SDA] on F.Cu, 길이 0.5000 mm
+[clearance]: 공간거리 위반 (네트클래스 'Default' 공간거리 0.2000 mm; 실제값 0.0500 mm)
+    Rule: 네트클래스 'Default'; error
+    @(67.7500 mm, 63.2500 mm): 비아 [STATUS_LED_4_MCU] on F.Cu - B.Cu
+    @(67.7500 mm, 62.7500 mm): 배선 [OLED_SDA] on F.Cu, 길이 2.2500 mm
+[clearance]: 공간거리 위반 (네트클래스 'Default' 공간거리 0.2000 mm; 실제값 0.0500 mm)
+    Rule: 네트클래스 'Default'; error
+    @(68.2500 mm, 63.2500 mm): 비아 [OLED_SDA] on F.Cu - B.Cu
+    @(68.7500 mm, 63.7500 mm): 배선 [OLED_SCL] on B.Cu, 길이 1.0000 mm
+[clearance]: 공간거리 위반 (네트클래스 'Default' 공간거리 0.2000 mm; 실제값 0.0500 mm)
+    Rule: 네트클래스 'Default'; error
+    @(45.7500 mm, 55.2500 mm): 배선 [OLED_SCL] on B.Cu, 길이 0.5000 mm
+    @(45.2500 mm, 54.7500 mm): 비아 [OLED_SDA] on F.Cu - B.Cu
+[clearance]: 공간거리 위반 (네트클래스 'Default' 공간거리 0.2000 mm; 실제값 0.0500 mm)
+    Rule: 네트클래스 'Default'; error
+    @(88.0000 mm, 62.2500 mm): 배선 [OLED_SDA] on B.Cu, 길이 5.7500 mm
+    @(81.7500 mm, 62.2500 mm): 비아 [STATUS_LED_4_MCU] on F.Cu - B.Cu
+[clearance]: 공간거리 위반 (네트클래스 'Default' 공간거리 0.2000 mm; 실제값 0.1090 mm)
+    Rule: 네트클래스 'Default'; error
+    @(34.0000 mm, 62.2500 mm): 비아 [BOOT_GPIO0] on F.Cu - B.Cu
+    @(34.5000 mm, 62.5000 mm): 배선 [OLED_SCL] on B.Cu, 길이 0.2500 mm
+[shorting_items]: 두 개의 네트를 단락시키는 개체 (네트 OLED_SCL 와 OLED_SDA)
+    Local override; error
+    @(45.2500 mm, 55.2500 mm): 비아 [OLED_SCL] on F.Cu - B.Cu
+    @(45.2500 mm, 54.7500 mm): 비아 [OLED_SDA] on F.Cu - B.Cu
+[shorting_items]: 두 개의 네트를 단락시키는 개체 (네트 OLED_SCL 와 OLED_SDA)
+    Local override; error
+    @(45.2500 mm, 55.2500 mm): 비아 [OLED_SCL] on F.Cu - B.Cu
+    @(45.2500 mm, 54.7500 mm): 비아 [OLED_SDA] on F.Cu - B.Cu
+[clearance]: 공간거리 위반 (네트클래스 'Default' 공간거리 0.2000 mm; 실제값 0.0571 mm)
+    Rule: 네트클래스 'Default'; error
+    @(68.2500 mm, 63.2500 mm): 비아 [OLED_SDA] on F.Cu - B.Cu
+    @(67.7500 mm, 63.7500 mm): 비아 [OLED_SCL] on F.Cu - B.Cu
+[clearance]: 공간거리 위반 (네트클래스 'Default' 공간거리 0.2000 mm; 실제값 0.0500 mm)
+    Rule: 네트클래스 'Default'; error
+    @(45.7500 mm, 51.5000 mm): 배선 [OLED_SCL] on B.Cu, 길이 3.7500 mm
+    @(45.2500 mm, 54.7500 mm): 비아 [OLED_SDA] on F.Cu - B.Cu
+[clearance]: 공간거리 위반 (네트클래스 'Default' 공간거리 0.2000 mm; 실제값 0.0500 mm)
+    Rule: 네트클래스 'Default'; error
+    @(68.7500 mm, 63.2500 mm): 배선 [OLED_SCL] on B.Cu, 길이 0.5000 mm
+    @(68.2500 mm, 63.2500 mm): 비아 [OLED_SDA] on F.Cu - B.Cu
+[shorting_items]: 두 개의 네트를 단락시키는 개체 (네트 OLED_SCL 와 CHAL_0_MCU)
+    Local override; error
+    @(87.2500 mm, 62.7500 mm): 비아 [OLED_SCL] on F.Cu - B.Cu
+    @(86.4100 mm, 62.2500 mm): 패드 6 [CHAL_0_MCU]의 U1 위F.Cu
+[clearance]: 공간거리 위반 (네트클래스 'Default' 공간거리 0.2000 mm; 실제값 0.0571 mm)
+    Rule: 네트클래스 'Default'; error
+    @(68.2500 mm, 63.2500 mm): 비아 [OLED_SDA] on F.Cu - B.Cu
+    @(67.7500 mm, 63.7500 mm): 비아 [OLED_SCL] on F.Cu - B.Cu
+[clearance]: 공간거리 위반 (네트클래스 'Default' 공간거리 0.2000 mm; 실제값 0.0500 mm)
+    Rule: 네트클래스 'Default'; error
+    @(86.5000 mm, 63.2500 mm): 비아 [CHAL_0_MCU] on F.Cu - B.Cu
+    @(87.2500 mm, 62.7500 mm): 배선 [OLED_SCL] on B.Cu, 길이 4.5000 mm
+[clearance]: 공간거리 위반 (네트클래스 'Default' 공간거리 0.2000 mm; 실제값 0.1090 mm)
+    Rule: 네트클래스 'Default'; error
+    @(34.0000 mm, 62.2500 mm): 비아 [BOOT_GPIO0] on F.Cu - B.Cu
+    @(40.5000 mm, 62.5000 mm): 배선 [OLED_SCL] on B.Cu, 길이 6.0000 mm
+[clearance]: 공간거리 위반 (네트클래스 'Default' 공간거리 0.2000 mm; 실제값 0.0500 mm)
+    Rule: 네트클래스 'Default'; error
+    @(81.7500 mm, 62.2500 mm): 비아 [STATUS_LED_4_MCU] on F.Cu - B.Cu
+    @(82.2500 mm, 62.7500 mm): 배선 [OLED_SDA] on B.Cu, 길이 14.0000 mm
+[clearance]: 공간거리 위반 (네트클래스 'Default' 공간거리 0.2000 mm; 실제값 0.1750 mm)
+    Rule: 네트클래스 'Default'; error
+    @(63.3250 mm, 59.7500 mm): 배선 [STATUS_LED_3_A] on F.Cu, 길이 0.0375 mm
+    @(63.7500 mm, 60.5000 mm): 배선 [OLED_SCL] on F.Cu, 길이 0.7500 mm
+[shorting_items]: 두 개의 네트를 단락시키는 개체 (네트 OLED_SCL 와 CHAL_0_MCU)
+    Local override; error
+    @(87.7500 mm, 62.2500 mm): 배선 [OLED_SCL] on F.Cu, 길이 0.5000 mm
+    @(86.4100 mm, 62.2500 mm): 패드 6 [CHAL_0_MCU]의 U1 위F.Cu
+[clearance]: 공간거리 위반 (네트클래스 'Default' 공간거리 0.2000 mm; 실제값 0.0500 mm)
+    Rule: 네트클래스 'Default'; error
+    @(45.2500 mm, 55.2500 mm): 배선 [OLED_SCL] on F.Cu, 길이 0.7500 mm
+    @(45.2500 mm, 54.7500 mm): 비아 [OLED_SDA] on F.Cu - B.Cu
+[shorting_items]: 두 개의 네트를 단락시키는 개체 (네트 OLED_SCL 와 CHAL_0_MCU)
+    Local override; error
+    @(87.2500 mm, 62.2500 mm): 배선 [OLED_SCL] on F.Cu, 길이 0.5000 mm
+    @(86.4100 mm, 62.2500 mm): 패드 6 [CHAL_0_MCU]의 U1 위F.Cu
+[clearance]: 공간거리 위반 (네트클래스 'Default' 공간거리 0.2000 mm; 실제값 0.0500 mm)
+    Rule: 네트클래스 'Default'; error
+    @(67.7500 mm, 63.2500 mm): 비아 [STATUS_LED_4_MCU] on F.Cu - B.Cu
+    @(67.7500 mm, 63.7500 mm): 배선 [OLED_SCL] on F.Cu, 길이 3.5000 mm
+[clearance]: 공간거리 위반 (네트클래스 'Default' 공간거리 0.2000 mm; 실제값 0.0500 mm)
+    Rule: 네트클래스 'Default'; error
+    @(45.5000 mm, 49.0000 mm): 배선 [OLED_SCL] on F.Cu, 길이 3.5000 mm
+    @(45.0000 mm, 48.5000 mm): 비아 [OLED_SDA] on F.Cu - B.Cu
+[clearance]: 공간거리 위반 (네트클래스 'Default' 공간거리 0.2000 mm; 실제값 0.0500 mm)
+    Rule: 네트클래스 'Default'; error
+    @(39.0000 mm, 50.7500 mm): 비아 [PLAYER_UART_TX] on F.Cu - B.Cu
+    @(39.5000 mm, 32.7500 mm): 배선 [PLAYER_UART_RX] on B.Cu, 길이 18.5000 mm
+[clearance]: 공간거리 위반 (네트클래스 'Default' 공간거리 0.2000 mm; 실제값 0.1750 mm)
+    Rule: 네트클래스 'Default'; error
+    @(64.2500 mm, 60.5000 mm): 배선 [OLED_SCL] on F.Cu, 길이 0.5000 mm
+    @(63.3250 mm, 61.5000 mm): 배선 [STATUS_LED_3_A] on F.Cu, 길이 1.7500 mm
+[clearance]: 공간거리 위반 (네트클래스 'Default' 공간거리 0.2000 mm; 실제값 0.0500 mm)
+    Rule: 네트클래스 'Default'; error
+    @(39.0000 mm, 50.7500 mm): 비아 [PLAYER_UART_TX] on F.Cu - B.Cu
+    @(39.5000 mm, 51.2500 mm): 배선 [PLAYER_UART_RX] on B.Cu, 길이 13.2500 mm
+[shorting_items]: 두 개의 네트를 단락시키는 개체 (네트 OLED_SCL 와 OLED_SDA)
+    Local override; error
+    @(87.6800 mm, 62.2500 mm): 배선 [OLED_SCL] on F.Cu, 길이 0.0700 mm
+    @(89.0000 mm, 62.2500 mm): 배선 [OLED_SDA] on F.Cu, 길이 1.0000 mm
+[clearance]: 공간거리 위반 (네트클래스 'Default' 공간거리 0.2000 mm; 실제값 0.1000 mm)
+    Rule: 네트클래스 'Default'; error
+    @(27.7500 mm, 54.2500 mm): 비아 [VBUS] on F.Cu - B.Cu
+    @(28.0000 mm, 55.0000 mm): 배선 [3V3] on B.Cu, 길이 1.0000 mm
+[clearance]: 공간거리 위반 (네트클래스 'Default' 공간거리 0.2000 mm; 실제값 0.1406 mm)
+    Rule: 네트클래스 'Default'; error
+    @(27.7500 mm, 54.2500 mm): 비아 [VBUS] on F.Cu - B.Cu
+    @(28.0000 mm, 56.5000 mm): 배선 [3V3] on B.Cu, 길이 1.5000 mm
+[clearance]: 공간거리 위반 (네트클래스 'Default' 공간거리 0.2000 mm; 실제값 0.1090 mm)
+    Rule: 네트클래스 'Default'; error
+    @(79.2500 mm, 58.0000 mm): 배선 [3V3] on F.Cu, 길이 0.2500 mm
+    @(78.5000 mm, 58.2500 mm): 배선 [STATUS_LED_3_MCU] on F.Cu, 길이 3.7500 mm
+[clearance]: 공간거리 위반 (네트클래스 'Default' 공간거리 0.2000 mm; 실제값 0.1000 mm)
+    Rule: 네트클래스 'Default'; error
+    @(89.0000 mm, 54.6750 mm): 패드 2 [EN]의 R_EN 위F.Cu
+    @(89.0000 mm, 56.2500 mm): 배선 [3V3] on F.Cu, 길이 0.7500 mm
+[clearance]: 공간거리 위반 (네트클래스 'Default' 공간거리 0.2000 mm; 실제값 0.1000 mm)
+    Rule: 네트클래스 'Default'; error
+    @(27.7500 mm, 54.2500 mm): 비아 [VBUS] on F.Cu - B.Cu
+    @(27.0000 mm, 55.0000 mm): 배선 [3V3] on B.Cu, 길이 2.0000 mm
+[clearance]: 공간거리 위반 (네트클래스 'Default' 공간거리 0.2000 mm; 실제값 0.0500 mm)
+    Rule: 네트클래스 'Default'; error
+    @(75.2500 mm, 57.7500 mm): 배선 [3V3] on F.Cu, 길이 1.2500 mm
+    @(74.7500 mm, 58.2500 mm): 배선 [STATUS_LED_3_MCU] on F.Cu, 길이 1.2500 mm
+[clearance]: 공간거리 위반 (네트클래스 'Default' 공간거리 0.2000 mm; 실제값 0.1650 mm)
+    Rule: 네트클래스 'Default'; error
+    @(94.0000 mm, 78.7500 mm): 배선 [3V3] on F.Cu, 길이 2.0000 mm
+    @(92.7600 mm, 79.7500 mm): 패드 40 [GND]의 U1 위F.Cu
+[clearance]: 공간거리 위반 (네트클래스 'Default' 공간거리 0.2000 mm; 실제값 0.1000 mm)
+    Rule: 네트클래스 'Default'; error
+    @(77.5000 mm, 82.5000 mm): 배선 [3V3] on F.Cu, 길이 1.0000 mm
+    @(76.5000 mm, 81.6750 mm): 패드 2 [BOOT_GPIO0]의 R_BOOT 위F.Cu
+[clearance]: 공간거리 위반 (네트클래스 'Default' 공간거리 0.2000 mm; 실제값 0.1750 mm)
+    Rule: 네트클래스 'Default'; error
+    @(91.9500 mm, 48.9375 mm): 패드 2 [GND]의 Q_BZ 위F.Cu
+    @(92.7500 mm, 49.7500 mm): 배선 [3V3] on F.Cu, 길이 2.0000 mm
+[clearance]: 공간거리 위반 (네트클래스 'Default' 공간거리 0.2000 mm; 실제값 0.1000 mm)
+    Rule: 네트클래스 'Default'; error
+    @(44.7500 mm, 52.0000 mm): 비아 [EN] on F.Cu - B.Cu
+    @(44.0000 mm, 54.0000 mm): 배선 [3V3] on F.Cu, 길이 7.2500 mm
+[clearance]: 공간거리 위반 (네트클래스 'Default' 공간거리 0.2000 mm; 실제값 0.0500 mm)
+    Rule: 네트클래스 'Default'; error
+    @(79.0000 mm, 57.7500 mm): 배선 [3V3] on F.Cu, 길이 3.7500 mm
+    @(74.7500 mm, 58.2500 mm): 배선 [STATUS_LED_3_MCU] on F.Cu, 길이 1.2500 mm
+[clearance]: 공간거리 위반 (네트클래스 'Default' 공간거리 0.2000 mm; 실제값 0.1850 mm)
+    Rule: 네트클래스 'Default'; error
+    @(91.5000 mm, 62.2500 mm): 배선 [3V3] on F.Cu, 길이 16.5000 mm
+    @(92.7600 mm, 62.2500 mm): 패드 1 [GND]의 U1 위F.Cu
+[clearance]: 공간거리 위반 (네트클래스 'Default' 공간거리 0.2000 mm; 실제값 0.1000 mm)
+    Rule: 네트클래스 'Default'; error
+    @(62.0000 mm, 55.7500 mm): 비아 [CHAL_2_MCU] on F.Cu - B.Cu
+    @(61.2500 mm, 56.5000 mm): 배선 [3V3] on F.Cu, 길이 2.5000 mm
+[clearance]: 공간거리 위반 (네트클래스 'Default' 공간거리 0.2000 mm; 실제값 0.1000 mm)
+    Rule: 네트클래스 'Default'; error
+    @(31.2500 mm, 56.5000 mm): 배선 [3V3] on F.Cu, 길이 2.5000 mm
+    @(29.2500 mm, 55.7500 mm): 비아 [PLAYER_UART_TX] on F.Cu - B.Cu
+[clearance]: 공간거리 위반 (네트클래스 'Default' 공간거리 0.2000 mm; 실제값 0.1000 mm)
+    Rule: 네트클래스 'Default'; error
+    @(76.5000 mm, 82.5000 mm): 배선 [3V3] on F.Cu, 길이 0.7500 mm
+    @(76.5000 mm, 81.6750 mm): 패드 2 [BOOT_GPIO0]의 R_BOOT 위F.Cu
+[shorting_items]: 두 개의 네트를 단락시키는 개체 (네트 3V3 와 EN)
+    Local override; error
+    @(91.2500 mm, 62.2500 mm): 배선 [3V3] on F.Cu, 길이 1.0000 mm
+    @(90.2200 mm, 62.2500 mm): 패드 3 [EN]의 U1 위F.Cu
+[clearance]: 공간거리 위반 (네트클래스 'Default' 공간거리 0.2000 mm; 실제값 0.1250 mm)
+    Rule: 네트클래스 'Default'; error
+    @(42.0000 mm, 56.5000 mm): 배선 [3V3] on F.Cu, 길이 1.0000 mm
+    @(42.0000 mm, 55.5500 mm): 패드 2 [GND]의 C5 위F.Cu
+[clearance]: 공간거리 위반 (네트클래스 'Default' 공간거리 0.2000 mm; 실제값 0.1250 mm)
+    Rule: 네트클래스 'Default'; error
+    @(91.9500 mm, 48.9375 mm): 패드 2 [GND]의 Q_BZ 위F.Cu
+    @(92.7500 mm, 47.7500 mm): 배선 [3V3] on F.Cu, 길이 1.0000 mm
+[clearance]: 공간거리 위반 (네트클래스 'Default' 공간거리 0.2000 mm; 실제값 0.1850 mm)
+    Rule: 네트클래스 'Default'; error
+    @(91.5000 mm, 62.2500 mm): 배선 [3V3] on F.Cu, 길이 0.2500 mm
+    @(92.7600 mm, 62.2500 mm): 패드 1 [GND]의 U1 위F.Cu
+[clearance]: 공간거리 위반 (네트클래스 'Default' 공간거리 0.2000 mm; 실제값 0.1000 mm)
+    Rule: 네트클래스 'Default'; error
+    @(61.2500 mm, 54.0000 mm): 배선 [3V3] on F.Cu, 길이 19.2500 mm
+    @(45.2500 mm, 54.7500 mm): 비아 [OLED_SDA] on F.Cu - B.Cu
+[clearance]: 공간거리 위반 (네트클래스 'Default' 공간거리 0.2000 mm; 실제값 0.1250 mm)
+    Rule: 네트클래스 'Default'; error
+    @(42.0000 mm, 56.5000 mm): 배선 [3V3] on F.Cu, 길이 4.2500 mm
+    @(42.0000 mm, 55.5500 mm): 패드 2 [GND]의 C5 위F.Cu
+[clearance]: 공간거리 위반 (네트클래스 'Default' 공간거리 0.2000 mm; 실제값 0.1271 mm)
+    Rule: 네트클래스 'Default'; error
+    @(91.7500 mm, 47.7500 mm): 배선 [3V3] on F.Cu, 길이 2.0000 mm
+    @(91.9500 mm, 48.9375 mm): 패드 2 [GND]의 Q_BZ 위F.Cu
+[clearance]: 공간거리 위반 (네트클래스 'Default' 공간거리 0.2000 mm; 실제값 0.1000 mm)
+    Rule: 네트클래스 'Default'; error
+    @(91.2500 mm, 61.2500 mm): 배선 [3V3] on F.Cu, 길이 5.2500 mm
+    @(85.2500 mm, 61.2500 mm): 비아 [CHAL_1_MCU] on F.Cu - B.Cu
+[clearance]: 공간거리 위반 (네트클래스 'Default' 공간거리 0.2000 mm; 실제값 0.0500 mm)
+    Rule: 네트클래스 'Default'; error
+    @(83.0000 mm, 60.0000 mm): 배선 [3V3] on F.Cu, 길이 3.7500 mm
+    @(78.7500 mm, 60.7500 mm): 배선 [STATUS_LED_3_MCU] on F.Cu, 길이 2.2500 mm
+[clearance]: 공간거리 위반 (네트클래스 'Default' 공간거리 0.2000 mm; 실제값 0.1000 mm)
+    Rule: 네트클래스 'Default'; error
+    @(44.0000 mm, 45.1750 mm): 패드 2 [OLED_SDA]의 R_SDA 위F.Cu
+    @(44.0000 mm, 46.0000 mm): 배선 [3V3] on F.Cu, 길이 1.0000 mm
+[clearance]: 공간거리 위반 (네트클래스 'Default' 공간거리 0.2000 mm; 실제값 0.1000 mm)
+    Rule: 네트클래스 'Default'; error
+    @(44.0000 mm, 46.7500 mm): 배선 [3V3] on F.Cu, 길이 0.7500 mm
+    @(44.0000 mm, 45.1750 mm): 패드 2 [OLED_SDA]의 R_SDA 위F.Cu
+[shorting_items]: 두 개의 네트를 단락시키는 개체 (네트 GND 와 VBUS)
+    Local override; error
+    @(59.2500 mm, 100.4550 mm): 패드 A1 [GND]의 J1 위F.Cu
+    @(60.0500 mm, 100.4550 mm): 패드 A4 [VBUS]의 J1 위F.Cu
+[shorting_items]: 두 개의 네트를 단락시키는 개체 (네트 GND 와 3V3)
+    Local override; error
+    @(92.7600 mm, 62.2500 mm): 패드 1 [GND]의 U1 위F.Cu
+    @(91.4900 mm, 62.2500 mm): 패드 2 [3V3]의 U1 위F.Cu
+[shorting_items]: 두 개의 네트를 단락시키는 개체 (네트 3V3 와 EN)
+    Local override; error
+    @(91.4900 mm, 62.2500 mm): 패드 2 [3V3]의 U1 위F.Cu
+    @(90.2200 mm, 62.2500 mm): 패드 3 [EN]의 U1 위F.Cu
+[shorting_items]: 두 개의 네트를 단락시키는 개체 (네트 VBUS 와 USB_CC1)
+    Local override; error
+    @(60.0500 mm, 100.4550 mm): 패드 A4 [VBUS]의 J1 위F.Cu
+    @(61.2500 mm, 100.4550 mm): 패드 A5 [USB_CC1]의 J1 위F.Cu
+[shorting_items]: 두 개의 네트를 단락시키는 개체 (네트 EN 와 OLED_SDA)
+    Local override; error
+    @(90.2200 mm, 62.2500 mm): 패드 3 [EN]의 U1 위F.Cu
+    @(88.9500 mm, 62.2500 mm): 패드 4 [OLED_SDA]의 U1 위F.Cu
+[shorting_items]: 두 개의 네트를 단락시키는 개체 (네트 USB_CC1 와 USB_D_P)
+    Local override; error
+    @(61.2500 mm, 100.4550 mm): 패드 A5 [USB_CC1]의 J1 위F.Cu
+    @(62.2500 mm, 100.4550 mm): 패드 A6 [USB_D_P]의 J1 위F.Cu
+[shorting_items]: 두 개의 네트를 단락시키는 개체 (네트 OLED_SDA 와 OLED_SCL)
+    Local override; error
+    @(88.9500 mm, 62.2500 mm): 패드 4 [OLED_SDA]의 U1 위F.Cu
+    @(87.6800 mm, 62.2500 mm): 패드 5 [OLED_SCL]의 U1 위F.Cu
+[clearance]: 공간거리 위반 (네트클래스 'USB' 공간거리 0.2000 mm; 실제값 0.0500 mm)
+    Rule: 네트클래스 'USB'; error
+    @(61.2500 mm, 100.4550 mm): 패드 A5 [USB_CC1]의 J1 위F.Cu
+    @(62.7500 mm, 100.4550 mm): 패드 A7 [USB_D_N]의 J1 위F.Cu
+[shorting_items]: 두 개의 네트를 단락시키는 개체 (네트 OLED_SCL 와 CHAL_0_MCU)
+    Local override; error
+    @(87.6800 mm, 62.2500 mm): 패드 5 [OLED_SCL]의 U1 위F.Cu
+    @(86.4100 mm, 62.2500 mm): 패드 6 [CHAL_0_MCU]의 U1 위F.Cu
+[shorting_items]: 두 개의 네트를 단락시키는 개체 (네트 USB_D_P 와 USB_D_N)
+    Local override; error
+    @(62.2500 mm, 100.4550 mm): 패드 A6 [USB_D_P]의 J1 위F.Cu
+    @(62.7500 mm, 100.4550 mm): 패드 A7 [USB_D_N]의 J1 위F.Cu
+[hole_clearance]: 홀 공간거리 위반 (기판의 홀 제약조건 설정 공간거리 0.2500 mm; 실제값 0.0000 mm)
+    Rule: 기판의 홀 제약조건 설정; error
+    @(87.6800 mm, 62.2500 mm): 패드 5 [OLED_SCL]의 U1 위F.Cu
+    @(88.0000 mm, 62.2500 mm): 비아 [OLED_SDA] on F.Cu - B.Cu
+[hole_clearance]: 홀 공간거리 위반 (기판의 홀 제약조건 설정 공간거리 0.2500 mm; 실제값 0.0000 mm)
+    Rule: 기판의 홀 제약조건 설정; error
+    @(86.4100 mm, 62.2500 mm): 패드 6 [CHAL_0_MCU]의 U1 위F.Cu
+    @(87.2500 mm, 62.7500 mm): 비아 [OLED_SCL] on F.Cu - B.Cu
+[shorting_items]: 두 개의 네트를 단락시키는 개체 (네트 CHAL_0_MCU 와 CHAL_1_MCU)
+    Local override; error
+    @(86.4100 mm, 62.2500 mm): 패드 6 [CHAL_0_MCU]의 U1 위F.Cu
+    @(85.1400 mm, 62.2500 mm): 패드 7 [CHAL_1_MCU]의 U1 위F.Cu
+[clearance]: 공간거리 위반 (네트클래스 'USB' 공간거리 0.2000 mm; 실제값 0.0500 mm)
+    Rule: 네트클래스 'USB'; error
+    @(63.7500 mm, 100.4550 mm): 패드 A8 [<no net>]의 J1 위F.Cu
+    @(62.2500 mm, 100.4550 mm): 패드 A6 [USB_D_P]의 J1 위F.Cu
+[clearance]: 공간거리 위반 (네트클래스 'USB' 공간거리 0.2000 mm; 실제값 0.0000 mm)
+    Rule: 네트클래스 'USB'; error
+    @(63.7500 mm, 100.4550 mm): 패드 A8 [<no net>]의 J1 위F.Cu
+    @(62.7500 mm, 100.4550 mm): 패드 A7 [USB_D_N]의 J1 위F.Cu
+[clearance]: 공간거리 위반 (네트클래스 'USB' 공간거리 0.2000 mm; 실제값 0.0000 mm)
+    Rule: 네트클래스 'USB'; error
+    @(63.7500 mm, 100.4550 mm): 패드 A8 [<no net>]의 J1 위F.Cu
+    @(63.2500 mm, 100.4550 mm): 패드 B6 [USB_D_P]의 J1 위F.Cu
+[shorting_items]: 두 개의 네트를 단락시키는 개체 (네트 CHAL_1_MCU 와 STATUS_LED_3_MCU)
+    Local override; error
+    @(85.1400 mm, 62.2500 mm): 패드 7 [CHAL_1_MCU]의 U1 위F.Cu
+    @(83.8700 mm, 62.2500 mm): 패드 8 [STATUS_LED_3_MCU]의 U1 위F.Cu
+[clearance]: 공간거리 위반 (네트클래스 'Default' 공간거리 0.2000 mm; 실제값 0.0000 mm)
+    Rule: 네트클래스 'Default'; error
+    @(63.7500 mm, 100.4550 mm): 패드 A8 [<no net>]의 J1 위F.Cu
+    @(64.9500 mm, 100.4550 mm): 패드 B4 [VBUS]의 J1 위F.Cu
+[clearance]: 공간거리 위반 (네트클래스 'Default' 공간거리 0.2000 mm; 실제값 0.0000 mm)
+    Rule: 네트클래스 'Default'; error
+    @(63.7500 mm, 100.4550 mm): 패드 A8 [<no net>]의 J1 위F.Cu
+    @(64.2500 mm, 100.4550 mm): 패드 B5 [USB_CC2]의 J1 위F.Cu
+[shorting_items]: 두 개의 네트를 단락시키는 개체 (네트 STATUS_LED_3_MCU 와 STATUS_LED_4_MCU)
+    Local override; error
+    @(83.8700 mm, 62.2500 mm): 패드 8 [STATUS_LED_3_MCU]의 U1 위F.Cu
+    @(82.6000 mm, 62.2500 mm): 패드 9 [STATUS_LED_4_MCU]의 U1 위F.Cu
+[clearance]: 공간거리 위반 (네트클래스 'Default' 공간거리 0.2000 mm; 실제값 0.0000 mm)
+    Rule: 네트클래스 'Default'; error
+    @(63.7500 mm, 100.4550 mm): 패드 A8 [<no net>]의 J1 위F.Cu
+    @(64.9500 mm, 100.4550 mm): 패드 A9 [VBUS]의 J1 위F.Cu
+[shorting_items]: 두 개의 네트를 단락시키는 개체 (네트 STATUS_LED_4_MCU 와 STATUS_LED_5_MCU)
+    Local override; error
+    @(82.6000 mm, 62.2500 mm): 패드 9 [STATUS_LED_4_MCU]의 U1 위F.Cu
+    @(81.3300 mm, 62.2500 mm): 패드 10 [STATUS_LED_5_MCU]의 U1 위F.Cu
+[hole_clearance]: 홀 공간거리 위반 (기판의 홀 제약조건 설정 공간거리 0.2500 mm; 실제값 0.0000 mm)
+    Rule: 기판의 홀 제약조건 설정; error
+    @(81.3300 mm, 62.2500 mm): 패드 10 [STATUS_LED_5_MCU]의 U1 위F.Cu
+    @(81.7500 mm, 62.2500 mm): 비아 [STATUS_LED_4_MCU] on F.Cu - B.Cu
+[shorting_items]: 두 개의 네트를 단락시키는 개체 (네트 STATUS_LED_5_MCU 와 BUZZER_GPIO)
+    Local override; error
+    @(81.3300 mm, 62.2500 mm): 패드 10 [STATUS_LED_5_MCU]의 U1 위F.Cu
+    @(80.0600 mm, 62.2500 mm): 패드 11 [BUZZER_GPIO]의 U1 위F.Cu
+[shorting_items]: 두 개의 네트를 단락시키는 개체 (네트 VBUS 와 USB_CC2)
+    Local override; error
+    @(64.9500 mm, 100.4550 mm): 패드 A9 [VBUS]의 J1 위F.Cu
+    @(64.2500 mm, 100.4550 mm): 패드 B5 [USB_CC2]의 J1 위F.Cu
+[shorting_items]: 두 개의 네트를 단락시키는 개체 (네트 VBUS 와 GND)
+    Local override; error
+    @(64.9500 mm, 100.4550 mm): 패드 A9 [VBUS]의 J1 위F.Cu
+    @(65.7500 mm, 100.4550 mm): 패드 A12 [GND]의 J1 위F.Cu
+[shorting_items]: 두 개의 네트를 단락시키는 개체 (네트 BUZZER_GPIO 와 CHAL_2_MCU)
+    Local override; error
+    @(80.0600 mm, 62.2500 mm): 패드 11 [BUZZER_GPIO]의 U1 위F.Cu
+    @(78.7900 mm, 62.2500 mm): 패드 12 [CHAL_2_MCU]의 U1 위F.Cu
+[shorting_items]: 두 개의 네트를 단락시키는 개체 (네트 VBUS 와 GND)
+    Local override; error
+    @(64.9500 mm, 100.4550 mm): 패드 A9 [VBUS]의 J1 위F.Cu
+    @(65.7500 mm, 100.4550 mm): 패드 B1 [GND]의 J1 위F.Cu
+[shorting_items]: 두 개의 네트를 단락시키는 개체 (네트 CHAL_2_MCU 와 USB_D_N)
+    Local override; error
+    @(78.7900 mm, 62.2500 mm): 패드 12 [CHAL_2_MCU]의 U1 위F.Cu
+    @(77.5200 mm, 62.2500 mm): 패드 13 [USB_D_N]의 U1 위F.Cu
+[shorting_items]: 두 개의 네트를 단락시키는 개체 (네트 GND 와 VBUS)
+    Local override; error
+    @(65.7500 mm, 100.4550 mm): 패드 A12 [GND]의 J1 위F.Cu
+    @(64.9500 mm, 100.4550 mm): 패드 B4 [VBUS]의 J1 위F.Cu
+[shorting_items]: 두 개의 네트를 단락시키는 개체 (네트 USB_D_N 와 USB_D_P)
+    Local override; error
+    @(77.5200 mm, 62.2500 mm): 패드 13 [USB_D_N]의 U1 위F.Cu
+    @(76.2500 mm, 62.2500 mm): 패드 14 [USB_D_P]의 U1 위F.Cu
+[clearance]: 공간거리 위반 (네트클래스 'Default' 공간거리 0.2000 mm; 실제값 0.0500 mm)
+    Rule: 네트클래스 'Default'; error
+    @(65.7500 mm, 100.4550 mm): 패드 A12 [GND]의 J1 위F.Cu
+    @(64.2500 mm, 100.4550 mm): 패드 B5 [USB_CC2]의 J1 위F.Cu
+[hole_clearance]: 홀 공간거리 위반 (기판의 홀 제약조건 설정 공간거리 0.2500 mm; 실제값 0.0000 mm)
+    Rule: 기판의 홀 제약조건 설정; error
+    @(77.5200 mm, 62.2500 mm): 패드 13 [USB_D_N]의 U1 위F.Cu
+    @(78.2500 mm, 61.7500 mm): 비아 [CHAL_2_MCU] on F.Cu - B.Cu
+[shorting_items]: 두 개의 네트를 단락시키는 개체 (네트 GND 와 VBUS)
+    Local override; error
+    @(65.7500 mm, 100.4550 mm): 패드 B1 [GND]의 J1 위F.Cu
+    @(64.9500 mm, 100.4550 mm): 패드 B4 [VBUS]의 J1 위F.Cu
+[clearance]: 공간거리 위반 (네트클래스 'Default' 공간거리 0.2000 mm; 실제값 0.0000 mm)
+    Rule: 네트클래스 'Default'; error
+    @(75.0000 mm, 64.0150 mm): 패드 15 [<no net>]의 U1 위F.Cu
+    @(75.0000 mm, 65.2850 mm): 패드 16 [<no net>]의 U1 위F.Cu
+[clearance]: 공간거리 위반 (네트클래스 'Default' 공간거리 0.2000 mm; 실제값 0.0000 mm)
+    Rule: 네트클래스 'Default'; error
+    @(75.0000 mm, 65.2850 mm): 패드 16 [<no net>]의 U1 위F.Cu
+    @(75.0000 mm, 66.5550 mm): 패드 17 [<no net>]의 U1 위F.Cu
+[clearance]: 공간거리 위반 (네트클래스 'Default' 공간거리 0.2000 mm; 실제값 0.0500 mm)
+    Rule: 네트클래스 'Default'; error
+    @(65.7500 mm, 100.4550 mm): 패드 B1 [GND]의 J1 위F.Cu
+    @(64.2500 mm, 100.4550 mm): 패드 B5 [USB_CC2]의 J1 위F.Cu
+[clearance]: 공간거리 위반 (네트클래스 'Default' 공간거리 0.2000 mm; 실제값 0.0000 mm)
+    Rule: 네트클래스 'Default'; error
+    @(75.0000 mm, 66.5550 mm): 패드 17 [<no net>]의 U1 위F.Cu
+    @(75.0000 mm, 67.8250 mm): 패드 18 [<no net>]의 U1 위F.Cu
+[clearance]: 공간거리 위반 (네트클래스 'Default' 공간거리 0.2000 mm; 실제값 0.0000 mm)
+    Rule: 네트클래스 'Default'; error
+    @(75.0000 mm, 67.8250 mm): 패드 18 [<no net>]의 U1 위F.Cu
+    @(75.0000 mm, 69.0950 mm): 패드 19 [<no net>]의 U1 위F.Cu
+[shorting_items]: 두 개의 네트를 단락시키는 개체 (네트 VBUS 와 USB_CC2)
+    Local override; error
+    @(64.9500 mm, 100.4550 mm): 패드 B4 [VBUS]의 J1 위F.Cu
+    @(64.2500 mm, 100.4550 mm): 패드 B5 [USB_CC2]의 J1 위F.Cu
+[clearance]: 공간거리 위반 (네트클래스 'Default' 공간거리 0.2000 mm; 실제값 0.0000 mm)
+    Rule: 네트클래스 'Default'; error
+    @(75.0000 mm, 69.0950 mm): 패드 19 [<no net>]의 U1 위F.Cu
+    @(75.0000 mm, 70.3650 mm): 패드 20 [ADMIN_UNLOCK]의 U1 위F.Cu
+[shorting_items]: 두 개의 네트를 단락시키는 개체 (네트 ADMIN_UNLOCK 와 STATUS_LED_1_MCU)
+    Local override; error
+    @(75.0000 mm, 70.3650 mm): 패드 20 [ADMIN_UNLOCK]의 U1 위F.Cu
+    @(75.0000 mm, 71.6350 mm): 패드 21 [STATUS_LED_1_MCU]의 U1 위F.Cu
+[shorting_items]: 두 개의 네트를 단락시키는 개체 (네트 STATUS_LED_1_MCU 와 STATUS_LED_2_MCU)
+    Local override; error
+    @(75.0000 mm, 71.6350 mm): 패드 21 [STATUS_LED_1_MCU]의 U1 위F.Cu
+    @(75.0000 mm, 72.9050 mm): 패드 22 [STATUS_LED_2_MCU]의 U1 위F.Cu
+[clearance]: 공간거리 위반 (네트클래스 'USB' 공간거리 0.2000 mm; 실제값 0.0500 mm)
+    Rule: 네트클래스 'USB'; error
+    @(64.2500 mm, 100.4550 mm): 패드 B5 [USB_CC2]의 J1 위F.Cu
+    @(62.7500 mm, 100.4550 mm): 패드 A7 [USB_D_N]의 J1 위F.Cu
+[clearance]: 공간거리 위반 (네트클래스 'Default' 공간거리 0.2000 mm; 실제값 0.0000 mm)
+    Rule: 네트클래스 'Default'; error
+    @(75.0000 mm, 72.9050 mm): 패드 22 [STATUS_LED_2_MCU]의 U1 위F.Cu
+    @(75.0000 mm, 74.1750 mm): 패드 23 [<no net>]의 U1 위F.Cu
+[shorting_items]: 두 개의 네트를 단락시키는 개체 (네트 USB_CC2 와 USB_D_P)
+    Local override; error
+    @(64.2500 mm, 100.4550 mm): 패드 B5 [USB_CC2]의 J1 위F.Cu
+    @(63.2500 mm, 100.4550 mm): 패드 B6 [USB_D_P]의 J1 위F.Cu
+[clearance]: 공간거리 위반 (네트클래스 'Default' 공간거리 0.2000 mm; 실제값 0.0000 mm)
+    Rule: 네트클래스 'Default'; error
+    @(75.0000 mm, 74.1750 mm): 패드 23 [<no net>]의 U1 위F.Cu
+    @(75.0000 mm, 75.4450 mm): 패드 24 [<no net>]의 U1 위F.Cu
+[clearance]: 공간거리 위반 (네트클래스 'Default' 공간거리 0.2000 mm; 실제값 0.0000 mm)
+    Rule: 네트클래스 'Default'; error
+    @(75.0000 mm, 75.4450 mm): 패드 24 [<no net>]의 U1 위F.Cu
+    @(75.0000 mm, 76.7150 mm): 패드 25 [<no net>]의 U1 위F.Cu
+[clearance]: 공간거리 위반 (네트클래스 'Default' 공간거리 0.2000 mm; 실제값 0.0000 mm)
+    Rule: 네트클래스 'Default'; error
+    @(75.0000 mm, 76.7150 mm): 패드 25 [<no net>]의 U1 위F.Cu
+    @(75.0000 mm, 77.9850 mm): 패드 26 [<no net>]의 U1 위F.Cu
+[clearance]: 공간거리 위반 (네트클래스 'USB' (차동 쌍) 공간거리 0.1500 mm; 실제값 0.0500 mm)
+    Rule: 네트클래스 'USB' (차동 쌍); error
+    @(63.2500 mm, 100.4550 mm): 패드 B6 [USB_D_P]의 J1 위F.Cu
+    @(61.7500 mm, 100.4550 mm): 패드 B7 [USB_D_N]의 J1 위F.Cu
+[shorting_items]: 두 개의 네트를 단락시키는 개체 (네트 USB_D_P 와 USB_D_N)
+    Local override; error
+    @(63.2500 mm, 100.4550 mm): 패드 B6 [USB_D_P]의 J1 위F.Cu
+    @(62.7500 mm, 100.4550 mm): 패드 A7 [USB_D_N]의 J1 위F.Cu
+[clearance]: 공간거리 위반 (네트클래스 'Default' 공간거리 0.2000 mm; 실제값 0.0000 mm)
+    Rule: 네트클래스 'Default'; error
+    @(76.2500 mm, 79.7500 mm): 패드 27 [BOOT_GPIO0]의 U1 위F.Cu
+    @(77.5200 mm, 79.7500 mm): 패드 28 [<no net>]의 U1 위F.Cu
+[shorting_items]: 두 개의 네트를 단락시키는 개체 (네트 USB_D_N 와 USB_CC1)
+    Local override; error
+    @(61.7500 mm, 100.4550 mm): 패드 B7 [USB_D_N]의 J1 위F.Cu
+    @(61.2500 mm, 100.4550 mm): 패드 A5 [USB_CC1]의 J1 위F.Cu
+[shorting_items]: 두 개의 네트를 단락시키는 개체 (네트 USB_D_N 와 USB_D_P)
+    Local override; error
+    @(61.7500 mm, 100.4550 mm): 패드 B7 [USB_D_N]의 J1 위F.Cu
+    @(62.2500 mm, 100.4550 mm): 패드 A6 [USB_D_P]의 J1 위F.Cu
+[clearance]: 공간거리 위반 (네트클래스 'Default' 공간거리 0.2000 mm; 실제값 0.0000 mm)
+    Rule: 네트클래스 'Default'; error
+    @(77.5200 mm, 79.7500 mm): 패드 28 [<no net>]의 U1 위F.Cu
+    @(78.7900 mm, 79.7500 mm): 패드 29 [<no net>]의 U1 위F.Cu
+[clearance]: 공간거리 위반 (네트클래스 'USB' 공간거리 0.2000 mm; 실제값 0.0000 mm)
+    Rule: 네트클래스 'USB'; error
+    @(61.7500 mm, 100.4550 mm): 패드 B7 [USB_D_N]의 J1 위F.Cu
+    @(60.7500 mm, 100.4550 mm): 패드 B8 [<no net>]의 J1 위F.Cu
+[clearance]: 공간거리 위반 (네트클래스 'Default' 공간거리 0.2000 mm; 실제값 0.0000 mm)
+    Rule: 네트클래스 'Default'; error
+    @(78.7900 mm, 79.7500 mm): 패드 29 [<no net>]의 U1 위F.Cu
+    @(80.0600 mm, 79.7500 mm): 패드 30 [<no net>]의 U1 위F.Cu
+[clearance]: 공간거리 위반 (네트클래스 'Default' 공간거리 0.2000 mm; 실제값 0.0000 mm)
+    Rule: 네트클래스 'Default'; error
+    @(80.0600 mm, 79.7500 mm): 패드 30 [<no net>]의 U1 위F.Cu
+    @(81.3300 mm, 79.7500 mm): 패드 31 [<no net>]의 U1 위F.Cu
+[clearance]: 공간거리 위반 (네트클래스 'Default' 공간거리 0.2000 mm; 실제값 0.0000 mm)
+    Rule: 네트클래스 'Default'; error
+    @(60.7500 mm, 100.4550 mm): 패드 B8 [<no net>]의 J1 위F.Cu
+    @(61.2500 mm, 100.4550 mm): 패드 A5 [USB_CC1]의 J1 위F.Cu
+[clearance]: 공간거리 위반 (네트클래스 'Default' 공간거리 0.2000 mm; 실제값 0.0000 mm)
+    Rule: 네트클래스 'Default'; error
+    @(81.3300 mm, 79.7500 mm): 패드 31 [<no net>]의 U1 위F.Cu
+    @(82.6000 mm, 79.7500 mm): 패드 32 [<no net>]의 U1 위F.Cu
+[clearance]: 공간거리 위반 (네트클래스 'USB' 공간거리 0.2000 mm; 실제값 0.0500 mm)
+    Rule: 네트클래스 'USB'; error
+    @(60.7500 mm, 100.4550 mm): 패드 B8 [<no net>]의 J1 위F.Cu
+    @(62.2500 mm, 100.4550 mm): 패드 A6 [USB_D_P]의 J1 위F.Cu
+[clearance]: 공간거리 위반 (네트클래스 'Default' 공간거리 0.2000 mm; 실제값 0.0000 mm)
+    Rule: 네트클래스 'Default'; error
+    @(82.6000 mm, 79.7500 mm): 패드 32 [<no net>]의 U1 위F.Cu
+    @(83.8700 mm, 79.7500 mm): 패드 33 [<no net>]의 U1 위F.Cu
+[clearance]: 공간거리 위반 (네트클래스 'Default' 공간거리 0.2000 mm; 실제값 0.0000 mm)
+    Rule: 네트클래스 'Default'; error
+    @(60.7500 mm, 100.4550 mm): 패드 B8 [<no net>]의 J1 위F.Cu
+    @(60.0500 mm, 100.4550 mm): 패드 A4 [VBUS]의 J1 위F.Cu
+[clearance]: 공간거리 위반 (네트클래스 'Default' 공간거리 0.2000 mm; 실제값 0.0000 mm)
+    Rule: 네트클래스 'Default'; error
+    @(83.8700 mm, 79.7500 mm): 패드 33 [<no net>]의 U1 위F.Cu
+    @(85.1400 mm, 79.7500 mm): 패드 34 [<no net>]의 U1 위F.Cu
+[clearance]: 공간거리 위반 (네트클래스 'Default' 공간거리 0.2000 mm; 실제값 0.0000 mm)
+    Rule: 네트클래스 'Default'; error
+    @(60.7500 mm, 100.4550 mm): 패드 B8 [<no net>]의 J1 위F.Cu
+    @(60.0500 mm, 100.4550 mm): 패드 B9 [VBUS]의 J1 위F.Cu
+[clearance]: 공간거리 위반 (네트클래스 'Default' 공간거리 0.2000 mm; 실제값 0.0000 mm)
+    Rule: 네트클래스 'Default'; error
+    @(85.1400 mm, 79.7500 mm): 패드 34 [<no net>]의 U1 위F.Cu
+    @(86.4100 mm, 79.7500 mm): 패드 35 [<no net>]의 U1 위F.Cu
+[hole_clearance]: 홀 공간거리 위반 (기판의 홀 제약조건 설정 공간거리 0.2500 mm; 실제값 0.0000 mm)
+    Rule: 기판의 홀 제약조건 설정; error
+    @(86.4100 mm, 79.7500 mm): 패드 35 [<no net>]의 U1 위F.Cu
+    @(86.7500 mm, 79.7500 mm): 비아 [UART_RX_MCU] on F.Cu - B.Cu
+[clearance]: 공간거리 위반 (네트클래스 'Default' 공간거리 0.2000 mm; 실제값 0.0500 mm)
+    Rule: 네트클래스 'Default'; error
+    @(60.7500 mm, 100.4550 mm): 패드 B8 [<no net>]의 J1 위F.Cu
+    @(59.2500 mm, 100.4550 mm): 패드 A1 [GND]의 J1 위F.Cu
+[clearance]: 공간거리 위반 (네트클래스 'Default' 공간거리 0.2000 mm; 실제값 0.0000 mm)
+    Rule: 네트클래스 'Default'; error
+    @(86.4100 mm, 79.7500 mm): 패드 35 [<no net>]의 U1 위F.Cu
+    @(87.6800 mm, 79.7500 mm): 패드 36 [UART_RX_MCU]의 U1 위F.Cu
+[clearance]: 공간거리 위반 (네트클래스 'Default' 공간거리 0.2000 mm; 실제값 0.0500 mm)
+    Rule: 네트클래스 'Default'; error
+    @(60.7500 mm, 100.4550 mm): 패드 B8 [<no net>]의 J1 위F.Cu
+    @(59.2500 mm, 100.4550 mm): 패드 B12 [GND]의 J1 위F.Cu
+[hole_clearance]: 홀 공간거리 위반 (기판의 홀 제약조건 설정 공간거리 0.2500 mm; 실제값 0.0000 mm)
+    Rule: 기판의 홀 제약조건 설정; error
+    @(87.6800 mm, 79.7500 mm): 패드 36 [UART_RX_MCU]의 U1 위F.Cu
+    @(88.5000 mm, 79.2500 mm): 비아 [UART_TX_MCU] on F.Cu - B.Cu
+[shorting_items]: 두 개의 네트를 단락시키는 개체 (네트 UART_RX_MCU 와 UART_TX_MCU)
+    Local override; error
+    @(87.6800 mm, 79.7500 mm): 패드 36 [UART_RX_MCU]의 U1 위F.Cu
+    @(88.9500 mm, 79.7500 mm): 패드 37 [UART_TX_MCU]의 U1 위F.Cu
+[shorting_items]: 두 개의 네트를 단락시키는 개체 (네트 VBUS 와 USB_CC1)
+    Local override; error
+    @(60.0500 mm, 100.4550 mm): 패드 B9 [VBUS]의 J1 위F.Cu
+    @(61.2500 mm, 100.4550 mm): 패드 A5 [USB_CC1]의 J1 위F.Cu
+[clearance]: 공간거리 위반 (네트클래스 'Default' 공간거리 0.2000 mm; 실제값 0.0000 mm)
+    Rule: 네트클래스 'Default'; error
+    @(88.9500 mm, 79.7500 mm): 패드 37 [UART_TX_MCU]의 U1 위F.Cu
+    @(90.2200 mm, 79.7500 mm): 패드 38 [<no net>]의 U1 위F.Cu
+[shorting_items]: 두 개의 네트를 단락시키는 개체 (네트 VBUS 와 GND)
+    Local override; error
+    @(60.0500 mm, 100.4550 mm): 패드 B9 [VBUS]의 J1 위F.Cu
+    @(59.2500 mm, 100.4550 mm): 패드 A1 [GND]의 J1 위F.Cu
+[clearance]: 공간거리 위반 (네트클래스 'Default' 공간거리 0.2000 mm; 실제값 0.0000 mm)
+    Rule: 네트클래스 'Default'; error
+    @(90.2200 mm, 79.7500 mm): 패드 38 [<no net>]의 U1 위F.Cu
+    @(91.4900 mm, 79.7500 mm): 패드 39 [<no net>]의 U1 위F.Cu
+[shorting_items]: 두 개의 네트를 단락시키는 개체 (네트 VBUS 와 GND)
+    Local override; error
+    @(60.0500 mm, 100.4550 mm): 패드 B9 [VBUS]의 J1 위F.Cu
+    @(59.2500 mm, 100.4550 mm): 패드 B12 [GND]의 J1 위F.Cu
+[clearance]: 공간거리 위반 (네트클래스 'Default' 공간거리 0.2000 mm; 실제값 0.0000 mm)
+    Rule: 네트클래스 'Default'; error
+    @(91.4900 mm, 79.7500 mm): 패드 39 [<no net>]의 U1 위F.Cu
+    @(92.7600 mm, 79.7500 mm): 패드 40 [GND]의 U1 위F.Cu
+[shorting_items]: 두 개의 네트를 단락시키는 개체 (네트 GND 와 VBUS)
+    Local override; error
+    @(59.2500 mm, 100.4550 mm): 패드 B12 [GND]의 J1 위F.Cu
+    @(60.0500 mm, 100.4550 mm): 패드 A4 [VBUS]의 J1 위F.Cu
+[hole_clearance]: 홀 공간거리 위반 (기판의 홀 제약조건 설정 공간거리 0.2500 mm; 실제값 0.2023 mm)
+    Rule: 기판의 홀 제약조건 설정; error
+    @(58.1800 mm, 101.3700 mm): SH의 PTH 패드[GND]J1
+    @(59.6100 mm, 101.9000 mm): J1의 NPTH 패드
+[hole_clearance]: 홀 공간거리 위반 (기판의 홀 제약조건 설정 공간거리 0.2500 mm; 실제값 0.2023 mm)
+    Rule: 기판의 홀 제약조건 설정; error
+    @(58.1800 mm, 101.3700 mm): SH의 PTH 패드[GND]J1
+    @(59.6100 mm, 101.9000 mm): J1의 NPTH 패드
+[hole_clearance]: 홀 공간거리 위반 (기판의 홀 제약조건 설정 공간거리 0.2500 mm; 실제값 0.2023 mm)
+    Rule: 기판의 홀 제약조건 설정; error
+    @(66.8200 mm, 101.3700 mm): SH의 PTH 패드[GND]J1
+    @(65.3900 mm, 101.9000 mm): J1의 NPTH 패드
+[hole_clearance]: 홀 공간거리 위반 (기판의 홀 제약조건 설정 공간거리 0.2500 mm; 실제값 0.2023 mm)
+    Rule: 기판의 홀 제약조건 설정; error
+    @(66.8200 mm, 101.3700 mm): SH의 PTH 패드[GND]J1
+    @(65.3900 mm, 101.9000 mm): J1의 NPTH 패드
+[courtyards_overlap]: Courtyards overlap
+    Rule: 부품자리 제약조건 기판 설정; error
+    @(87.5000 mm, 71.0000 mm): 풋프린트 U1
+    @(96.0000 mm, 53.0000 mm): 풋프린트 C9
+[courtyards_overlap]: Courtyards overlap
+    Rule: 부품자리 제약조건 기판 설정; error
+    @(87.5000 mm, 71.0000 mm): 풋프린트 U1
+    @(96.0000 mm, 48.0000 mm): 풋프린트 D_BZ
+[copper_edge_clearance]: 기판 모서리 공간거리 위반 (기판 구성 제약 모서리 공간거리 0.5000 mm; 실제값 0.4790 mm)
+    Rule: 기판 구성 제약 모서리; error
+    @(52.3684 mm, 102.0125 mm): 세그먼트 (Edge.Cuts)
+    @(54.0000 mm, 102.2500 mm): 배선 [USB_CC1] on F.Cu, 길이 0.2500 mm
+[copper_edge_clearance]: 기판 모서리 공간거리 위반 (기판 구성 제약 모서리 공간거리 0.5000 mm; 실제값 0.4790 mm)
+    Rule: 기판 구성 제약 모서리; error
+    @(52.3684 mm, 102.0125 mm): 세그먼트 (Edge.Cuts)
+    @(54.5000 mm, 102.2500 mm): 배선 [USB_CC1] on F.Cu, 길이 0.5000 mm
+[copper_edge_clearance]: 기판 모서리 공간거리 위반 (기판 구성 제약 모서리 공간거리 0.5000 mm; 실제값 0.0000 mm)
+    Rule: 기판 구성 제약 모서리; error
+    @(56.7933 mm, 104.7603 mm): 세그먼트 (Edge.Cuts)
+    @(58.1800 mm, 105.5500 mm): SH의 PTH 패드[GND]J1
+[copper_edge_clearance]: 기판 모서리 공간거리 위반 (기판 구성 제약 모서리 공간거리 0.5000 mm; 실제값 0.0233 mm)
+    Rule: 기판 구성 제약 모서리; error
+    @(65.2692 mm, 107.3129 mm): 세그먼트 (Edge.Cuts)
+    @(66.8200 mm, 105.5500 mm): SH의 PTH 패드[GND]J1
+[drill_out_of_range]: 홀 크기 범위를 벗어남 (보드 설정 제약 조건 최소 홀 0.3000 mm; 실제 값 0.2000 mm)
+    Rule: 보드 설정 제약 조건; error
+    @(85.7400 mm, 68.1000 mm): 41의 PTH 패드[GND]U1
+[drill_out_of_range]: 홀 크기 범위를 벗어남 (보드 설정 제약 조건 최소 홀 0.3000 mm; 실제 값 0.2000 mm)
+    Rule: 보드 설정 제약 조건; error
+    @(84.3400 mm, 68.1000 mm): 41의 PTH 패드[GND]U1
+[drill_out_of_range]: 홀 크기 범위를 벗어남 (보드 설정 제약 조건 최소 홀 0.3000 mm; 실제 값 0.2000 mm)
+    Rule: 보드 설정 제약 조건; error
+    @(86.4400 mm, 68.8000 mm): 41의 PTH 패드[GND]U1
+[drill_out_of_range]: 홀 크기 범위를 벗어남 (보드 설정 제약 조건 최소 홀 0.3000 mm; 실제 값 0.2000 mm)
+    Rule: 보드 설정 제약 조건; error
+    @(85.0400 mm, 68.8000 mm): 41의 PTH 패드[GND]U1
+[drill_out_of_range]: 홀 크기 범위를 벗어남 (보드 설정 제약 조건 최소 홀 0.3000 mm; 실제 값 0.2000 mm)
+    Rule: 보드 설정 제약 조건; error
+    @(83.6400 mm, 68.8000 mm): 41의 PTH 패드[GND]U1
+[drill_out_of_range]: 홀 크기 범위를 벗어남 (보드 설정 제약 조건 최소 홀 0.3000 mm; 실제 값 0.2000 mm)
+    Rule: 보드 설정 제약 조건; error
+    @(85.7400 mm, 69.5000 mm): 41의 PTH 패드[GND]U1
+[drill_out_of_range]: 홀 크기 범위를 벗어남 (보드 설정 제약 조건 최소 홀 0.3000 mm; 실제 값 0.2000 mm)
+    Rule: 보드 설정 제약 조건; error
+    @(84.3400 mm, 69.5000 mm): 41의 PTH 패드[GND]U1
+[drill_out_of_range]: 홀 크기 범위를 벗어남 (보드 설정 제약 조건 최소 홀 0.3000 mm; 실제 값 0.2000 mm)
+    Rule: 보드 설정 제약 조건; error
+    @(86.4400 mm, 70.2000 mm): 41의 PTH 패드[GND]U1
+[drill_out_of_range]: 홀 크기 범위를 벗어남 (보드 설정 제약 조건 최소 홀 0.3000 mm; 실제 값 0.2000 mm)
+    Rule: 보드 설정 제약 조건; error
+    @(85.0400 mm, 70.2000 mm): 41의 PTH 패드[GND]U1
+[drill_out_of_range]: 홀 크기 범위를 벗어남 (보드 설정 제약 조건 최소 홀 0.3000 mm; 실제 값 0.2000 mm)
+    Rule: 보드 설정 제약 조건; error
+    @(83.6400 mm, 70.2000 mm): 41의 PTH 패드[GND]U1
+[drill_out_of_range]: 홀 크기 범위를 벗어남 (보드 설정 제약 조건 최소 홀 0.3000 mm; 실제 값 0.2000 mm)
+    Rule: 보드 설정 제약 조건; error
+    @(85.7400 mm, 70.9000 mm): 41의 PTH 패드[GND]U1
+[drill_out_of_range]: 홀 크기 범위를 벗어남 (보드 설정 제약 조건 최소 홀 0.3000 mm; 실제 값 0.2000 mm)
+    Rule: 보드 설정 제약 조건; error
+    @(84.3400 mm, 70.9000 mm): 41의 PTH 패드[GND]U1
+[solder_mask_bridge]: 전면 솔더 마스크 조리개는 다른 네트를 사용하여 항목을 연결합니다
+    Rule: 보드 설정 솔더 마스크 최소 너비; error
+    @(87.2500 mm, 62.2500 mm): 배선 [OLED_SCL] on F.Cu, 길이 0.5000 mm
+    @(86.4100 mm, 62.2500 mm): 패드 6 [CHAL_0_MCU]의 U1 위F.Cu
+[solder_mask_bridge]: 전면 솔더 마스크 조리개는 다른 네트를 사용하여 항목을 연결합니다
+    Rule: 보드 설정 솔더 마스크 최소 너비; error
+    @(87.7500 mm, 62.2500 mm): 배선 [OLED_SCL] on F.Cu, 길이 0.5000 mm
+    @(86.4100 mm, 62.2500 mm): 패드 6 [CHAL_0_MCU]의 U1 위F.Cu
+[solder_mask_bridge]: 전면 솔더 마스크 조리개는 다른 네트를 사용하여 항목을 연결합니다
+    Rule: 보드 설정 솔더 마스크 최소 너비; error
+    @(87.2500 mm, 62.7500 mm): 비아 [OLED_SCL] on F.Cu - B.Cu
+    @(86.4100 mm, 62.2500 mm): 패드 6 [CHAL_0_MCU]의 U1 위F.Cu
+[solder_mask_bridge]: 전면 솔더 마스크 조리개는 다른 네트를 사용하여 항목을 연결합니다
+    Rule: 보드 설정 솔더 마스크 최소 너비; error
+    @(60.0000 mm, 99.2500 mm): 배선 [VBUS] on F.Cu, 길이 1.2500 mm
+    @(60.7500 mm, 100.4550 mm): 패드 B8 [<no net>]의 J1 위F.Cu
+[solder_mask_bridge]: 전면 솔더 마스크 조리개는 다른 네트를 사용하여 항목을 연결합니다
+    Rule: 보드 설정 솔더 마스크 최소 너비; error
+    @(60.0000 mm, 99.2500 mm): 배선 [VBUS] on F.Cu, 길이 1.2500 mm
+    @(59.2500 mm, 100.4550 mm): 패드 A1 [GND]의 J1 위F.Cu
+[solder_mask_bridge]: 전면 솔더 마스크 조리개는 다른 네트를 사용하여 항목을 연결합니다
+    Rule: 보드 설정 솔더 마스크 최소 너비; error
+    @(60.0000 mm, 99.2500 mm): 배선 [VBUS] on F.Cu, 길이 1.2500 mm
+    @(59.2500 mm, 100.4550 mm): 패드 B12 [GND]의 J1 위F.Cu
+[solder_mask_bridge]: 전면 솔더 마스크 조리개는 다른 네트를 사용하여 항목을 연결합니다
+    Rule: 보드 설정 솔더 마스크 최소 너비; error
+    @(61.7500 mm, 100.4550 mm): 배선 [USB_D_N] on F.Cu, 길이 0.9550 mm
+    @(61.2500 mm, 100.4550 mm): 패드 A5 [USB_CC1]의 J1 위F.Cu
+[solder_mask_bridge]: 전면 솔더 마스크 조리개는 다른 네트를 사용하여 항목을 연결합니다
+    Rule: 보드 설정 솔더 마스크 최소 너비; error
+    @(61.7500 mm, 100.4550 mm): 배선 [USB_D_N] on F.Cu, 길이 0.9550 mm
+    @(62.2500 mm, 100.4550 mm): 패드 A6 [USB_D_P]의 J1 위F.Cu
+[solder_mask_bridge]: 전면 솔더 마스크 조리개는 다른 네트를 사용하여 항목을 연결합니다
+    Rule: 보드 설정 솔더 마스크 최소 너비; error
+    @(65.0000 mm, 99.0000 mm): 배선 [VBUS] on F.Cu, 길이 1.5000 mm
+    @(65.7500 mm, 100.4550 mm): 패드 A12 [GND]의 J1 위F.Cu
+[solder_mask_bridge]: 전면 솔더 마스크 조리개는 다른 네트를 사용하여 항목을 연결합니다
+    Rule: 보드 설정 솔더 마스크 최소 너비; error
+    @(65.0000 mm, 99.0000 mm): 배선 [VBUS] on F.Cu, 길이 1.5000 mm
+    @(65.7500 mm, 100.4550 mm): 패드 B1 [GND]의 J1 위F.Cu
+[solder_mask_bridge]: 전면 솔더 마스크 조리개는 다른 네트를 사용하여 항목을 연결합니다
+    Rule: 보드 설정 솔더 마스크 최소 너비; error
+    @(64.2500 mm, 100.5000 mm): 배선 [USB_CC2] on F.Cu, 길이 0.7500 mm
+    @(63.7500 mm, 100.4550 mm): 패드 A8 [<no net>]의 J1 위F.Cu
+[solder_mask_bridge]: 전면 솔더 마스크 조리개는 다른 네트를 사용하여 항목을 연결합니다
+    Rule: 보드 설정 솔더 마스크 최소 너비; error
+    @(65.0000 mm, 99.0000 mm): 배선 [VBUS] on F.Cu, 길이 1.5000 mm
+    @(64.2500 mm, 100.4550 mm): 패드 B5 [USB_CC2]의 J1 위F.Cu
+[solder_mask_bridge]: 전면 솔더 마스크 조리개는 다른 네트를 사용하여 항목을 연결합니다
+    Rule: 보드 설정 솔더 마스크 최소 너비; error
+    @(64.2500 mm, 100.5000 mm): 배선 [USB_CC2] on F.Cu, 길이 0.7500 mm
+    @(64.9500 mm, 100.4550 mm): 패드 A9 [VBUS]의 J1 위F.Cu
+[solder_mask_bridge]: 전면 솔더 마스크 조리개는 다른 네트를 사용하여 항목을 연결합니다
+    Rule: 보드 설정 솔더 마스크 최소 너비; error
+    @(64.2500 mm, 100.5000 mm): 배선 [USB_CC2] on F.Cu, 길이 0.7500 mm
+    @(64.9500 mm, 100.4550 mm): 패드 B4 [VBUS]의 J1 위F.Cu
+[solder_mask_bridge]: 전면 솔더 마스크 조리개는 다른 네트를 사용하여 항목을 연결합니다
+    Rule: 보드 설정 솔더 마스크 최소 너비; error
+    @(60.0500 mm, 100.4550 mm): 배선 [VBUS] on F.Cu, 길이 0.0673 mm
+    @(60.7500 mm, 100.4550 mm): 패드 B8 [<no net>]의 J1 위F.Cu
+[solder_mask_bridge]: 전면 솔더 마스크 조리개는 다른 네트를 사용하여 항목을 연결합니다
+    Rule: 보드 설정 솔더 마스크 최소 너비; error
+    @(91.2500 mm, 62.2500 mm): 배선 [3V3] on F.Cu, 길이 1.0000 mm
+    @(90.2200 mm, 62.2500 mm): 패드 3 [EN]의 U1 위F.Cu
+[solder_mask_bridge]: 전면 솔더 마스크 조리개는 다른 네트를 사용하여 항목을 연결합니다
+    Rule: 보드 설정 솔더 마스크 최소 너비; error
+    @(60.0500 mm, 100.4550 mm): 배선 [VBUS] on F.Cu, 길이 0.0673 mm
+    @(59.2500 mm, 100.4550 mm): 패드 A1 [GND]의 J1 위F.Cu
+[solder_mask_bridge]: 전면 솔더 마스크 조리개는 다른 네트를 사용하여 항목을 연결합니다
+    Rule: 보드 설정 솔더 마스크 최소 너비; error
+    @(91.5000 mm, 62.2500 mm): 배선 [3V3] on F.Cu, 길이 0.2500 mm
+    @(90.2200 mm, 62.2500 mm): 패드 3 [EN]의 U1 위F.Cu
+[solder_mask_bridge]: 전면 솔더 마스크 조리개는 다른 네트를 사용하여 항목을 연결합니다
+    Rule: 보드 설정 솔더 마스크 최소 너비; error
+    @(60.0500 mm, 100.4550 mm): 배선 [VBUS] on F.Cu, 길이 0.0673 mm
+    @(59.2500 mm, 100.4550 mm): 패드 B12 [GND]의 J1 위F.Cu
+[solder_mask_bridge]: 전면 솔더 마스크 조리개는 다른 네트를 사용하여 항목을 연결합니다
+    Rule: 보드 설정 솔더 마스크 최소 너비; error
+    @(78.7500 mm, 62.2500 mm): 배선 [CHAL_2_MCU] on F.Cu, 길이 0.5000 mm
+    @(77.5200 mm, 62.2500 mm): 패드 13 [USB_D_N]의 U1 위F.Cu
+[solder_mask_bridge]: 전면 솔더 마스크 조리개는 다른 네트를 사용하여 항목을 연결합니다
+    Rule: 보드 설정 솔더 마스크 최소 너비; error
+    @(78.2500 mm, 62.2500 mm): 배선 [CHAL_2_MCU] on F.Cu, 길이 0.5000 mm
+    @(77.5200 mm, 62.2500 mm): 패드 13 [USB_D_N]의 U1 위F.Cu
+[solder_mask_bridge]: 전면 솔더 마스크 조리개는 다른 네트를 사용하여 항목을 연결합니다
+    Rule: 보드 설정 솔더 마스크 최소 너비; error
+    @(89.0000 mm, 79.7500 mm): 배선 [UART_TX_MCU] on F.Cu, 길이 0.5000 mm
+    @(87.6800 mm, 79.7500 mm): 패드 36 [UART_RX_MCU]의 U1 위F.Cu
+[solder_mask_bridge]: 전면 솔더 마스크 조리개는 다른 네트를 사용하여 항목을 연결합니다
+    Rule: 보드 설정 솔더 마스크 최소 너비; error
+    @(89.0000 mm, 62.2500 mm): 배선 [OLED_SDA] on F.Cu, 길이 1.0000 mm
+    @(87.6800 mm, 62.2500 mm): 패드 5 [OLED_SCL]의 U1 위F.Cu
+[solder_mask_bridge]: 전면 솔더 마스크 조리개는 다른 네트를 사용하여 항목을 연결합니다
+    Rule: 보드 설정 솔더 마스크 최소 너비; error
+    @(64.9500 mm, 100.4550 mm): 배선 [VBUS] on F.Cu, 길이 0.0673 mm
+    @(65.7500 mm, 100.4550 mm): 패드 A12 [GND]의 J1 위F.Cu
+[solder_mask_bridge]: 전면 솔더 마스크 조리개는 다른 네트를 사용하여 항목을 연결합니다
+    Rule: 보드 설정 솔더 마스크 최소 너비; error
+    @(82.5000 mm, 62.2500 mm): 배선 [STATUS_LED_4_MCU] on F.Cu, 길이 0.7500 mm
+    @(81.3300 mm, 62.2500 mm): 패드 10 [STATUS_LED_5_MCU]의 U1 위F.Cu
+[solder_mask_bridge]: 전면 솔더 마스크 조리개는 다른 네트를 사용하여 항목을 연결합니다
+    Rule: 보드 설정 솔더 마스크 최소 너비; error
+    @(64.9500 mm, 100.4550 mm): 배선 [VBUS] on F.Cu, 길이 0.0673 mm
+    @(65.7500 mm, 100.4550 mm): 패드 B1 [GND]의 J1 위F.Cu
+[solder_mask_bridge]: 전면 솔더 마스크 조리개는 다른 네트를 사용하여 항목을 연결합니다
+    Rule: 보드 설정 솔더 마스크 최소 너비; error
+    @(88.5000 mm, 79.2500 mm): 비아 [UART_TX_MCU] on F.Cu - B.Cu
+    @(87.6800 mm, 79.7500 mm): 패드 36 [UART_RX_MCU]의 U1 위F.Cu
+[solder_mask_bridge]: 전면 솔더 마스크 조리개는 다른 네트를 사용하여 항목을 연결합니다
+    Rule: 보드 설정 솔더 마스크 최소 너비; error
+    @(64.2500 mm, 100.4550 mm): 배선 [USB_CC2] on F.Cu, 길이 0.0450 mm
+    @(63.7500 mm, 100.4550 mm): 패드 A8 [<no net>]의 J1 위F.Cu
+[solder_mask_bridge]: 전면 솔더 마스크 조리개는 다른 네트를 사용하여 항목을 연결합니다
+    Rule: 보드 설정 솔더 마스크 최소 너비; error
+    @(78.2500 mm, 61.7500 mm): 비아 [CHAL_2_MCU] on F.Cu - B.Cu
+    @(77.5200 mm, 62.2500 mm): 패드 13 [USB_D_N]의 U1 위F.Cu
+[solder_mask_bridge]: 전면 솔더 마스크 조리개는 다른 네트를 사용하여 항목을 연결합니다
+    Rule: 보드 설정 솔더 마스크 최소 너비; error
+    @(64.9500 mm, 100.4550 mm): 배선 [VBUS] on F.Cu, 길이 0.0673 mm
+    @(64.2500 mm, 100.4550 mm): 패드 B5 [USB_CC2]의 J1 위F.Cu
+[solder_mask_bridge]: 전면 솔더 마스크 조리개는 다른 네트를 사용하여 항목을 연결합니다
+    Rule: 보드 설정 솔더 마스크 최소 너비; error
+    @(88.0000 mm, 62.2500 mm): 비아 [OLED_SDA] on F.Cu - B.Cu
+    @(87.6800 mm, 62.2500 mm): 패드 5 [OLED_SCL]의 U1 위F.Cu
+[solder_mask_bridge]: 전면 솔더 마스크 조리개는 다른 네트를 사용하여 항목을 연결합니다
+    Rule: 보드 설정 솔더 마스크 최소 너비; error
+    @(81.7500 mm, 62.2500 mm): 비아 [STATUS_LED_4_MCU] on F.Cu - B.Cu
+    @(81.3300 mm, 62.2500 mm): 패드 10 [STATUS_LED_5_MCU]의 U1 위F.Cu
+[solder_mask_bridge]: 전면 솔더 마스크 조리개는 다른 네트를 사용하여 항목을 연결합니다
+    Rule: 보드 설정 솔더 마스크 최소 너비; error
+    @(91.4900 mm, 62.2500 mm): 패드 2 [3V3]의 U1 위F.Cu
+    @(92.7600 mm, 62.2500 mm): 패드 1 [GND]의 U1 위F.Cu
+[solder_mask_bridge]: 전면 솔더 마스크 조리개는 다른 네트를 사용하여 항목을 연결합니다
+    Rule: 보드 설정 솔더 마스크 최소 너비; error
+    @(64.2500 mm, 100.4550 mm): 배선 [USB_CC2] on F.Cu, 길이 0.0450 mm
+    @(64.9500 mm, 100.4550 mm): 패드 A9 [VBUS]의 J1 위F.Cu
+[solder_mask_bridge]: 전면 솔더 마스크 조리개는 다른 네트를 사용하여 항목을 연결합니다
+    Rule: 보드 설정 솔더 마스크 최소 너비; error
+    @(91.4900 mm, 62.2500 mm): 패드 2 [3V3]의 U1 위F.Cu
+    @(90.2200 mm, 62.2500 mm): 패드 3 [EN]의 U1 위F.Cu
+[solder_mask_bridge]: 전면 솔더 마스크 조리개는 다른 네트를 사용하여 항목을 연결합니다
+    Rule: 보드 설정 솔더 마스크 최소 너비; error
+    @(64.2500 mm, 100.4550 mm): 배선 [USB_CC2] on F.Cu, 길이 0.0450 mm
+    @(64.9500 mm, 100.4550 mm): 패드 B4 [VBUS]의 J1 위F.Cu
+[solder_mask_bridge]: 전면 솔더 마스크 조리개는 다른 네트를 사용하여 항목을 연결합니다
+    Rule: 보드 설정 솔더 마스크 최소 너비; error
+    @(90.2200 mm, 62.2500 mm): 패드 3 [EN]의 U1 위F.Cu
+    @(88.9500 mm, 62.2500 mm): 패드 4 [OLED_SDA]의 U1 위F.Cu
+[solder_mask_bridge]: 전면 솔더 마스크 조리개는 다른 네트를 사용하여 항목을 연결합니다
+    Rule: 보드 설정 솔더 마스크 최소 너비; error
+    @(88.9500 mm, 62.2500 mm): 패드 4 [OLED_SDA]의 U1 위F.Cu
+    @(87.6800 mm, 62.2500 mm): 패드 5 [OLED_SCL]의 U1 위F.Cu
+[solder_mask_bridge]: 전면 솔더 마스크 조리개는 다른 네트를 사용하여 항목을 연결합니다
+    Rule: 보드 설정 솔더 마스크 최소 너비; error
+    @(87.6800 mm, 62.2500 mm): 패드 5 [OLED_SCL]의 U1 위F.Cu
+    @(86.4100 mm, 62.2500 mm): 패드 6 [CHAL_0_MCU]의 U1 위F.Cu
+[solder_mask_bridge]: 전면 솔더 마스크 조리개는 다른 네트를 사용하여 항목을 연결합니다
+    Rule: 보드 설정 솔더 마스크 최소 너비; error
+    @(61.2500 mm, 100.5000 mm): 배선 [USB_CC1] on F.Cu, 길이 0.5000 mm
+    @(60.7500 mm, 100.4550 mm): 패드 B8 [<no net>]의 J1 위F.Cu
+[solder_mask_bridge]: 전면 솔더 마스크 조리개는 다른 네트를 사용하여 항목을 연결합니다
+    Rule: 보드 설정 솔더 마스크 최소 너비; error
+    @(61.2500 mm, 100.5000 mm): 배선 [USB_CC1] on F.Cu, 길이 0.5000 mm
+    @(61.7500 mm, 100.4550 mm): 패드 B7 [USB_D_N]의 J1 위F.Cu
+[solder_mask_bridge]: 전면 솔더 마스크 조리개는 다른 네트를 사용하여 항목을 연결합니다
+    Rule: 보드 설정 솔더 마스크 최소 너비; error
+    @(86.4100 mm, 62.2500 mm): 패드 6 [CHAL_0_MCU]의 U1 위F.Cu
+    @(85.1400 mm, 62.2500 mm): 패드 7 [CHAL_1_MCU]의 U1 위F.Cu
+[solder_mask_bridge]: 전면 솔더 마스크 조리개는 다른 네트를 사용하여 항목을 연결합니다
+    Rule: 보드 설정 솔더 마스크 최소 너비; error
+    @(87.7500 mm, 79.7500 mm): 배선 [UART_RX_MCU] on F.Cu, 길이 1.0000 mm
+    @(86.4100 mm, 79.7500 mm): 패드 35 [<no net>]의 U1 위F.Cu
+[solder_mask_bridge]: 전면 솔더 마스크 조리개는 다른 네트를 사용하여 항목을 연결합니다
+    Rule: 보드 설정 솔더 마스크 최소 너비; error
+    @(61.2500 mm, 100.5000 mm): 배선 [USB_CC1] on F.Cu, 길이 0.5000 mm
+    @(60.0500 mm, 100.4550 mm): 패드 A4 [VBUS]의 J1 위F.Cu
+[solder_mask_bridge]: 전면 솔더 마스크 조리개는 다른 네트를 사용하여 항목을 연결합니다
+    Rule: 보드 설정 솔더 마스크 최소 너비; error
+    @(86.7500 mm, 79.7500 mm): 비아 [UART_RX_MCU] on F.Cu - B.Cu
+    @(86.4100 mm, 79.7500 mm): 패드 35 [<no net>]의 U1 위F.Cu
+[solder_mask_bridge]: 전면 솔더 마스크 조리개는 다른 네트를 사용하여 항목을 연결합니다
+    Rule: 보드 설정 솔더 마스크 최소 너비; error
+    @(61.2500 mm, 100.5000 mm): 배선 [USB_CC1] on F.Cu, 길이 0.5000 mm
+    @(60.0500 mm, 100.4550 mm): 패드 B9 [VBUS]의 J1 위F.Cu
+[solder_mask_bridge]: 전면 솔더 마스크 조리개는 다른 네트를 사용하여 항목을 연결합니다
+    Rule: 보드 설정 솔더 마스크 최소 너비; error
+    @(88.5000 mm, 79.7500 mm): 배선 [UART_TX_MCU] on F.Cu, 길이 0.5000 mm
+    @(87.6800 mm, 79.7500 mm): 패드 36 [UART_RX_MCU]의 U1 위F.Cu
+[solder_mask_bridge]: 전면 솔더 마스크 조리개는 다른 네트를 사용하여 항목을 연결합니다
+    Rule: 보드 설정 솔더 마스크 최소 너비; error
+    @(59.2500 mm, 100.4550 mm): 패드 A1 [GND]의 J1 위F.Cu
+    @(60.0500 mm, 100.4550 mm): 패드 A4 [VBUS]의 J1 위F.Cu
+[solder_mask_bridge]: 전면 솔더 마스크 조리개는 다른 네트를 사용하여 항목을 연결합니다
+    Rule: 보드 설정 솔더 마스크 최소 너비; error
+    @(59.2500 mm, 100.4550 mm): 패드 A1 [GND]의 J1 위F.Cu
+    @(60.0500 mm, 100.4550 mm): 패드 B9 [VBUS]의 J1 위F.Cu
+[solder_mask_bridge]: 전면 솔더 마스크 조리개는 다른 네트를 사용하여 항목을 연결합니다
+    Rule: 보드 설정 솔더 마스크 최소 너비; error
+    @(61.2500 mm, 100.4550 mm): 배선 [USB_CC1] on F.Cu, 길이 0.0450 mm
+    @(60.7500 mm, 100.4550 mm): 패드 B8 [<no net>]의 J1 위F.Cu
+[solder_mask_bridge]: 전면 솔더 마스크 조리개는 다른 네트를 사용하여 항목을 연결합니다
+    Rule: 보드 설정 솔더 마스크 최소 너비; error
+    @(60.0500 mm, 100.4550 mm): 패드 A4 [VBUS]의 J1 위F.Cu
+    @(60.7500 mm, 100.4550 mm): 패드 B8 [<no net>]의 J1 위F.Cu
+[solder_mask_bridge]: 전면 솔더 마스크 조리개는 다른 네트를 사용하여 항목을 연결합니다
+    Rule: 보드 설정 솔더 마스크 최소 너비; error
+    @(60.0500 mm, 100.4550 mm): 패드 A4 [VBUS]의 J1 위F.Cu
+    @(61.2500 mm, 100.4550 mm): 패드 A5 [USB_CC1]의 J1 위F.Cu
+[solder_mask_bridge]: 전면 솔더 마스크 조리개는 다른 네트를 사용하여 항목을 연결합니다
+    Rule: 보드 설정 솔더 마스크 최소 너비; error
+    @(85.1400 mm, 62.2500 mm): 패드 7 [CHAL_1_MCU]의 U1 위F.Cu
+    @(83.8700 mm, 62.2500 mm): 패드 8 [STATUS_LED_3_MCU]의 U1 위F.Cu
+[solder_mask_bridge]: 전면 솔더 마스크 조리개는 다른 네트를 사용하여 항목을 연결합니다
+    Rule: 보드 설정 솔더 마스크 최소 너비; error
+    @(60.0500 mm, 100.4550 mm): 패드 A4 [VBUS]의 J1 위F.Cu
+    @(59.2500 mm, 100.4550 mm): 패드 B12 [GND]의 J1 위F.Cu
+[solder_mask_bridge]: 전면 솔더 마스크 조리개는 다른 네트를 사용하여 항목을 연결합니다
+    Rule: 보드 설정 솔더 마스크 최소 너비; error
+    @(83.8700 mm, 62.2500 mm): 패드 8 [STATUS_LED_3_MCU]의 U1 위F.Cu
+    @(82.6000 mm, 62.2500 mm): 패드 9 [STATUS_LED_4_MCU]의 U1 위F.Cu
+[solder_mask_bridge]: 전면 솔더 마스크 조리개는 다른 네트를 사용하여 항목을 연결합니다
+    Rule: 보드 설정 솔더 마스크 최소 너비; error
+    @(61.2500 mm, 100.4550 mm): 배선 [USB_CC1] on F.Cu, 길이 0.0450 mm
+    @(61.7500 mm, 100.4550 mm): 패드 B7 [USB_D_N]의 J1 위F.Cu
+[solder_mask_bridge]: 전면 솔더 마스크 조리개는 다른 네트를 사용하여 항목을 연결합니다
+    Rule: 보드 설정 솔더 마스크 최소 너비; error
+    @(61.2500 mm, 100.4550 mm): 패드 A5 [USB_CC1]의 J1 위F.Cu
+    @(60.7500 mm, 100.4550 mm): 패드 B8 [<no net>]의 J1 위F.Cu
+[solder_mask_bridge]: 전면 솔더 마스크 조리개는 다른 네트를 사용하여 항목을 연결합니다
+    Rule: 보드 설정 솔더 마스크 최소 너비; error
+    @(82.6000 mm, 62.2500 mm): 패드 9 [STATUS_LED_4_MCU]의 U1 위F.Cu
+    @(81.3300 mm, 62.2500 mm): 패드 10 [STATUS_LED_5_MCU]의 U1 위F.Cu
+[solder_mask_bridge]: 전면 솔더 마스크 조리개는 다른 네트를 사용하여 항목을 연결합니다
+    Rule: 보드 설정 솔더 마스크 최소 너비; error
+    @(61.2500 mm, 100.4550 mm): 패드 A5 [USB_CC1]의 J1 위F.Cu
+    @(62.2500 mm, 100.4550 mm): 패드 A6 [USB_D_P]의 J1 위F.Cu
+[solder_mask_bridge]: 전면 솔더 마스크 조리개는 다른 네트를 사용하여 항목을 연결합니다
+    Rule: 보드 설정 솔더 마스크 최소 너비; error
+    @(60.7500 mm, 100.5000 mm): 배선 [USB_CC1] on F.Cu, 길이 0.7500 mm
+    @(60.7500 mm, 100.4550 mm): 패드 B8 [<no net>]의 J1 위F.Cu
+[solder_mask_bridge]: 전면 솔더 마스크 조리개는 다른 네트를 사용하여 항목을 연결합니다
+    Rule: 보드 설정 솔더 마스크 최소 너비; error
+    @(81.3300 mm, 62.2500 mm): 패드 10 [STATUS_LED_5_MCU]의 U1 위F.Cu
+    @(80.0600 mm, 62.2500 mm): 패드 11 [BUZZER_GPIO]의 U1 위F.Cu
+[solder_mask_bridge]: 전면 솔더 마스크 조리개는 다른 네트를 사용하여 항목을 연결합니다
+    Rule: 보드 설정 솔더 마스크 최소 너비; error
+    @(61.2500 mm, 100.4550 mm): 패드 A5 [USB_CC1]의 J1 위F.Cu
+    @(61.7500 mm, 100.4550 mm): 패드 B7 [USB_D_N]의 J1 위F.Cu
+[solder_mask_bridge]: 전면 솔더 마스크 조리개는 다른 네트를 사용하여 항목을 연결합니다
+    Rule: 보드 설정 솔더 마스크 최소 너비; error
+    @(60.7500 mm, 100.5000 mm): 배선 [USB_CC1] on F.Cu, 길이 0.7500 mm
+    @(60.0500 mm, 100.4550 mm): 패드 A4 [VBUS]의 J1 위F.Cu
+[solder_mask_bridge]: 전면 솔더 마스크 조리개는 다른 네트를 사용하여 항목을 연결합니다
+    Rule: 보드 설정 솔더 마스크 최소 너비; error
+    @(80.0600 mm, 62.2500 mm): 패드 11 [BUZZER_GPIO]의 U1 위F.Cu
+    @(78.7900 mm, 62.2500 mm): 패드 12 [CHAL_2_MCU]의 U1 위F.Cu
+[solder_mask_bridge]: 전면 솔더 마스크 조리개는 다른 네트를 사용하여 항목을 연결합니다
+    Rule: 보드 설정 솔더 마스크 최소 너비; error
+    @(61.2500 mm, 100.4550 mm): 패드 A5 [USB_CC1]의 J1 위F.Cu
+    @(60.0500 mm, 100.4550 mm): 패드 B9 [VBUS]의 J1 위F.Cu
+[solder_mask_bridge]: 전면 솔더 마스크 조리개는 다른 네트를 사용하여 항목을 연결합니다
+    Rule: 보드 설정 솔더 마스크 최소 너비; error
+    @(60.7500 mm, 100.5000 mm): 배선 [USB_CC1] on F.Cu, 길이 0.7500 mm
+    @(60.0500 mm, 100.4550 mm): 패드 B9 [VBUS]의 J1 위F.Cu
+[solder_mask_bridge]: 전면 솔더 마스크 조리개는 다른 네트를 사용하여 항목을 연결합니다
+    Rule: 보드 설정 솔더 마스크 최소 너비; error
+    @(78.7900 mm, 62.2500 mm): 패드 12 [CHAL_2_MCU]의 U1 위F.Cu
+    @(77.5200 mm, 62.2500 mm): 패드 13 [USB_D_N]의 U1 위F.Cu
+[solder_mask_bridge]: 전면 솔더 마스크 조리개는 다른 네트를 사용하여 항목을 연결합니다
+    Rule: 보드 설정 솔더 마스크 최소 너비; error
+    @(62.2500 mm, 100.4550 mm): 패드 A6 [USB_D_P]의 J1 위F.Cu
+    @(62.7500 mm, 100.4550 mm): 패드 A7 [USB_D_N]의 J1 위F.Cu
+[solder_mask_bridge]: 전면 솔더 마스크 조리개는 다른 네트를 사용하여 항목을 연결합니다
+    Rule: 보드 설정 솔더 마스크 최소 너비; error
+    @(63.2500 mm, 100.4550 mm): 배선 [USB_D_P] on F.Cu, 길이 1.2050 mm
+    @(62.7500 mm, 100.4550 mm): 패드 A7 [USB_D_N]의 J1 위F.Cu
+[solder_mask_bridge]: 전면 솔더 마스크 조리개는 다른 네트를 사용하여 항목을 연결합니다
+    Rule: 보드 설정 솔더 마스크 최소 너비; error
+    @(77.5200 mm, 62.2500 mm): 패드 13 [USB_D_N]의 U1 위F.Cu
+    @(76.2500 mm, 62.2500 mm): 패드 14 [USB_D_P]의 U1 위F.Cu
+[solder_mask_bridge]: 전면 솔더 마스크 조리개는 다른 네트를 사용하여 항목을 연결합니다
+    Rule: 보드 설정 솔더 마스크 최소 너비; error
+    @(63.2500 mm, 100.4550 mm): 배선 [USB_D_P] on F.Cu, 길이 1.2050 mm
+    @(63.7500 mm, 100.4550 mm): 패드 A8 [<no net>]의 J1 위F.Cu
+[solder_mask_bridge]: 전면 솔더 마스크 조리개는 다른 네트를 사용하여 항목을 연결합니다
+    Rule: 보드 설정 솔더 마스크 최소 너비; error
+    @(62.2500 mm, 100.4550 mm): 패드 A6 [USB_D_P]의 J1 위F.Cu
+    @(61.7500 mm, 100.4550 mm): 패드 B7 [USB_D_N]의 J1 위F.Cu
+[solder_mask_bridge]: 전면 솔더 마스크 조리개는 다른 네트를 사용하여 항목을 연결합니다
+    Rule: 보드 설정 솔더 마스크 최소 너비; error
+    @(62.7500 mm, 100.4550 mm): 패드 A7 [USB_D_N]의 J1 위F.Cu
+    @(63.7500 mm, 100.4550 mm): 패드 A8 [<no net>]의 J1 위F.Cu
+[solder_mask_bridge]: 전면 솔더 마스크 조리개는 다른 네트를 사용하여 항목을 연결합니다
+    Rule: 보드 설정 솔더 마스크 최소 너비; error
+    @(62.2500 mm, 100.4550 mm): 배선 [USB_D_P] on F.Cu, 길이 1.2050 mm
+    @(62.7500 mm, 100.4550 mm): 패드 A7 [USB_D_N]의 J1 위F.Cu
+[solder_mask_bridge]: 전면 솔더 마스크 조리개는 다른 네트를 사용하여 항목을 연결합니다
+    Rule: 보드 설정 솔더 마스크 최소 너비; error
+    @(75.0000 mm, 64.0150 mm): 패드 15 [<no net>]의 U1 위F.Cu
+    @(75.0000 mm, 65.2850 mm): 패드 16 [<no net>]의 U1 위F.Cu
+[solder_mask_bridge]: 전면 솔더 마스크 조리개는 다른 네트를 사용하여 항목을 연결합니다
+    Rule: 보드 설정 솔더 마스크 최소 너비; error
+    @(62.2500 mm, 100.4550 mm): 배선 [USB_D_P] on F.Cu, 길이 1.2050 mm
+    @(61.7500 mm, 100.4550 mm): 패드 B7 [USB_D_N]의 J1 위F.Cu
+[solder_mask_bridge]: 전면 솔더 마스크 조리개는 다른 네트를 사용하여 항목을 연결합니다
+    Rule: 보드 설정 솔더 마스크 최소 너비; error
+    @(75.0000 mm, 65.2850 mm): 패드 16 [<no net>]의 U1 위F.Cu
+    @(75.0000 mm, 66.5550 mm): 패드 17 [<no net>]의 U1 위F.Cu
+[solder_mask_bridge]: 전면 솔더 마스크 조리개는 다른 네트를 사용하여 항목을 연결합니다
+    Rule: 보드 설정 솔더 마스크 최소 너비; error
+    @(62.7500 mm, 100.4550 mm): 패드 A7 [USB_D_N]의 J1 위F.Cu
+    @(63.2500 mm, 100.4550 mm): 패드 B6 [USB_D_P]의 J1 위F.Cu
+[solder_mask_bridge]: 전면 솔더 마스크 조리개는 다른 네트를 사용하여 항목을 연결합니다
+    Rule: 보드 설정 솔더 마스크 최소 너비; error
+    @(75.0000 mm, 66.5550 mm): 패드 17 [<no net>]의 U1 위F.Cu
+    @(75.0000 mm, 67.8250 mm): 패드 18 [<no net>]의 U1 위F.Cu
+[solder_mask_bridge]: 전면 솔더 마스크 조리개는 다른 네트를 사용하여 항목을 연결합니다
+    Rule: 보드 설정 솔더 마스크 최소 너비; error
+    @(60.7500 mm, 98.5000 mm): 배선 [USB_D_N] on F.Cu, 길이 4.4500 mm
+    @(61.3625 mm, 95.9500 mm): 패드 3 [USB_D_P]의 D1 위F.Cu
+[solder_mask_bridge]: 전면 솔더 마스크 조리개는 다른 네트를 사용하여 항목을 연결합니다
+    Rule: 보드 설정 솔더 마스크 최소 너비; error
+    @(75.0000 mm, 67.8250 mm): 패드 18 [<no net>]의 U1 위F.Cu
+    @(75.0000 mm, 69.0950 mm): 패드 19 [<no net>]의 U1 위F.Cu
+[solder_mask_bridge]: 전면 솔더 마스크 조리개는 다른 네트를 사용하여 항목을 연결합니다
+    Rule: 보드 설정 솔더 마스크 최소 너비; error
+    @(63.7500 mm, 100.4550 mm): 패드 A8 [<no net>]의 J1 위F.Cu
+    @(64.9500 mm, 100.4550 mm): 패드 A9 [VBUS]의 J1 위F.Cu
+[solder_mask_bridge]: 전면 솔더 마스크 조리개는 다른 네트를 사용하여 항목을 연결합니다
+    Rule: 보드 설정 솔더 마스크 최소 너비; error
+    @(60.7500 mm, 98.5000 mm): 배선 [USB_D_N] on F.Cu, 길이 4.4500 mm
+    @(61.3625 mm, 95.0000 mm): 패드 2 [GND]의 D1 위F.Cu
+[solder_mask_bridge]: 전면 솔더 마스크 조리개는 다른 네트를 사용하여 항목을 연결합니다
+    Rule: 보드 설정 솔더 마스크 최소 너비; error
+    @(62.7500 mm, 100.4550 mm): 배선 [USB_D_N] on F.Cu, 길이 1.5450 mm
+    @(62.2500 mm, 100.4550 mm): 패드 A6 [USB_D_P]의 J1 위F.Cu
+[solder_mask_bridge]: 전면 솔더 마스크 조리개는 다른 네트를 사용하여 항목을 연결합니다
+    Rule: 보드 설정 솔더 마스크 최소 너비; error
+    @(75.0000 mm, 69.0950 mm): 패드 19 [<no net>]의 U1 위F.Cu
+    @(75.0000 mm, 70.3650 mm): 패드 20 [ADMIN_UNLOCK]의 U1 위F.Cu
+[solder_mask_bridge]: 전면 솔더 마스크 조리개는 다른 네트를 사용하여 항목을 연결합니다
+    Rule: 보드 설정 솔더 마스크 최소 너비; error
+    @(63.7500 mm, 100.4550 mm): 패드 A8 [<no net>]의 J1 위F.Cu
+    @(64.9500 mm, 100.4550 mm): 패드 B4 [VBUS]의 J1 위F.Cu
+[solder_mask_bridge]: 전면 솔더 마스크 조리개는 다른 네트를 사용하여 항목을 연결합니다
+    Rule: 보드 설정 솔더 마스크 최소 너비; error
+    @(62.7500 mm, 100.4550 mm): 배선 [USB_D_N] on F.Cu, 길이 1.5450 mm
+    @(63.2500 mm, 100.4550 mm): 패드 B6 [USB_D_P]의 J1 위F.Cu
+[solder_mask_bridge]: 전면 솔더 마스크 조리개는 다른 네트를 사용하여 항목을 연결합니다
+    Rule: 보드 설정 솔더 마스크 최소 너비; error
+    @(75.0000 mm, 70.3650 mm): 패드 20 [ADMIN_UNLOCK]의 U1 위F.Cu
+    @(75.0000 mm, 71.6350 mm): 패드 21 [STATUS_LED_1_MCU]의 U1 위F.Cu
+[solder_mask_bridge]: 전면 솔더 마스크 조리개는 다른 네트를 사용하여 항목을 연결합니다
+    Rule: 보드 설정 솔더 마스크 최소 너비; error
+    @(63.7500 mm, 100.4550 mm): 패드 A8 [<no net>]의 J1 위F.Cu
+    @(64.2500 mm, 100.4550 mm): 패드 B5 [USB_CC2]의 J1 위F.Cu
+[solder_mask_bridge]: 전면 솔더 마스크 조리개는 다른 네트를 사용하여 항목을 연결합니다
+    Rule: 보드 설정 솔더 마스크 최소 너비; error
+    @(75.0000 mm, 71.6350 mm): 패드 21 [STATUS_LED_1_MCU]의 U1 위F.Cu
+    @(75.0000 mm, 72.9050 mm): 패드 22 [STATUS_LED_2_MCU]의 U1 위F.Cu
+[solder_mask_bridge]: 전면 솔더 마스크 조리개는 다른 네트를 사용하여 항목을 연결합니다
+    Rule: 보드 설정 솔더 마스크 최소 너비; error
+    @(63.7500 mm, 100.4550 mm): 패드 A8 [<no net>]의 J1 위F.Cu
+    @(63.2500 mm, 100.4550 mm): 패드 B6 [USB_D_P]의 J1 위F.Cu
+[solder_mask_bridge]: 전면 솔더 마스크 조리개는 다른 네트를 사용하여 항목을 연결합니다
+    Rule: 보드 설정 솔더 마스크 최소 너비; error
+    @(75.0000 mm, 72.9050 mm): 패드 22 [STATUS_LED_2_MCU]의 U1 위F.Cu
+    @(75.0000 mm, 74.1750 mm): 패드 23 [<no net>]의 U1 위F.Cu
+[solder_mask_bridge]: 전면 솔더 마스크 조리개는 다른 네트를 사용하여 항목을 연결합니다
+    Rule: 보드 설정 솔더 마스크 최소 너비; error
+    @(64.9500 mm, 100.4550 mm): 패드 A9 [VBUS]의 J1 위F.Cu
+    @(65.7500 mm, 100.4550 mm): 패드 A12 [GND]의 J1 위F.Cu
+[solder_mask_bridge]: 전면 솔더 마스크 조리개는 다른 네트를 사용하여 항목을 연결합니다
+    Rule: 보드 설정 솔더 마스크 최소 너비; error
+    @(64.9500 mm, 100.4550 mm): 패드 A9 [VBUS]의 J1 위F.Cu
+    @(65.7500 mm, 100.4550 mm): 패드 B1 [GND]의 J1 위F.Cu
+[solder_mask_bridge]: 전면 솔더 마스크 조리개는 다른 네트를 사용하여 항목을 연결합니다
+    Rule: 보드 설정 솔더 마스크 최소 너비; error
+    @(75.0000 mm, 74.1750 mm): 패드 23 [<no net>]의 U1 위F.Cu
+    @(75.0000 mm, 75.4450 mm): 패드 24 [<no net>]의 U1 위F.Cu
+[solder_mask_bridge]: 전면 솔더 마스크 조리개는 다른 네트를 사용하여 항목을 연결합니다
+    Rule: 보드 설정 솔더 마스크 최소 너비; error
+    @(64.9500 mm, 100.4550 mm): 패드 A9 [VBUS]의 J1 위F.Cu
+    @(64.2500 mm, 100.4550 mm): 패드 B5 [USB_CC2]의 J1 위F.Cu
+[solder_mask_bridge]: 전면 솔더 마스크 조리개는 다른 네트를 사용하여 항목을 연결합니다
+    Rule: 보드 설정 솔더 마스크 최소 너비; error
+    @(75.0000 mm, 75.4450 mm): 패드 24 [<no net>]의 U1 위F.Cu
+    @(75.0000 mm, 76.7150 mm): 패드 25 [<no net>]의 U1 위F.Cu
+[solder_mask_bridge]: 전면 솔더 마스크 조리개는 다른 네트를 사용하여 항목을 연결합니다
+    Rule: 보드 설정 솔더 마스크 최소 너비; error
+    @(65.7500 mm, 100.4550 mm): 패드 A12 [GND]의 J1 위F.Cu
+    @(64.9500 mm, 100.4550 mm): 패드 B4 [VBUS]의 J1 위F.Cu
+[solder_mask_bridge]: 전면 솔더 마스크 조리개는 다른 네트를 사용하여 항목을 연결합니다
+    Rule: 보드 설정 솔더 마스크 최소 너비; error
+    @(75.0000 mm, 76.7150 mm): 패드 25 [<no net>]의 U1 위F.Cu
+    @(75.0000 mm, 77.9850 mm): 패드 26 [<no net>]의 U1 위F.Cu
+[solder_mask_bridge]: 전면 솔더 마스크 조리개는 다른 네트를 사용하여 항목을 연결합니다
+    Rule: 보드 설정 솔더 마스크 최소 너비; error
+    @(65.7500 mm, 100.4550 mm): 패드 B1 [GND]의 J1 위F.Cu
+    @(64.9500 mm, 100.4550 mm): 패드 B4 [VBUS]의 J1 위F.Cu
+[solder_mask_bridge]: 전면 솔더 마스크 조리개는 다른 네트를 사용하여 항목을 연결합니다
+    Rule: 보드 설정 솔더 마스크 최소 너비; error
+    @(76.2500 mm, 79.7500 mm): 패드 27 [BOOT_GPIO0]의 U1 위F.Cu
+    @(77.5200 mm, 79.7500 mm): 패드 28 [<no net>]의 U1 위F.Cu
+[solder_mask_bridge]: 전면 솔더 마스크 조리개는 다른 네트를 사용하여 항목을 연결합니다
+    Rule: 보드 설정 솔더 마스크 최소 너비; error
+    @(64.9500 mm, 100.4550 mm): 패드 B4 [VBUS]의 J1 위F.Cu
+    @(64.2500 mm, 100.4550 mm): 패드 B5 [USB_CC2]의 J1 위F.Cu
+[solder_mask_bridge]: 전면 솔더 마스크 조리개는 다른 네트를 사용하여 항목을 연결합니다
+    Rule: 보드 설정 솔더 마스크 최소 너비; error
+    @(77.5200 mm, 79.7500 mm): 패드 28 [<no net>]의 U1 위F.Cu
+    @(78.7900 mm, 79.7500 mm): 패드 29 [<no net>]의 U1 위F.Cu
+[solder_mask_bridge]: 전면 솔더 마스크 조리개는 다른 네트를 사용하여 항목을 연결합니다
+    Rule: 보드 설정 솔더 마스크 최소 너비; error
+    @(64.2500 mm, 100.4550 mm): 패드 B5 [USB_CC2]의 J1 위F.Cu
+    @(63.2500 mm, 100.4550 mm): 패드 B6 [USB_D_P]의 J1 위F.Cu
+[solder_mask_bridge]: 전면 솔더 마스크 조리개는 다른 네트를 사용하여 항목을 연결합니다
+    Rule: 보드 설정 솔더 마스크 최소 너비; error
+    @(78.7900 mm, 79.7500 mm): 패드 29 [<no net>]의 U1 위F.Cu
+    @(80.0600 mm, 79.7500 mm): 패드 30 [<no net>]의 U1 위F.Cu
+[solder_mask_bridge]: 전면 솔더 마스크 조리개는 다른 네트를 사용하여 항목을 연결합니다
+    Rule: 보드 설정 솔더 마스크 최소 너비; error
+    @(61.7500 mm, 100.4550 mm): 패드 B7 [USB_D_N]의 J1 위F.Cu
+    @(60.7500 mm, 100.4550 mm): 패드 B8 [<no net>]의 J1 위F.Cu
+[solder_mask_bridge]: 전면 솔더 마스크 조리개는 다른 네트를 사용하여 항목을 연결합니다
+    Rule: 보드 설정 솔더 마스크 최소 너비; error
+    @(80.0600 mm, 79.7500 mm): 패드 30 [<no net>]의 U1 위F.Cu
+    @(81.3300 mm, 79.7500 mm): 패드 31 [<no net>]의 U1 위F.Cu
+[solder_mask_bridge]: 전면 솔더 마스크 조리개는 다른 네트를 사용하여 항목을 연결합니다
+    Rule: 보드 설정 솔더 마스크 최소 너비; error
+    @(60.7500 mm, 100.4550 mm): 패드 B8 [<no net>]의 J1 위F.Cu
+    @(60.0500 mm, 100.4550 mm): 패드 B9 [VBUS]의 J1 위F.Cu
+[solder_mask_bridge]: 전면 솔더 마스크 조리개는 다른 네트를 사용하여 항목을 연결합니다
+    Rule: 보드 설정 솔더 마스크 최소 너비; error
+    @(81.3300 mm, 79.7500 mm): 패드 31 [<no net>]의 U1 위F.Cu
+    @(82.6000 mm, 79.7500 mm): 패드 32 [<no net>]의 U1 위F.Cu
+[solder_mask_bridge]: 전면 솔더 마스크 조리개는 다른 네트를 사용하여 항목을 연결합니다
+    Rule: 보드 설정 솔더 마스크 최소 너비; error
+    @(60.0500 mm, 100.4550 mm): 패드 B9 [VBUS]의 J1 위F.Cu
+    @(59.2500 mm, 100.4550 mm): 패드 B12 [GND]의 J1 위F.Cu
+[solder_mask_bridge]: 전면 솔더 마스크 조리개는 다른 네트를 사용하여 항목을 연결합니다
+    Rule: 보드 설정 솔더 마스크 최소 너비; error
+    @(82.6000 mm, 79.7500 mm): 패드 32 [<no net>]의 U1 위F.Cu
+    @(83.8700 mm, 79.7500 mm): 패드 33 [<no net>]의 U1 위F.Cu
+[solder_mask_bridge]: 전면 솔더 마스크 조리개는 다른 네트를 사용하여 항목을 연결합니다
+    Rule: 보드 설정 솔더 마스크 최소 너비; error
+    @(83.8700 mm, 79.7500 mm): 패드 33 [<no net>]의 U1 위F.Cu
+    @(85.1400 mm, 79.7500 mm): 패드 34 [<no net>]의 U1 위F.Cu
+[solder_mask_bridge]: 전면 솔더 마스크 조리개는 다른 네트를 사용하여 항목을 연결합니다
+    Rule: 보드 설정 솔더 마스크 최소 너비; error
+    @(85.1400 mm, 79.7500 mm): 패드 34 [<no net>]의 U1 위F.Cu
+    @(86.4100 mm, 79.7500 mm): 패드 35 [<no net>]의 U1 위F.Cu
+[solder_mask_bridge]: 전면 솔더 마스크 조리개는 다른 네트를 사용하여 항목을 연결합니다
+    Rule: 보드 설정 솔더 마스크 최소 너비; error
+    @(86.4100 mm, 79.7500 mm): 패드 35 [<no net>]의 U1 위F.Cu
+    @(87.6800 mm, 79.7500 mm): 패드 36 [UART_RX_MCU]의 U1 위F.Cu
+[solder_mask_bridge]: 전면 솔더 마스크 조리개는 다른 네트를 사용하여 항목을 연결합니다
+    Rule: 보드 설정 솔더 마스크 최소 너비; error
+    @(87.6800 mm, 79.7500 mm): 패드 36 [UART_RX_MCU]의 U1 위F.Cu
+    @(88.9500 mm, 79.7500 mm): 패드 37 [UART_TX_MCU]의 U1 위F.Cu
+[solder_mask_bridge]: 전면 솔더 마스크 조리개는 다른 네트를 사용하여 항목을 연결합니다
+    Rule: 보드 설정 솔더 마스크 최소 너비; error
+    @(88.9500 mm, 79.7500 mm): 패드 37 [UART_TX_MCU]의 U1 위F.Cu
+    @(90.2200 mm, 79.7500 mm): 패드 38 [<no net>]의 U1 위F.Cu
+[solder_mask_bridge]: 전면 솔더 마스크 조리개는 다른 네트를 사용하여 항목을 연결합니다
+    Rule: 보드 설정 솔더 마스크 최소 너비; error
+    @(90.2200 mm, 79.7500 mm): 패드 38 [<no net>]의 U1 위F.Cu
+    @(91.4900 mm, 79.7500 mm): 패드 39 [<no net>]의 U1 위F.Cu
+[solder_mask_bridge]: 전면 솔더 마스크 조리개는 다른 네트를 사용하여 항목을 연결합니다
+    Rule: 보드 설정 솔더 마스크 최소 너비; error
+    @(91.4900 mm, 79.7500 mm): 패드 39 [<no net>]의 U1 위F.Cu
+    @(92.7600 mm, 79.7500 mm): 패드 40 [GND]의 U1 위F.Cu
+[silk_edge_clearance]: Silkscreen clipped by board edge
+    Rule: 기판 구성 제약 실크; warning
+    @(24.3439 mm, 86.8013 mm): 세그먼트 (Edge.Cuts)
+    @(72.7746 mm, 25.8337 mm): 다각형 (B.Silkscreen)
+[silk_edge_clearance]: Silkscreen clipped by board edge
+    Rule: 기판 구성 제약 실크; warning
+    @(59.7246 mm, 107.3163 mm): 세그먼트 (Edge.Cuts)
+    @(57.8000 mm, 108.4000 mm): 세그먼트 of J1 on F.Silkscreen
+[hole_to_hole]: 드릴홀이 서로 너무 가깝게 뚫음 (보드 설정 제약 조건 최소 값 0.2495 mm; 실제 값 0.2000 mm)
+    Rule: 보드 설정 제약 조건; warning
+    @(45.2500 mm, 55.2500 mm): 비아 [OLED_SCL] on F.Cu - B.Cu
+    @(45.2500 mm, 54.7500 mm): 비아 [OLED_SDA] on F.Cu - B.Cu
+[hole_to_hole]: 드릴홀이 서로 너무 가깝게 뚫음 (보드 설정 제약 조건 최소 값 0.2495 mm; 실제 값 0.2000 mm)
+    Rule: 보드 설정 제약 조건; warning
+    @(67.7500 mm, 63.2500 mm): 비아 [STATUS_LED_4_MCU] on F.Cu - B.Cu
+    @(67.7500 mm, 63.7500 mm): 비아 [OLED_SCL] on F.Cu - B.Cu
+[hole_to_hole]: 드릴홀이 서로 너무 가깝게 뚫음 (보드 설정 제약 조건 최소 값 0.2495 mm; 실제 값 0.2000 mm)
+    Rule: 보드 설정 제약 조건; warning
+    @(67.7500 mm, 63.2500 mm): 비아 [STATUS_LED_4_MCU] on F.Cu - B.Cu
+    @(68.2500 mm, 63.2500 mm): 비아 [OLED_SDA] on F.Cu - B.Cu
+[hole_to_hole]: 드릴홀이 서로 너무 가깝게 뚫음 (보드 설정 제약 조건 최소 값 0.2495 mm; 실제 값 0.2000 mm)
+    Rule: 보드 설정 제약 조건; warning
+    @(80.0000 mm, 46.0000 mm): 비아 [BUZZER_GPIO] on F.Cu - B.Cu
+    @(79.5000 mm, 46.0000 mm): 비아 [EN] on F.Cu - B.Cu
+[hole_to_hole]: 드릴홀이 서로 너무 가깝게 뚫음 (보드 설정 제약 조건 최소 값 0.2495 mm; 실제 값 0.2000 mm)
+    Rule: 보드 설정 제약 조건; warning
+    @(80.0000 mm, 46.0000 mm): 비아 [BUZZER_GPIO] on F.Cu - B.Cu
+    @(80.5000 mm, 46.0000 mm): 비아 [UART_TX_MCU] on F.Cu - B.Cu
+[lib_footprint_mismatch]: 풋프린트 'USB_C_Receptacle_HRO_TYPE-C-31-M-12'이(가) 라이브러리 'Connector_USB'의 사본과 일치하지 않습니다
+    Local override; warning
+    @(62.5000 mm, 104.5000 mm): 풋프린트 J1
+[lib_footprint_mismatch]: 풋프린트 'ESP32-S3-WROOM-1'이(가) 라이브러리 'RF_Module'의 사본과 일치하지 않습니다
+    Local override; warning
+    @(87.5000 mm, 71.0000 mm): 풋프린트 U1
+[text_height]: 텍스트 높이가 범위를 벗어남 (보드의 최대 실크 텍스트 높이 제한 최소 높이 0.8000 mm; 실제 0.5800 mm)
+    Rule: 보드의 최대 실크 텍스트 높이 제한; warning
+    @(30.0000 mm, 83.0000 mm): PCB 텍스트 'C0' (F.Silkscreen)
+[text_height]: 텍스트 높이가 범위를 벗어남 (보드의 최대 실크 텍스트 높이 제한 최소 높이 0.8000 mm; 실제 0.5800 mm)
+    Rule: 보드의 최대 실크 텍스트 높이 제한; warning
+    @(36.0000 mm, 83.0000 mm): PCB 텍스트 'C1' (F.Silkscreen)
+[text_height]: 텍스트 높이가 범위를 벗어남 (보드의 최대 실크 텍스트 높이 제한 최소 높이 0.8000 mm; 실제 0.5800 mm)
+    Rule: 보드의 최대 실크 텍스트 높이 제한; warning
+    @(42.0000 mm, 83.0000 mm): PCB 텍스트 'C2' (F.Silkscreen)
+[text_height]: 텍스트 높이가 범위를 벗어남 (보드의 최대 실크 텍스트 높이 제한 최소 높이 0.8000 mm; 실제 0.5800 mm)
+    Rule: 보드의 최대 실크 텍스트 높이 제한; warning
+    @(52.0000 mm, 55.9000 mm): PCB 텍스트 '1' (F.Silkscreen)
+[text_height]: 텍스트 높이가 범위를 벗어남 (보드의 최대 실크 텍스트 높이 제한 최소 높이 0.8000 mm; 실제 0.5800 mm)
+    Rule: 보드의 최대 실크 텍스트 높이 제한; warning
+    @(57.2500 mm, 55.9000 mm): PCB 텍스트 '2' (F.Silkscreen)
+[text_height]: 텍스트 높이가 범위를 벗어남 (보드의 최대 실크 텍스트 높이 제한 최소 높이 0.8000 mm; 실제 0.5800 mm)
+    Rule: 보드의 최대 실크 텍스트 높이 제한; warning
+    @(62.5000 mm, 55.9000 mm): PCB 텍스트 '3' (F.Silkscreen)
+[text_height]: 텍스트 높이가 범위를 벗어남 (보드의 최대 실크 텍스트 높이 제한 최소 높이 0.8000 mm; 실제 0.5800 mm)
+    Rule: 보드의 최대 실크 텍스트 높이 제한; warning
+    @(67.7500 mm, 55.9000 mm): PCB 텍스트 '4' (F.Silkscreen)
+[text_height]: 텍스트 높이가 범위를 벗어남 (보드의 최대 실크 텍스트 높이 제한 최소 높이 0.8000 mm; 실제 0.5800 mm)
+    Rule: 보드의 최대 실크 텍스트 높이 제한; warning
+    @(73.0000 mm, 55.9000 mm): PCB 텍스트 '5' (F.Silkscreen)
+[text_height]: 텍스트 높이가 범위를 벗어남 (보드의 최대 실크 텍스트 높이 제한 최소 높이 0.8000 mm; 실제 0.5800 mm)
+    Rule: 보드의 최대 실크 텍스트 높이 제한; warning
+    @(62.5000 mm, 23.2000 mm): PCB 텍스트 'Developed By @Z3r0c0k3_' (F.Silkscreen)
+[text_height]: 텍스트 높이가 범위를 벗어남 (보드의 최대 실크 텍스트 높이 제한 최소 높이 0.8000 mm; 실제 0.6200 mm)
+    Rule: 보드의 최대 실크 텍스트 높이 제한; warning
+    @(52.5000 mm, 84.5000 mm): PCB 텍스트 'RST' (F.Silkscreen)
+[text_height]: 텍스트 높이가 범위를 벗어남 (보드의 최대 실크 텍스트 높이 제한 최소 높이 0.8000 mm; 실제 0.6200 mm)
+    Rule: 보드의 최대 실크 텍스트 높이 제한; warning
+    @(62.5000 mm, 84.5000 mm): PCB 텍스트 'BOOT' (F.Silkscreen)
+[text_height]: 텍스트 높이가 범위를 벗어남 (보드의 최대 실크 텍스트 높이 제한 최소 높이 0.8000 mm; 실제 0.6200 mm)
+    Rule: 보드의 최대 실크 텍스트 높이 제한; warning
+    @(72.5000 mm, 84.5000 mm): PCB 텍스트 'ADMIN' (F.Silkscreen)
+[text_height]: 텍스트 높이가 범위를 벗어남 (보드의 최대 실크 텍스트 높이 제한 최소 높이 0.8000 mm; 실제 0.7200 mm)
+    Rule: 보드의 최대 실크 텍스트 높이 제한; warning
+    @(34.5000 mm, 27.5000 mm): PCB 텍스트 'UART' (F.Silkscreen)
+[text_height]: 텍스트 높이가 범위를 벗어남 (보드의 최대 실크 텍스트 높이 제한 최소 높이 0.8000 mm; 실제 0.7200 mm)
+    Rule: 보드의 최대 실크 텍스트 높이 제한; warning
+    @(62.5000 mm, 54.7000 mm): PCB 텍스트 'STATUS' (F.Silkscreen)
+[text_height]: 텍스트 높이가 범위를 벗어남 (보드의 최대 실크 텍스트 높이 제한 최소 높이 0.8000 mm; 실제 0.7200 mm)
+    Rule: 보드의 최대 실크 텍스트 높이 제한; warning
+    @(62.5000 mm, 91.8000 mm): PCB 텍스트 'USB-C' (F.Silkscreen)
+[text_height]: 텍스트 높이가 범위를 벗어남 (보드의 최대 실크 텍스트 높이 제한 최소 높이 0.8000 mm; 실제 0.5400 mm)
+    Rule: 보드의 최대 실크 텍스트 높이 제한; warning
+    @(28.0000 mm, 50.7000 mm): PCB 텍스트 '3V3' (B.Silkscreen)
+[text_height]: 텍스트 높이가 범위를 벗어남 (보드의 최대 실크 텍스트 높이 제한 최소 높이 0.8000 mm; 실제 0.5400 mm)
+    Rule: 보드의 최대 실크 텍스트 높이 제한; warning
+    @(28.0000 mm, 57.7000 mm): PCB 텍스트 'EN' (B.Silkscreen)
+[text_height]: 텍스트 높이가 범위를 벗어남 (보드의 최대 실크 텍스트 높이 제한 최소 높이 0.8000 mm; 실제 0.5400 mm)
+    Rule: 보드의 최대 실크 텍스트 높이 제한; warning
+    @(28.0000 mm, 64.7000 mm): PCB 텍스트 'RX' (B.Silkscreen)
+[text_height]: 텍스트 높이가 범위를 벗어남 (보드의 최대 실크 텍스트 높이 제한 최소 높이 0.8000 mm; 실제 0.5400 mm)
+    Rule: 보드의 최대 실크 텍스트 높이 제한; warning
+    @(34.0000 mm, 50.7000 mm): PCB 텍스트 'GND' (B.Silkscreen)
+[text_height]: 텍스트 높이가 범위를 벗어남 (보드의 최대 실크 텍스트 높이 제한 최소 높이 0.8000 mm; 실제 0.5400 mm)
+    Rule: 보드의 최대 실크 텍스트 높이 제한; warning
+    @(34.0000 mm, 57.7000 mm): PCB 텍스트 'BOOT' (B.Silkscreen)
+[text_height]: 텍스트 높이가 범위를 벗어남 (보드의 최대 실크 텍스트 높이 제한 최소 높이 0.8000 mm; 실제 0.5400 mm)
+    Rule: 보드의 최대 실크 텍스트 높이 제한; warning
+    @(34.0000 mm, 64.7000 mm): PCB 텍스트 'SCL' (B.Silkscreen)
+[text_height]: 텍스트 높이가 범위를 벗어남 (보드의 최대 실크 텍스트 높이 제한 최소 높이 0.8000 mm; 실제 0.5400 mm)
+    Rule: 보드의 최대 실크 텍스트 높이 제한; warning
+    @(40.0000 mm, 50.7000 mm): PCB 텍스트 '5V' (B.Silkscreen)
+[text_height]: 텍스트 높이가 범위를 벗어남 (보드의 최대 실크 텍스트 높이 제한 최소 높이 0.8000 mm; 실제 0.5400 mm)
+    Rule: 보드의 최대 실크 텍스트 높이 제한; warning
+    @(40.0000 mm, 57.7000 mm): PCB 텍스트 'TX' (B.Silkscreen)
+[text_height]: 텍스트 높이가 범위를 벗어남 (보드의 최대 실크 텍스트 높이 제한 최소 높이 0.8000 mm; 실제 0.5400 mm)
+    Rule: 보드의 최대 실크 텍스트 높이 제한; warning
+    @(40.0000 mm, 64.7000 mm): PCB 텍스트 'SDA' (B.Silkscreen)
+[text_height]: 텍스트 높이가 범위를 벗어남 (보드의 최대 실크 텍스트 높이 제한 최소 높이 0.8000 mm; 실제 0.7800 mm)
+    Rule: 보드의 최대 실크 텍스트 높이 제한; warning
+    @(62.5000 mm, 98.0000 mm): PCB 텍스트 'DKU Aegis' (B.Silkscreen)
+[silk_overlap]: Silkscreen clearance
+    Rule: 기판 구성 제약 실크; warning
+    @(97.4026 mm, 48.4889 mm): 세그먼트 (F.Silkscreen)
+    @(97.0000 mm, 50.3600 mm): 세그먼트 of D_BZ on F.Silkscreen
+[silk_overlap]: Silkscreen clearance
+    Rule: 기판 구성 제약 실크; warning
+    @(85.5000 mm, 48.0700 mm): R_BZ_PD 의 참조 필드
+    @(88.6000 mm, 48.0000 mm): Q_BZ 의 참조 필드
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; warning
+    @(26.3802 mm, 53.7190 mm): 세그먼트 (F.Silkscreen)
+    @(27.0000 mm, 53.9500 mm): 패드 1 [VBUS]의 C1 위F.Cu
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; warning
+    @(74.5500 mm, 80.2000 mm): 세그먼트 of U1 on F.Silkscreen
+    @(75.0000 mm, 77.9850 mm): 패드 26 [<no net>]의 U1 위F.Cu
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; warning
+    @(74.5500 mm, 80.2000 mm): 세그먼트 of U1 on F.Silkscreen
+    @(76.2500 mm, 79.7500 mm): 패드 27 [BOOT_GPIO0]의 U1 위F.Cu
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; warning
+    @(74.5500 mm, 61.8000 mm): 세그먼트 of U1 on F.Silkscreen
+    @(75.0000 mm, 64.0150 mm): 패드 15 [<no net>]의 U1 위F.Cu
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; warning
+    @(75.5500 mm, 61.8000 mm): 세그먼트 of U1 on F.Silkscreen
+    @(76.2500 mm, 62.2500 mm): 패드 14 [USB_D_P]의 U1 위F.Cu
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; warning
+    @(93.5250 mm, 61.8000 mm): 다각형 of U1 on F.Silkscreen
+    @(92.7600 mm, 62.2500 mm): 패드 1 [GND]의 U1 위F.Cu
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; warning
+    @(89.3750 mm, 38.8750 mm): 직사각형 of BZ1 on F.Silkscreen
+    @(93.9475 mm, 43.2500 mm): 패드 2 [BUZZER_SW]의 BZ1 위F.Cu
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; warning
+    @(27.0073 mm, 51.3192 mm): 세그먼트 (F.Silkscreen)
+    @(27.0000 mm, 53.9500 mm): 패드 1 [VBUS]의 C1 위F.Cu
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; warning
+    @(27.0073 mm, 51.3192 mm): 세그먼트 (F.Silkscreen)
+    @(27.0000 mm, 52.0500 mm): 패드 2 [GND]의 C1 위F.Cu
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; warning
+    @(89.3750 mm, 38.8750 mm): 직사각형 of BZ1 on F.Silkscreen
+    @(90.0525 mm, 43.2500 mm): 패드 1 [3V3]의 BZ1 위F.Cu
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; warning
+    @(89.3750 mm, 38.8750 mm): 직사각형 of BZ1 on F.Silkscreen
+    @(90.0525 mm, 39.7500 mm): 패드 3 [<no net>]의 BZ1 위F.Cu
+[silk_overlap]: Silkscreen clearance
+    Rule: 기판 구성 제약 실크; warning
+    @(40.0000 mm, 53.0000 mm): 원 of TP_VBUS on B.Silkscreen
+    @(72.7746 mm, 25.8337 mm): 다각형 (B.Silkscreen)
+[silk_overlap]: Silkscreen clearance
+    Rule: 기판 구성 제약 실크; warning
+    @(40.0000 mm, 50.7000 mm): PCB 텍스트 '5V' (B.Silkscreen)
+    @(72.7746 mm, 25.8337 mm): 다각형 (B.Silkscreen)
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; warning
+    @(72.7746 mm, 25.8337 mm): 다각형 (B.Silkscreen)
+    @(51.0000 mm, 50.5000 mm): OLED1의 NPTH 패드
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; warning
+    @(72.7746 mm, 25.8337 mm): 다각형 (B.Silkscreen)
+    @(51.0000 mm, 27.5000 mm): OLED1의 NPTH 패드
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; warning
+    @(72.7746 mm, 25.8337 mm): 다각형 (B.Silkscreen)
+    @(74.0000 mm, 27.5000 mm): OLED1의 NPTH 패드
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; warning
+    @(72.7746 mm, 25.8337 mm): 다각형 (B.Silkscreen)
+    @(74.0000 mm, 50.5000 mm): OLED1의 NPTH 패드
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; warning
+    @(72.7746 mm, 25.8337 mm): 다각형 (B.Silkscreen)
+    @(63.7700 mm, 50.4300 mm): 3의 PTH 패드[OLED_SCL]OLED1
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; warning
+    @(72.7746 mm, 25.8337 mm): 다각형 (B.Silkscreen)
+    @(66.3100 mm, 50.4300 mm): 4의 PTH 패드[OLED_SDA]OLED1
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; warning
+    @(72.7746 mm, 25.8337 mm): 다각형 (B.Silkscreen)
+    @(58.6900 mm, 50.4300 mm): 1의 PTH 패드[GND]OLED1
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; warning
+    @(72.7746 mm, 25.8337 mm): 다각형 (B.Silkscreen)
+    @(61.2300 mm, 50.4300 mm): 2의 PTH 패드[3V3]OLED1
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; warning
+    @(72.7746 mm, 25.8337 mm): 다각형 (B.Silkscreen)
+    @(59.6100 mm, 101.9000 mm): J1의 NPTH 패드
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; warning
+    @(72.7746 mm, 25.8337 mm): 다각형 (B.Silkscreen)
+    @(58.1800 mm, 101.3700 mm): SH의 PTH 패드[GND]J1
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; warning
+    @(72.7746 mm, 25.8337 mm): 다각형 (B.Silkscreen)
+    @(58.1800 mm, 105.5500 mm): SH의 PTH 패드[GND]J1
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; warning
+    @(72.7746 mm, 25.8337 mm): 다각형 (B.Silkscreen)
+    @(65.3900 mm, 101.9000 mm): J1의 NPTH 패드
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; warning
+    @(72.7746 mm, 25.8337 mm): 다각형 (B.Silkscreen)
+    @(66.8200 mm, 101.3700 mm): SH의 PTH 패드[GND]J1
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; warning
+    @(72.7746 mm, 25.8337 mm): 다각형 (B.Silkscreen)
+    @(66.8200 mm, 105.5500 mm): SH의 PTH 패드[GND]J1
+
+** Found 36 unconnected pads **
+[unconnected_items]: Missing connection between items
+    Local override; warning
+    @(27.0000 mm, 52.0500 mm): 패드 2 [GND]의 C1 위F.Cu
+    @(27.0000 mm, 55.7250 mm): 패드 2 [GND]의 C2 위F.Cu
+[unconnected_items]: Missing connection between items
+    Local override; warning
+    @(27.0000 mm, 55.7250 mm): 패드 2 [GND]의 C2 위F.Cu
+    @(27.0000 mm, 59.0500 mm): 패드 2 [GND]의 C3 위F.Cu
+[unconnected_items]: Missing connection between items
+    Local override; warning
+    @(31.3500 mm, 54.2000 mm): 패드 1 [GND]의 U2 위F.Cu
+    @(34.0000 mm, 53.0000 mm): 패드 1 [GND]의 TP_GND 위B.Cu
+[unconnected_items]: Missing connection between items
+    Local override; warning
+    @(31.3500 mm, 54.2000 mm): 패드 1 [GND]의 U2 위F.Cu
+    @(27.0000 mm, 55.7250 mm): 패드 2 [GND]의 C2 위F.Cu
+[unconnected_items]: Missing connection between items
+    Local override; warning
+    @(34.0000 mm, 31.5000 mm): 1의 PTH 패드[GND]P_UART
+    @(44.0000 mm, 37.2250 mm): 패드 2 [GND]의 C_OLED 위F.Cu
+[unconnected_items]: Missing connection between items
+    Local override; warning
+    @(34.0000 mm, 53.0000 mm): 패드 1 [GND]의 TP_GND 위B.Cu
+    @(42.0000 mm, 52.0500 mm): 패드 2 [GND]의 C4 위F.Cu
+[unconnected_items]: Missing connection between items
+    Local override; warning
+    @(42.0000 mm, 55.5500 mm): 패드 2 [GND]의 C5 위F.Cu
+    @(42.0000 mm, 52.0500 mm): 패드 2 [GND]의 C4 위F.Cu
+[unconnected_items]: Missing connection between items
+    Local override; warning
+    @(42.0000 mm, 55.5500 mm): 패드 2 [GND]의 C5 위F.Cu
+    @(42.0000 mm, 59.2250 mm): 패드 2 [GND]의 C6 위F.Cu
+[unconnected_items]: Missing connection between items
+    Local override; warning
+    @(42.0000 mm, 59.2250 mm): 패드 2 [GND]의 C6 위F.Cu
+    @(51.2125 mm, 58.0000 mm): 패드 1 [GND]의 LED1 위F.Cu
+[unconnected_items]: Missing connection between items
+    Local override; warning
+    @(44.0000 mm, 37.2250 mm): 패드 2 [GND]의 C_OLED 위F.Cu
+    @(42.0000 mm, 52.0500 mm): 패드 2 [GND]의 C4 위F.Cu
+[unconnected_items]: Missing connection between items
+    Local override; warning
+    @(55.3250 mm, 96.5000 mm): 패드 2 [GND]의 R1 위F.Cu
+    @(59.2500 mm, 100.4550 mm): 패드 B12 [GND]의 J1 위F.Cu
+[unconnected_items]: Missing connection between items
+    Local override; warning
+    @(55.3250 mm, 96.5000 mm): 패드 2 [GND]의 R1 위F.Cu
+    @(54.7250 mm, 87.5000 mm): 패드 2 [GND]의 SW_EN 위F.Cu
+[unconnected_items]: Missing connection between items
+    Local override; warning
+    @(56.4625 mm, 58.0000 mm): 패드 1 [GND]의 LED2 위F.Cu
+    @(61.7125 mm, 58.0000 mm): 패드 1 [GND]의 LED3 위F.Cu
+[unconnected_items]: Missing connection between items
+    Local override; warning
+    @(56.4625 mm, 58.0000 mm): 패드 1 [GND]의 LED2 위F.Cu
+    @(51.2125 mm, 58.0000 mm): 패드 1 [GND]의 LED1 위F.Cu
+[unconnected_items]: Missing connection between items
+    Local override; warning
+    @(58.1800 mm, 105.5500 mm): SH의 PTH 패드[GND]J1
+    @(58.1800 mm, 101.3700 mm): SH의 PTH 패드[GND]J1
+[unconnected_items]: Missing connection between items
+    Local override; warning
+    @(58.6900 mm, 50.4300 mm): 1의 PTH 패드[GND]OLED1
+    @(56.4625 mm, 58.0000 mm): 패드 1 [GND]의 LED2 위F.Cu
+[unconnected_items]: Missing connection between items
+    Local override; warning
+    @(59.2500 mm, 100.4550 mm): 패드 B12 [GND]의 J1 위F.Cu
+    @(58.1800 mm, 101.3700 mm): SH의 PTH 패드[GND]J1
+[unconnected_items]: Missing connection between items
+    Local override; warning
+    @(61.3625 mm, 95.0000 mm): 패드 2 [GND]의 D1 위F.Cu
+    @(59.2500 mm, 100.4550 mm): 패드 B12 [GND]의 J1 위F.Cu
+[unconnected_items]: Missing connection between items
+    Local override; warning
+    @(61.3625 mm, 95.0000 mm): 패드 2 [GND]의 D1 위F.Cu
+    @(64.7250 mm, 87.5000 mm): 패드 2 [GND]의 SW_BOOT 위F.Cu
+[unconnected_items]: Missing connection between items
+    Local override; warning
+    @(61.7125 mm, 58.0000 mm): 패드 1 [GND]의 LED3 위F.Cu
+    @(66.9625 mm, 58.0000 mm): 패드 1 [GND]의 LED4 위F.Cu
+[unconnected_items]: Missing connection between items
+    Local override; warning
+    @(65.7500 mm, 100.4550 mm): 패드 A12 [GND]의 J1 위F.Cu
+    @(66.8200 mm, 101.3700 mm): SH의 PTH 패드[GND]J1
+[unconnected_items]: Missing connection between items
+    Local override; warning
+    @(65.7500 mm, 100.4550 mm): 패드 A12 [GND]의 J1 위F.Cu
+    @(59.2500 mm, 100.4550 mm): 패드 B12 [GND]의 J1 위F.Cu
+[unconnected_items]: Missing connection between items
+    Local override; warning
+    @(66.8200 mm, 101.3700 mm): SH의 PTH 패드[GND]J1
+    @(66.8200 mm, 105.5500 mm): SH의 PTH 패드[GND]J1
+[unconnected_items]: Missing connection between items
+    Local override; warning
+    @(66.8200 mm, 101.3700 mm): SH의 PTH 패드[GND]J1
+    @(71.3250 mm, 96.5000 mm): 패드 2 [GND]의 R2 위F.Cu
+[unconnected_items]: Missing connection between items
+    Local override; warning
+    @(72.2125 mm, 58.0000 mm): 패드 1 [GND]의 LED5 위F.Cu
+    @(66.9625 mm, 58.0000 mm): 패드 1 [GND]의 LED4 위F.Cu
+[unconnected_items]: Missing connection between items
+    Local override; warning
+    @(74.7250 mm, 87.5000 mm): 패드 2 [GND]의 SW_ADMIN 위F.Cu
+    @(71.3250 mm, 96.5000 mm): 패드 2 [GND]의 R2 위F.Cu
+[unconnected_items]: Missing connection between items
+    Local override; warning
+    @(74.7250 mm, 87.5000 mm): 패드 2 [GND]의 SW_ADMIN 위F.Cu
+    @(84.3400 mm, 70.9000 mm): 41의 PTH 패드[GND]U1
+[unconnected_items]: Missing connection between items
+    Local override; warning
+    @(83.0000 mm, 58.0500 mm): 패드 2 [GND]의 C7 위F.Cu
+    @(86.0000 mm, 58.2250 mm): 패드 2 [GND]의 C8 위F.Cu
+[unconnected_items]: Missing connection between items
+    Local override; warning
+    @(83.0000 mm, 58.0500 mm): 패드 2 [GND]의 C7 위F.Cu
+    @(72.2125 mm, 58.0000 mm): 패드 1 [GND]의 LED5 위F.Cu
+[unconnected_items]: Missing connection between items
+    Local override; warning
+    @(86.0000 mm, 58.2250 mm): 패드 2 [GND]의 C8 위F.Cu
+    @(89.0000 mm, 58.2250 mm): 패드 2 [GND]의 C_EN 위F.Cu
+[unconnected_items]: Missing connection between items
+    Local override; warning
+    @(86.3250 mm, 49.5000 mm): 패드 2 [GND]의 R_BZ_PD 위F.Cu
+    @(91.9500 mm, 48.9375 mm): 패드 2 [GND]의 Q_BZ 위F.Cu
+[unconnected_items]: Missing connection between items
+    Local override; warning
+    @(86.3250 mm, 49.5000 mm): 패드 2 [GND]의 R_BZ_PD 위F.Cu
+    @(86.0000 mm, 58.2250 mm): 패드 2 [GND]의 C8 위F.Cu
+[unconnected_items]: Missing connection between items
+    Local override; warning
+    @(92.7600 mm, 62.2500 mm): 패드 1 [GND]의 U1 위F.Cu
+    @(89.0000 mm, 58.2250 mm): 패드 2 [GND]의 C_EN 위F.Cu
+[unconnected_items]: Missing connection between items
+    Local override; warning
+    @(92.7600 mm, 62.2500 mm): 패드 1 [GND]의 U1 위F.Cu
+    @(86.4400 mm, 68.8000 mm): 41의 PTH 패드[GND]U1
+[unconnected_items]: Missing connection between items
+    Local override; warning
+    @(92.7600 mm, 79.7500 mm): 패드 40 [GND]의 U1 위F.Cu
+    @(85.7400 mm, 70.9000 mm): 41의 PTH 패드[GND]U1
+[unconnected_items]: Missing connection between items
+    Local override; warning
+    @(96.0000 mm, 52.0500 mm): 패드 2 [GND]의 C9 위F.Cu
+    @(91.9500 mm, 48.9375 mm): 패드 2 [GND]의 Q_BZ 위F.Cu
+
+** Found 0 Footprint errors **
+
+** Ignored checks **
+    - Footprint has no courtyard defined
+    - Track endpoint not centered on via
+    - Tuning profile track geometries
+    - Footprint doesn't match symbol's footprint filters
+    - Footprint component type doesn't match footprint pads
+
+** End of Report **

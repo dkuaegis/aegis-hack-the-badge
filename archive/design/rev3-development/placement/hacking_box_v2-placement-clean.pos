@@ -1,0 +1,45 @@
+### Footprint positions - created on 2026-07-27T19:27:41 ###
+### Printed by KiCad version 10.0.5
+## Unit = inches, Angle = deg.
+## Side : All
+# Ref      Val                    Package                                   PosX       PosY       Rot  Side
+C1         10uF                   C_0805_2012Metric                       1.1614    -2.8937   90.0000  top
+C2         100nF                  C_0603_1608Metric                       1.1614    -3.0315   90.0000  top
+C3         10uF                   C_0805_2012Metric                       1.2795    -3.0315   90.0000  top
+C4         10uF                   C_0805_2012Metric                       1.4961    -2.9921   90.0000  top
+C5         10uF                   C_0805_2012Metric                       1.6142    -2.8937   90.0000  top
+C6         100nF                  C_0603_1608Metric                       1.6142    -3.0315   90.0000  top
+C7         10uF                   C_0805_2012Metric                       3.2283    -2.4606   90.0000  top
+C8         100nF                  C_0603_1608Metric                       3.3386    -2.4606   90.0000  top
+C_EN       1uF                    C_0603_1608Metric                       3.4331    -2.4606   90.0000  top
+C_OLED     100nF                  C_0603_1608Metric                       1.7717    -1.9291   90.0000  top
+D1         USBLC6-2SC6            SOT-23-6                                1.0827    -2.6772   90.0000  top
+J1         TYPE-C-31-M-12         USB_C_Receptacle_HRO_TYPE-C-31-M-12     0.8071    -2.6772   90.0000  top
+LED1       RED_STATUS             LED_0603_1608Metric                     2.0472    -2.3031    0.0000  top
+LED2       RED_STATUS             LED_0603_1608Metric                     2.2539    -2.3031    0.0000  top
+LED3       RED_STATUS             LED_0603_1608Metric                     2.4606    -2.3031    0.0000  top
+LED4       RED_STATUS             LED_0603_1608Metric                     2.6673    -2.3031    0.0000  top
+LED5       RED_STATUS             LED_0603_1608Metric                     2.8740    -2.3031    0.0000  top
+P_UART     UART_GND_3V3_TX_RX     PinHeader_1x04_P2.54mm_Vertical         1.1417    -3.4843   90.0000  top
+R1         5.1k                   R_0603_1608Metric                       1.0236    -2.4606   90.0000  top
+R2         5.1k                   R_0603_1608Metric                       1.1417    -2.4606   90.0000  top
+R_BOOT     10k                    R_0603_1608Metric                       2.7362    -3.4252   90.0000  top
+R_CHAL0    1k                     R_0603_1608Metric                       1.6535    -3.5433   90.0000  top
+R_CHAL1    1k                     R_0603_1608Metric                       1.8898    -3.5433   90.0000  top
+R_CHAL2    1k                     R_0603_1608Metric                       2.1260    -3.5433   90.0000  top
+R_EN       10k                    R_0603_1608Metric                       3.4331    -2.3425   90.0000  top
+R_LED1     1k                     R_0603_1608Metric                       2.0472    -2.4409    0.0000  top
+R_LED2     1k                     R_0603_1608Metric                       2.2539    -2.4409    0.0000  top
+R_LED3     1k                     R_0603_1608Metric                       2.4606    -2.4409    0.0000  top
+R_LED4     1k                     R_0603_1608Metric                       2.6673    -2.4409    0.0000  top
+R_LED5     1k                     R_0603_1608Metric                       2.8740    -2.4409    0.0000  top
+R_SCL      10k                    R_0603_1608Metric                       1.7717    -2.0669   90.0000  top
+R_SDA      10k                    R_0603_1608Metric                       1.7717    -2.2047   90.0000  top
+R_UART_RX  1k                     R_0603_1608Metric                       1.5748    -3.3465   90.0000  top
+R_UART_TX  1k                     R_0603_1608Metric                       1.5748    -3.2087   90.0000  top
+SW_ADMIN   ADMIN                  SW_SPST_TS-1088-xR020                   2.9921    -3.9567    0.0000  top
+SW_BOOT    BOOT                   SW_SPST_TS-1088-xR020                   2.6378    -3.9567    0.0000  top
+SW_EN      RESET                  SW_SPST_TS-1088-xR020                   2.2835    -3.9567    0.0000  top
+U1         ESP32-S3-WROOM-1-N8R8  ESP32-S3-WROOM-1                        3.3071    -2.9528  -90.0000  top
+U2         ME6211C33M5G-N         SOT-23-5                                1.3780    -2.8543   90.0000  top
+## End

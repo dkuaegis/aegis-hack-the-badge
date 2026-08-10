@@ -1,0 +1,2 @@
+9587aad1b6be32cb36a85ae3e3dc2b8c729d20423e14280c86a3f2c1735e6653  upload/hacking_badge_v3_easyeda_pro_kicad_import.zip
+0b0dabd8842ae536b77327c46e7506b0b0d2d239f77a0fd4923886f8a8ff8726  reference/ProPrj_hack_the_badge_rev.3.epro2

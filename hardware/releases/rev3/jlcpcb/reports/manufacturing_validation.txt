@@ -1,0 +1,12 @@
+PASS
+- Gerber ZIP contains exactly 12 required files.
+- Gerber job: 2 layers, 84.05 x 100.05 mm, 1.6 mm thick.
+- Board profile Gerber has profile metadata and end marker.
+- PTH and NPTH Excellon files contain valid headers/end markers.
+- Drill report confirms 0.20 mm minimum drills and four 0.80 mm slots.
+- Front and rear plotted silkscreen apertures are at least 0.15 mm.
+- Front silkscreen contains the grouped EasyEDA/JLCPCB sponsor mark.
+- Final DRC has no electrical, copper, drill, slot, or mask errors.
+- J1, U1, U2, D1, and Q_BZ use verified LCSC placement corrections.
+- Assembly package: 15 BOM lines, 44 unique top-side placements.
+- Manual assembly list contains hand-soldered OLED1.

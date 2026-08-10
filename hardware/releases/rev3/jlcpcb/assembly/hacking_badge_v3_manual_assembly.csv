@@ -1,0 +1,2 @@
+Designator,Qty per board,Qty for 5 boards,Recommended order qty,Part,Supplier,Supplier item,Assembly,Notes
+OLED1,1,5,6,HS96L03W2C03,DeviceMart,15963242,Hand solder,"Pin 1 GND, 2 VCC, 3 SCL, 4 SDA; use a straight 1x4 2.54mm male header if the module ships without one"
