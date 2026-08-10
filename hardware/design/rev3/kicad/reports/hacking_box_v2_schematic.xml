@@ -1,0 +1,1957 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<export version="E">
+  <design>
+    <source>/Users/zerocoke/Desktop/University/동아리/Aegis/26-1/Badge_project/hardware/design/rev3/kicad/hacking_box_v2.kicad_sch</source>
+    <date>2026-08-10T12:33:08</date>
+    <tool>Eeschema 10.0.5</tool>
+    <sheet number="1" name="/" tstamps="/">
+      <title_block>
+        <title>Hacking Badge Ver.3 Production Circuit</title>
+        <company>DKU Aegis x MSG CTF</company>
+        <rev>3.1</rev>
+        <date>2026-07-28</date>
+        <source>hacking_box_v2.kicad_sch</source>
+        <comment number="1" value="Reverse-captured from the routed production PCB"/>
+        <comment number="2" value="ESP32-S3, USB-C, OLED, LEDs, controls, UART and buzzer"/>
+        <comment number="3" value=""/>
+        <comment number="4" value=""/>
+        <comment number="5" value=""/>
+        <comment number="6" value=""/>
+        <comment number="7" value=""/>
+        <comment number="8" value=""/>
+        <comment number="9" value=""/>
+      </title_block>
+    </sheet>
+  </design>
+  <components>
+    <comp ref="BZ1">
+      <value>SMD5020-ZK</value>
+      <footprint>HackingBox_V2:Buzzer_SMD5020_ZK</footprint>
+      <fields>
+        <field name="Footprint">HackingBox_V2:Buzzer_SMD5020_ZK</field>
+        <field name="Datasheet"/>
+        <field name="Description"/>
+      </fields>
+      <libsource lib="hacking_box_v2-rescue" part="HB_BUZZER" description=""/>
+      <property name="Sheetname" value="hacking_box_v2"/>
+      <property name="Sheetfile" value="hacking_box_v2.kicad_sch"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>00000000-0000-0000-0000-000071000001</tstamps>
+      <units>
+        <unit name="A">
+          <pins>
+            <pin num="1"/>
+            <pin num="3"/>
+            <pin num="2"/>
+          </pins>
+        </unit>
+      </units>
+    </comp>
+    <comp ref="C1">
+      <value>10uF</value>
+      <footprint>Capacitor_SMD:C_0805_2012Metric</footprint>
+      <fields>
+        <field name="Footprint">Capacitor_SMD:C_0805_2012Metric</field>
+        <field name="Datasheet"/>
+        <field name="Description"/>
+      </fields>
+      <libsource lib="hacking_box_v2-rescue" part="HB_C" description=""/>
+      <property name="Sheetname" value="hacking_box_v2"/>
+      <property name="Sheetfile" value="hacking_box_v2.kicad_sch"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>00000000-0000-0000-0000-000071000002</tstamps>
+      <units>
+        <unit name="A">
+          <pins>
+            <pin num="1"/>
+            <pin num="2"/>
+          </pins>
+        </unit>
+      </units>
+    </comp>
+    <comp ref="C2">
+      <value>100nF</value>
+      <footprint>Capacitor_SMD:C_0603_1608Metric</footprint>
+      <fields>
+        <field name="Footprint">Capacitor_SMD:C_0603_1608Metric</field>
+        <field name="Datasheet"/>
+        <field name="Description"/>
+      </fields>
+      <libsource lib="hacking_box_v2-rescue" part="HB_C" description=""/>
+      <property name="Sheetname" value="hacking_box_v2"/>
+      <property name="Sheetfile" value="hacking_box_v2.kicad_sch"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>00000000-0000-0000-0000-000071000003</tstamps>
+      <units>
+        <unit name="A">
+          <pins>
+            <pin num="1"/>
+            <pin num="2"/>
+          </pins>
+        </unit>
+      </units>
+    </comp>
+    <comp ref="C3">
+      <value>10uF</value>
+      <footprint>Capacitor_SMD:C_0805_2012Metric</footprint>
+      <fields>
+        <field name="Footprint">Capacitor_SMD:C_0805_2012Metric</field>
+        <field name="Datasheet"/>
+        <field name="Description"/>
+      </fields>
+      <libsource lib="hacking_box_v2-rescue" part="HB_C" description=""/>
+      <property name="Sheetname" value="hacking_box_v2"/>
+      <property name="Sheetfile" value="hacking_box_v2.kicad_sch"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>00000000-0000-0000-0000-000071000004</tstamps>
+      <units>
+        <unit name="A">
+          <pins>
+            <pin num="1"/>
+            <pin num="2"/>
+          </pins>
+        </unit>
+      </units>
+    </comp>
+    <comp ref="C4">
+      <value>10uF</value>
+      <footprint>Capacitor_SMD:C_0805_2012Metric</footprint>
+      <fields>
+        <field name="Footprint">Capacitor_SMD:C_0805_2012Metric</field>
+        <field name="Datasheet"/>
+        <field name="Description"/>
+      </fields>
+      <libsource lib="hacking_box_v2-rescue" part="HB_C" description=""/>
+      <property name="Sheetname" value="hacking_box_v2"/>
+      <property name="Sheetfile" value="hacking_box_v2.kicad_sch"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>00000000-0000-0000-0000-000071000005</tstamps>
+      <units>
+        <unit name="A">
+          <pins>
+            <pin num="1"/>
+            <pin num="2"/>
+          </pins>
+        </unit>
+      </units>
+    </comp>
+    <comp ref="C5">
+      <value>10uF</value>
+      <footprint>Capacitor_SMD:C_0805_2012Metric</footprint>
+      <fields>
+        <field name="Footprint">Capacitor_SMD:C_0805_2012Metric</field>
+        <field name="Datasheet"/>
+        <field name="Description"/>
+      </fields>
+      <libsource lib="hacking_box_v2-rescue" part="HB_C" description=""/>
+      <property name="Sheetname" value="hacking_box_v2"/>
+      <property name="Sheetfile" value="hacking_box_v2.kicad_sch"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>00000000-0000-0000-0000-000071000006</tstamps>
+      <units>
+        <unit name="A">
+          <pins>
+            <pin num="1"/>
+            <pin num="2"/>
+          </pins>
+        </unit>
+      </units>
+    </comp>
+    <comp ref="C6">
+      <value>100nF</value>
+      <footprint>Capacitor_SMD:C_0603_1608Metric</footprint>
+      <fields>
+        <field name="Footprint">Capacitor_SMD:C_0603_1608Metric</field>
+        <field name="Datasheet"/>
+        <field name="Description"/>
+      </fields>
+      <libsource lib="hacking_box_v2-rescue" part="HB_C" description=""/>
+      <property name="Sheetname" value="hacking_box_v2"/>
+      <property name="Sheetfile" value="hacking_box_v2.kicad_sch"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>00000000-0000-0000-0000-000071000007</tstamps>
+      <units>
+        <unit name="A">
+          <pins>
+            <pin num="1"/>
+            <pin num="2"/>
+          </pins>
+        </unit>
+      </units>
+    </comp>
+    <comp ref="C7">
+      <value>10uF</value>
+      <footprint>Capacitor_SMD:C_0805_2012Metric</footprint>
+      <fields>
+        <field name="Footprint">Capacitor_SMD:C_0805_2012Metric</field>
+        <field name="Datasheet"/>
+        <field name="Description"/>
+      </fields>
+      <libsource lib="hacking_box_v2-rescue" part="HB_C" description=""/>
+      <property name="Sheetname" value="hacking_box_v2"/>
+      <property name="Sheetfile" value="hacking_box_v2.kicad_sch"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>00000000-0000-0000-0000-000071000008</tstamps>
+      <units>
+        <unit name="A">
+          <pins>
+            <pin num="1"/>
+            <pin num="2"/>
+          </pins>
+        </unit>
+      </units>
+    </comp>
+    <comp ref="C8">
+      <value>100nF</value>
+      <footprint>Capacitor_SMD:C_0603_1608Metric</footprint>
+      <fields>
+        <field name="Footprint">Capacitor_SMD:C_0603_1608Metric</field>
+        <field name="Datasheet"/>
+        <field name="Description"/>
+      </fields>
+      <libsource lib="hacking_box_v2-rescue" part="HB_C" description=""/>
+      <property name="Sheetname" value="hacking_box_v2"/>
+      <property name="Sheetfile" value="hacking_box_v2.kicad_sch"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>00000000-0000-0000-0000-000071000009</tstamps>
+      <units>
+        <unit name="A">
+          <pins>
+            <pin num="1"/>
+            <pin num="2"/>
+          </pins>
+        </unit>
+      </units>
+    </comp>
+    <comp ref="C9">
+      <value>10uF</value>
+      <footprint>Capacitor_SMD:C_0805_2012Metric</footprint>
+      <fields>
+        <field name="Footprint">Capacitor_SMD:C_0805_2012Metric</field>
+        <field name="Datasheet"/>
+        <field name="Description"/>
+      </fields>
+      <libsource lib="hacking_box_v2-rescue" part="HB_C" description=""/>
+      <property name="Sheetname" value="hacking_box_v2"/>
+      <property name="Sheetfile" value="hacking_box_v2.kicad_sch"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>00000000-0000-0000-0000-00007100000a</tstamps>
+      <units>
+        <unit name="A">
+          <pins>
+            <pin num="1"/>
+            <pin num="2"/>
+          </pins>
+        </unit>
+      </units>
+    </comp>
+    <comp ref="C_EN">
+      <value>1uF</value>
+      <footprint>Capacitor_SMD:C_0603_1608Metric</footprint>
+      <fields>
+        <field name="Footprint">Capacitor_SMD:C_0603_1608Metric</field>
+        <field name="Datasheet"/>
+        <field name="Description"/>
+      </fields>
+      <libsource lib="hacking_box_v2-rescue" part="HB_C" description=""/>
+      <property name="Sheetname" value="hacking_box_v2"/>
+      <property name="Sheetfile" value="hacking_box_v2.kicad_sch"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>00000000-0000-0000-0000-00007100000b</tstamps>
+      <units>
+        <unit name="A">
+          <pins>
+            <pin num="1"/>
+            <pin num="2"/>
+          </pins>
+        </unit>
+      </units>
+    </comp>
+    <comp ref="C_OLED">
+      <value>100nF</value>
+      <footprint>Capacitor_SMD:C_0603_1608Metric</footprint>
+      <fields>
+        <field name="Footprint">Capacitor_SMD:C_0603_1608Metric</field>
+        <field name="Datasheet"/>
+        <field name="Description"/>
+      </fields>
+      <libsource lib="hacking_box_v2-rescue" part="HB_C" description=""/>
+      <property name="Sheetname" value="hacking_box_v2"/>
+      <property name="Sheetfile" value="hacking_box_v2.kicad_sch"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>00000000-0000-0000-0000-00007100000c</tstamps>
+      <units>
+        <unit name="A">
+          <pins>
+            <pin num="1"/>
+            <pin num="2"/>
+          </pins>
+        </unit>
+      </units>
+    </comp>
+    <comp ref="D1">
+      <value>USBLC6-2SC6</value>
+      <footprint>Package_TO_SOT_SMD:SOT-23-6</footprint>
+      <fields>
+        <field name="Footprint">Package_TO_SOT_SMD:SOT-23-6</field>
+        <field name="Datasheet"/>
+        <field name="Description"/>
+      </fields>
+      <libsource lib="hacking_box_v2-rescue" part="HB_ESD6" description=""/>
+      <property name="Sheetname" value="hacking_box_v2"/>
+      <property name="Sheetfile" value="hacking_box_v2.kicad_sch"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>00000000-0000-0000-0000-00007100000d</tstamps>
+      <units>
+        <unit name="A">
+          <pins>
+            <pin num="1"/>
+            <pin num="2"/>
+            <pin num="3"/>
+            <pin num="4"/>
+            <pin num="5"/>
+            <pin num="6"/>
+          </pins>
+        </unit>
+      </units>
+    </comp>
+    <comp ref="D_BZ">
+      <value>1N4148W</value>
+      <footprint>Diode_SMD:D_SOD-123</footprint>
+      <fields>
+        <field name="Footprint">Diode_SMD:D_SOD-123</field>
+        <field name="Datasheet"/>
+        <field name="Description"/>
+      </fields>
+      <libsource lib="hacking_box_v2-rescue" part="HB_DIODE" description=""/>
+      <property name="Sheetname" value="hacking_box_v2"/>
+      <property name="Sheetfile" value="hacking_box_v2.kicad_sch"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>00000000-0000-0000-0000-00007100000e</tstamps>
+      <units>
+        <unit name="A">
+          <pins>
+            <pin num="1"/>
+            <pin num="2"/>
+          </pins>
+        </unit>
+      </units>
+    </comp>
+    <comp ref="H1">
+      <value>LANYARD</value>
+      <footprint>MountingHole:MountingHole_2.7mm</footprint>
+      <fields>
+        <field name="Footprint">MountingHole:MountingHole_2.7mm</field>
+        <field name="Datasheet"/>
+        <field name="Description"/>
+      </fields>
+      <libsource lib="hacking_box_v2-rescue" part="HB_MECH" description=""/>
+      <property name="Sheetname" value="hacking_box_v2"/>
+      <property name="Sheetfile" value="hacking_box_v2.kicad_sch"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>00000000-0000-0000-0000-00007100000f</tstamps>
+      <units>
+        <unit name="A">
+          <pins/>
+        </unit>
+      </units>
+    </comp>
+    <comp ref="H2">
+      <value>LANYARD</value>
+      <footprint>MountingHole:MountingHole_2.7mm</footprint>
+      <fields>
+        <field name="Footprint">MountingHole:MountingHole_2.7mm</field>
+        <field name="Datasheet"/>
+        <field name="Description"/>
+      </fields>
+      <libsource lib="hacking_box_v2-rescue" part="HB_MECH" description=""/>
+      <property name="Sheetname" value="hacking_box_v2"/>
+      <property name="Sheetfile" value="hacking_box_v2.kicad_sch"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>00000000-0000-0000-0000-000071000010</tstamps>
+      <units>
+        <unit name="A">
+          <pins/>
+        </unit>
+      </units>
+    </comp>
+    <comp ref="J1">
+      <value>TYPE-C-31-M-12</value>
+      <footprint>Connector_USB:USB_C_Receptacle_HRO_TYPE-C-31-M-12</footprint>
+      <fields>
+        <field name="Footprint">Connector_USB:USB_C_Receptacle_HRO_TYPE-C-31-M-12</field>
+        <field name="Datasheet"/>
+        <field name="Description"/>
+      </fields>
+      <libsource lib="hacking_box_v2-rescue" part="HB_USB" description=""/>
+      <property name="Sheetname" value="hacking_box_v2"/>
+      <property name="Sheetfile" value="hacking_box_v2.kicad_sch"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>00000000-0000-0000-0000-000071000011</tstamps>
+      <units>
+        <unit name="A">
+          <pins>
+            <pin num="A1"/>
+            <pin num="A4"/>
+            <pin num="A5"/>
+            <pin num="A6"/>
+            <pin num="A7"/>
+            <pin num="A8"/>
+            <pin num="A9"/>
+            <pin num="A12"/>
+            <pin num="SH"/>
+            <pin num="B1"/>
+            <pin num="B4"/>
+            <pin num="B5"/>
+            <pin num="B6"/>
+            <pin num="B7"/>
+            <pin num="B8"/>
+            <pin num="B9"/>
+            <pin num="B12"/>
+          </pins>
+        </unit>
+      </units>
+    </comp>
+    <comp ref="LED1">
+      <value>RED_STATUS</value>
+      <footprint>LED_SMD:LED_0603_1608Metric</footprint>
+      <fields>
+        <field name="Footprint">LED_SMD:LED_0603_1608Metric</field>
+        <field name="Datasheet"/>
+        <field name="Description"/>
+      </fields>
+      <libsource lib="hacking_box_v2-rescue" part="HB_LED" description=""/>
+      <property name="Sheetname" value="hacking_box_v2"/>
+      <property name="Sheetfile" value="hacking_box_v2.kicad_sch"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>00000000-0000-0000-0000-000071000012</tstamps>
+      <units>
+        <unit name="A">
+          <pins>
+            <pin num="1"/>
+            <pin num="2"/>
+          </pins>
+        </unit>
+      </units>
+    </comp>
+    <comp ref="LED2">
+      <value>RED_STATUS</value>
+      <footprint>LED_SMD:LED_0603_1608Metric</footprint>
+      <fields>
+        <field name="Footprint">LED_SMD:LED_0603_1608Metric</field>
+        <field name="Datasheet"/>
+        <field name="Description"/>
+      </fields>
+      <libsource lib="hacking_box_v2-rescue" part="HB_LED" description=""/>
+      <property name="Sheetname" value="hacking_box_v2"/>
+      <property name="Sheetfile" value="hacking_box_v2.kicad_sch"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>00000000-0000-0000-0000-000071000013</tstamps>
+      <units>
+        <unit name="A">
+          <pins>
+            <pin num="1"/>
+            <pin num="2"/>
+          </pins>
+        </unit>
+      </units>
+    </comp>
+    <comp ref="LED3">
+      <value>RED_STATUS</value>
+      <footprint>LED_SMD:LED_0603_1608Metric</footprint>
+      <fields>
+        <field name="Footprint">LED_SMD:LED_0603_1608Metric</field>
+        <field name="Datasheet"/>
+        <field name="Description"/>
+      </fields>
+      <libsource lib="hacking_box_v2-rescue" part="HB_LED" description=""/>
+      <property name="Sheetname" value="hacking_box_v2"/>
+      <property name="Sheetfile" value="hacking_box_v2.kicad_sch"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>00000000-0000-0000-0000-000071000014</tstamps>
+      <units>
+        <unit name="A">
+          <pins>
+            <pin num="1"/>
+            <pin num="2"/>
+          </pins>
+        </unit>
+      </units>
+    </comp>
+    <comp ref="LED4">
+      <value>RED_STATUS</value>
+      <footprint>LED_SMD:LED_0603_1608Metric</footprint>
+      <fields>
+        <field name="Footprint">LED_SMD:LED_0603_1608Metric</field>
+        <field name="Datasheet"/>
+        <field name="Description"/>
+      </fields>
+      <libsource lib="hacking_box_v2-rescue" part="HB_LED" description=""/>
+      <property name="Sheetname" value="hacking_box_v2"/>
+      <property name="Sheetfile" value="hacking_box_v2.kicad_sch"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>00000000-0000-0000-0000-000071000015</tstamps>
+      <units>
+        <unit name="A">
+          <pins>
+            <pin num="1"/>
+            <pin num="2"/>
+          </pins>
+        </unit>
+      </units>
+    </comp>
+    <comp ref="LED5">
+      <value>RED_STATUS</value>
+      <footprint>LED_SMD:LED_0603_1608Metric</footprint>
+      <fields>
+        <field name="Footprint">LED_SMD:LED_0603_1608Metric</field>
+        <field name="Datasheet"/>
+        <field name="Description"/>
+      </fields>
+      <libsource lib="hacking_box_v2-rescue" part="HB_LED" description=""/>
+      <property name="Sheetname" value="hacking_box_v2"/>
+      <property name="Sheetfile" value="hacking_box_v2.kicad_sch"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>00000000-0000-0000-0000-000071000016</tstamps>
+      <units>
+        <unit name="A">
+          <pins>
+            <pin num="1"/>
+            <pin num="2"/>
+          </pins>
+        </unit>
+      </units>
+    </comp>
+    <comp ref="OLED1">
+      <value>HS96L03W2C03</value>
+      <footprint>HackingBox_V2:OLED_HS96L03W2C03</footprint>
+      <fields>
+        <field name="Footprint">HackingBox_V2:OLED_HS96L03W2C03</field>
+        <field name="Datasheet"/>
+        <field name="Description"/>
+      </fields>
+      <libsource lib="hacking_box_v2-rescue" part="HB_OLED" description=""/>
+      <property name="Sheetname" value="hacking_box_v2"/>
+      <property name="Sheetfile" value="hacking_box_v2.kicad_sch"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>00000000-0000-0000-0000-000071000017</tstamps>
+      <units>
+        <unit name="A">
+          <pins>
+            <pin num="1"/>
+            <pin num="2"/>
+            <pin num="3"/>
+            <pin num="4"/>
+          </pins>
+        </unit>
+      </units>
+    </comp>
+    <comp ref="P_CHAL0">
+      <value>TP</value>
+      <footprint>TestPoint:TestPoint_Pad_D1.5mm</footprint>
+      <fields>
+        <field name="Footprint">TestPoint:TestPoint_Pad_D1.5mm</field>
+        <field name="Datasheet"/>
+        <field name="Description"/>
+      </fields>
+      <libsource lib="hacking_box_v2-rescue" part="HB_TP" description=""/>
+      <property name="Sheetname" value="hacking_box_v2"/>
+      <property name="Sheetfile" value="hacking_box_v2.kicad_sch"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>00000000-0000-0000-0000-000071000018</tstamps>
+      <units>
+        <unit name="A">
+          <pins>
+            <pin num="1"/>
+          </pins>
+        </unit>
+      </units>
+    </comp>
+    <comp ref="P_CHAL1">
+      <value>TP</value>
+      <footprint>TestPoint:TestPoint_Pad_D1.5mm</footprint>
+      <fields>
+        <field name="Footprint">TestPoint:TestPoint_Pad_D1.5mm</field>
+        <field name="Datasheet"/>
+        <field name="Description"/>
+      </fields>
+      <libsource lib="hacking_box_v2-rescue" part="HB_TP" description=""/>
+      <property name="Sheetname" value="hacking_box_v2"/>
+      <property name="Sheetfile" value="hacking_box_v2.kicad_sch"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>00000000-0000-0000-0000-000071000019</tstamps>
+      <units>
+        <unit name="A">
+          <pins>
+            <pin num="1"/>
+          </pins>
+        </unit>
+      </units>
+    </comp>
+    <comp ref="P_CHAL2">
+      <value>TP</value>
+      <footprint>TestPoint:TestPoint_Pad_D1.5mm</footprint>
+      <fields>
+        <field name="Footprint">TestPoint:TestPoint_Pad_D1.5mm</field>
+        <field name="Datasheet"/>
+        <field name="Description"/>
+      </fields>
+      <libsource lib="hacking_box_v2-rescue" part="HB_TP" description=""/>
+      <property name="Sheetname" value="hacking_box_v2"/>
+      <property name="Sheetfile" value="hacking_box_v2.kicad_sch"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>00000000-0000-0000-0000-00007100001a</tstamps>
+      <units>
+        <unit name="A">
+          <pins>
+            <pin num="1"/>
+          </pins>
+        </unit>
+      </units>
+    </comp>
+    <comp ref="P_UART">
+      <value>UART_GND_3V3_TX_RX</value>
+      <footprint>Connector_PinHeader_2.54mm:PinHeader_1x04_P2.54mm_Vertical</footprint>
+      <fields>
+        <field name="Footprint">Connector_PinHeader_2.54mm:PinHeader_1x04_P2.54mm_Vertical</field>
+        <field name="Datasheet"/>
+        <field name="Description"/>
+      </fields>
+      <libsource lib="hacking_box_v2-rescue" part="HB_CONN4" description=""/>
+      <property name="Sheetname" value="hacking_box_v2"/>
+      <property name="Sheetfile" value="hacking_box_v2.kicad_sch"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>00000000-0000-0000-0000-00007100001b</tstamps>
+      <units>
+        <unit name="A">
+          <pins>
+            <pin num="1"/>
+            <pin num="2"/>
+            <pin num="3"/>
+            <pin num="4"/>
+          </pins>
+        </unit>
+      </units>
+    </comp>
+    <comp ref="Q_BZ">
+      <value>AO3400A</value>
+      <footprint>Package_TO_SOT_SMD:SOT-23</footprint>
+      <fields>
+        <field name="Footprint">Package_TO_SOT_SMD:SOT-23</field>
+        <field name="Datasheet"/>
+        <field name="Description"/>
+      </fields>
+      <libsource lib="hacking_box_v2-rescue" part="HB_FET3" description=""/>
+      <property name="Sheetname" value="hacking_box_v2"/>
+      <property name="Sheetfile" value="hacking_box_v2.kicad_sch"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>00000000-0000-0000-0000-00007100001c</tstamps>
+      <units>
+        <unit name="A">
+          <pins>
+            <pin num="1"/>
+            <pin num="2"/>
+            <pin num="3"/>
+          </pins>
+        </unit>
+      </units>
+    </comp>
+    <comp ref="R1">
+      <value>5.1k</value>
+      <footprint>Resistor_SMD:R_0603_1608Metric</footprint>
+      <fields>
+        <field name="Footprint">Resistor_SMD:R_0603_1608Metric</field>
+        <field name="Datasheet"/>
+        <field name="Description"/>
+      </fields>
+      <libsource lib="hacking_box_v2-rescue" part="HB_R" description=""/>
+      <property name="Sheetname" value="hacking_box_v2"/>
+      <property name="Sheetfile" value="hacking_box_v2.kicad_sch"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>00000000-0000-0000-0000-00007100001d</tstamps>
+      <units>
+        <unit name="A">
+          <pins>
+            <pin num="1"/>
+            <pin num="2"/>
+          </pins>
+        </unit>
+      </units>
+    </comp>
+    <comp ref="R2">
+      <value>5.1k</value>
+      <footprint>Resistor_SMD:R_0603_1608Metric</footprint>
+      <fields>
+        <field name="Footprint">Resistor_SMD:R_0603_1608Metric</field>
+        <field name="Datasheet"/>
+        <field name="Description"/>
+      </fields>
+      <libsource lib="hacking_box_v2-rescue" part="HB_R" description=""/>
+      <property name="Sheetname" value="hacking_box_v2"/>
+      <property name="Sheetfile" value="hacking_box_v2.kicad_sch"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>00000000-0000-0000-0000-00007100001e</tstamps>
+      <units>
+        <unit name="A">
+          <pins>
+            <pin num="1"/>
+            <pin num="2"/>
+          </pins>
+        </unit>
+      </units>
+    </comp>
+    <comp ref="R_BOOT">
+      <value>10k</value>
+      <footprint>Resistor_SMD:R_0603_1608Metric</footprint>
+      <fields>
+        <field name="Footprint">Resistor_SMD:R_0603_1608Metric</field>
+        <field name="Datasheet"/>
+        <field name="Description"/>
+      </fields>
+      <libsource lib="hacking_box_v2-rescue" part="HB_R" description=""/>
+      <property name="Sheetname" value="hacking_box_v2"/>
+      <property name="Sheetfile" value="hacking_box_v2.kicad_sch"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>00000000-0000-0000-0000-00007100001f</tstamps>
+      <units>
+        <unit name="A">
+          <pins>
+            <pin num="1"/>
+            <pin num="2"/>
+          </pins>
+        </unit>
+      </units>
+    </comp>
+    <comp ref="R_BZ">
+      <value>1k</value>
+      <footprint>Resistor_SMD:R_0603_1608Metric</footprint>
+      <fields>
+        <field name="Footprint">Resistor_SMD:R_0603_1608Metric</field>
+        <field name="Datasheet"/>
+        <field name="Description"/>
+      </fields>
+      <libsource lib="hacking_box_v2-rescue" part="HB_R" description=""/>
+      <property name="Sheetname" value="hacking_box_v2"/>
+      <property name="Sheetfile" value="hacking_box_v2.kicad_sch"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>00000000-0000-0000-0000-000071000020</tstamps>
+      <units>
+        <unit name="A">
+          <pins>
+            <pin num="1"/>
+            <pin num="2"/>
+          </pins>
+        </unit>
+      </units>
+    </comp>
+    <comp ref="R_BZ_PD">
+      <value>10k</value>
+      <footprint>Resistor_SMD:R_0603_1608Metric</footprint>
+      <fields>
+        <field name="Footprint">Resistor_SMD:R_0603_1608Metric</field>
+        <field name="Datasheet"/>
+        <field name="Description"/>
+      </fields>
+      <libsource lib="hacking_box_v2-rescue" part="HB_R" description=""/>
+      <property name="Sheetname" value="hacking_box_v2"/>
+      <property name="Sheetfile" value="hacking_box_v2.kicad_sch"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>00000000-0000-0000-0000-000071000021</tstamps>
+      <units>
+        <unit name="A">
+          <pins>
+            <pin num="1"/>
+            <pin num="2"/>
+          </pins>
+        </unit>
+      </units>
+    </comp>
+    <comp ref="R_CHAL0">
+      <value>1k</value>
+      <footprint>Resistor_SMD:R_0603_1608Metric</footprint>
+      <fields>
+        <field name="Footprint">Resistor_SMD:R_0603_1608Metric</field>
+        <field name="Datasheet"/>
+        <field name="Description"/>
+      </fields>
+      <libsource lib="hacking_box_v2-rescue" part="HB_R" description=""/>
+      <property name="Sheetname" value="hacking_box_v2"/>
+      <property name="Sheetfile" value="hacking_box_v2.kicad_sch"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>00000000-0000-0000-0000-000071000022</tstamps>
+      <units>
+        <unit name="A">
+          <pins>
+            <pin num="1"/>
+            <pin num="2"/>
+          </pins>
+        </unit>
+      </units>
+    </comp>
+    <comp ref="R_CHAL1">
+      <value>1k</value>
+      <footprint>Resistor_SMD:R_0603_1608Metric</footprint>
+      <fields>
+        <field name="Footprint">Resistor_SMD:R_0603_1608Metric</field>
+        <field name="Datasheet"/>
+        <field name="Description"/>
+      </fields>
+      <libsource lib="hacking_box_v2-rescue" part="HB_R" description=""/>
+      <property name="Sheetname" value="hacking_box_v2"/>
+      <property name="Sheetfile" value="hacking_box_v2.kicad_sch"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>00000000-0000-0000-0000-000071000023</tstamps>
+      <units>
+        <unit name="A">
+          <pins>
+            <pin num="1"/>
+            <pin num="2"/>
+          </pins>
+        </unit>
+      </units>
+    </comp>
+    <comp ref="R_CHAL2">
+      <value>1k</value>
+      <footprint>Resistor_SMD:R_0603_1608Metric</footprint>
+      <fields>
+        <field name="Footprint">Resistor_SMD:R_0603_1608Metric</field>
+        <field name="Datasheet"/>
+        <field name="Description"/>
+      </fields>
+      <libsource lib="hacking_box_v2-rescue" part="HB_R" description=""/>
+      <property name="Sheetname" value="hacking_box_v2"/>
+      <property name="Sheetfile" value="hacking_box_v2.kicad_sch"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>00000000-0000-0000-0000-000071000024</tstamps>
+      <units>
+        <unit name="A">
+          <pins>
+            <pin num="1"/>
+            <pin num="2"/>
+          </pins>
+        </unit>
+      </units>
+    </comp>
+    <comp ref="R_EN">
+      <value>10k</value>
+      <footprint>Resistor_SMD:R_0603_1608Metric</footprint>
+      <fields>
+        <field name="Footprint">Resistor_SMD:R_0603_1608Metric</field>
+        <field name="Datasheet"/>
+        <field name="Description"/>
+      </fields>
+      <libsource lib="hacking_box_v2-rescue" part="HB_R" description=""/>
+      <property name="Sheetname" value="hacking_box_v2"/>
+      <property name="Sheetfile" value="hacking_box_v2.kicad_sch"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>00000000-0000-0000-0000-000071000025</tstamps>
+      <units>
+        <unit name="A">
+          <pins>
+            <pin num="1"/>
+            <pin num="2"/>
+          </pins>
+        </unit>
+      </units>
+    </comp>
+    <comp ref="R_LED1">
+      <value>1k</value>
+      <footprint>Resistor_SMD:R_0603_1608Metric</footprint>
+      <fields>
+        <field name="Footprint">Resistor_SMD:R_0603_1608Metric</field>
+        <field name="Datasheet"/>
+        <field name="Description"/>
+      </fields>
+      <libsource lib="hacking_box_v2-rescue" part="HB_R" description=""/>
+      <property name="Sheetname" value="hacking_box_v2"/>
+      <property name="Sheetfile" value="hacking_box_v2.kicad_sch"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>00000000-0000-0000-0000-000071000026</tstamps>
+      <units>
+        <unit name="A">
+          <pins>
+            <pin num="1"/>
+            <pin num="2"/>
+          </pins>
+        </unit>
+      </units>
+    </comp>
+    <comp ref="R_LED2">
+      <value>1k</value>
+      <footprint>Resistor_SMD:R_0603_1608Metric</footprint>
+      <fields>
+        <field name="Footprint">Resistor_SMD:R_0603_1608Metric</field>
+        <field name="Datasheet"/>
+        <field name="Description"/>
+      </fields>
+      <libsource lib="hacking_box_v2-rescue" part="HB_R" description=""/>
+      <property name="Sheetname" value="hacking_box_v2"/>
+      <property name="Sheetfile" value="hacking_box_v2.kicad_sch"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>00000000-0000-0000-0000-000071000027</tstamps>
+      <units>
+        <unit name="A">
+          <pins>
+            <pin num="1"/>
+            <pin num="2"/>
+          </pins>
+        </unit>
+      </units>
+    </comp>
+    <comp ref="R_LED3">
+      <value>1k</value>
+      <footprint>Resistor_SMD:R_0603_1608Metric</footprint>
+      <fields>
+        <field name="Footprint">Resistor_SMD:R_0603_1608Metric</field>
+        <field name="Datasheet"/>
+        <field name="Description"/>
+      </fields>
+      <libsource lib="hacking_box_v2-rescue" part="HB_R" description=""/>
+      <property name="Sheetname" value="hacking_box_v2"/>
+      <property name="Sheetfile" value="hacking_box_v2.kicad_sch"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>00000000-0000-0000-0000-000071000028</tstamps>
+      <units>
+        <unit name="A">
+          <pins>
+            <pin num="1"/>
+            <pin num="2"/>
+          </pins>
+        </unit>
+      </units>
+    </comp>
+    <comp ref="R_LED4">
+      <value>1k</value>
+      <footprint>Resistor_SMD:R_0603_1608Metric</footprint>
+      <fields>
+        <field name="Footprint">Resistor_SMD:R_0603_1608Metric</field>
+        <field name="Datasheet"/>
+        <field name="Description"/>
+      </fields>
+      <libsource lib="hacking_box_v2-rescue" part="HB_R" description=""/>
+      <property name="Sheetname" value="hacking_box_v2"/>
+      <property name="Sheetfile" value="hacking_box_v2.kicad_sch"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>00000000-0000-0000-0000-000071000029</tstamps>
+      <units>
+        <unit name="A">
+          <pins>
+            <pin num="1"/>
+            <pin num="2"/>
+          </pins>
+        </unit>
+      </units>
+    </comp>
+    <comp ref="R_LED5">
+      <value>1k</value>
+      <footprint>Resistor_SMD:R_0603_1608Metric</footprint>
+      <fields>
+        <field name="Footprint">Resistor_SMD:R_0603_1608Metric</field>
+        <field name="Datasheet"/>
+        <field name="Description"/>
+      </fields>
+      <libsource lib="hacking_box_v2-rescue" part="HB_R" description=""/>
+      <property name="Sheetname" value="hacking_box_v2"/>
+      <property name="Sheetfile" value="hacking_box_v2.kicad_sch"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>00000000-0000-0000-0000-00007100002a</tstamps>
+      <units>
+        <unit name="A">
+          <pins>
+            <pin num="1"/>
+            <pin num="2"/>
+          </pins>
+        </unit>
+      </units>
+    </comp>
+    <comp ref="R_SCL">
+      <value>10k</value>
+      <footprint>Resistor_SMD:R_0603_1608Metric</footprint>
+      <fields>
+        <field name="Footprint">Resistor_SMD:R_0603_1608Metric</field>
+        <field name="Datasheet"/>
+        <field name="Description"/>
+      </fields>
+      <libsource lib="hacking_box_v2-rescue" part="HB_R" description=""/>
+      <property name="Sheetname" value="hacking_box_v2"/>
+      <property name="Sheetfile" value="hacking_box_v2.kicad_sch"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>00000000-0000-0000-0000-00007100002b</tstamps>
+      <units>
+        <unit name="A">
+          <pins>
+            <pin num="1"/>
+            <pin num="2"/>
+          </pins>
+        </unit>
+      </units>
+    </comp>
+    <comp ref="R_SDA">
+      <value>10k</value>
+      <footprint>Resistor_SMD:R_0603_1608Metric</footprint>
+      <fields>
+        <field name="Footprint">Resistor_SMD:R_0603_1608Metric</field>
+        <field name="Datasheet"/>
+        <field name="Description"/>
+      </fields>
+      <libsource lib="hacking_box_v2-rescue" part="HB_R" description=""/>
+      <property name="Sheetname" value="hacking_box_v2"/>
+      <property name="Sheetfile" value="hacking_box_v2.kicad_sch"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>00000000-0000-0000-0000-00007100002c</tstamps>
+      <units>
+        <unit name="A">
+          <pins>
+            <pin num="1"/>
+            <pin num="2"/>
+          </pins>
+        </unit>
+      </units>
+    </comp>
+    <comp ref="R_UART_RX">
+      <value>1k</value>
+      <footprint>Resistor_SMD:R_0603_1608Metric</footprint>
+      <fields>
+        <field name="Footprint">Resistor_SMD:R_0603_1608Metric</field>
+        <field name="Datasheet"/>
+        <field name="Description"/>
+      </fields>
+      <libsource lib="hacking_box_v2-rescue" part="HB_R" description=""/>
+      <property name="Sheetname" value="hacking_box_v2"/>
+      <property name="Sheetfile" value="hacking_box_v2.kicad_sch"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>00000000-0000-0000-0000-00007100002d</tstamps>
+      <units>
+        <unit name="A">
+          <pins>
+            <pin num="1"/>
+            <pin num="2"/>
+          </pins>
+        </unit>
+      </units>
+    </comp>
+    <comp ref="R_UART_TX">
+      <value>1k</value>
+      <footprint>Resistor_SMD:R_0603_1608Metric</footprint>
+      <fields>
+        <field name="Footprint">Resistor_SMD:R_0603_1608Metric</field>
+        <field name="Datasheet"/>
+        <field name="Description"/>
+      </fields>
+      <libsource lib="hacking_box_v2-rescue" part="HB_R" description=""/>
+      <property name="Sheetname" value="hacking_box_v2"/>
+      <property name="Sheetfile" value="hacking_box_v2.kicad_sch"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>00000000-0000-0000-0000-00007100002e</tstamps>
+      <units>
+        <unit name="A">
+          <pins>
+            <pin num="1"/>
+            <pin num="2"/>
+          </pins>
+        </unit>
+      </units>
+    </comp>
+    <comp ref="SW_ADMIN">
+      <value>ADMIN</value>
+      <footprint>Button_Switch_SMD:SW_SPST_TS-1088-xR020</footprint>
+      <fields>
+        <field name="Footprint">Button_Switch_SMD:SW_SPST_TS-1088-xR020</field>
+        <field name="Datasheet"/>
+        <field name="Description"/>
+      </fields>
+      <libsource lib="hacking_box_v2-rescue" part="HB_SW" description=""/>
+      <property name="Sheetname" value="hacking_box_v2"/>
+      <property name="Sheetfile" value="hacking_box_v2.kicad_sch"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>00000000-0000-0000-0000-00007100002f</tstamps>
+      <units>
+        <unit name="A">
+          <pins>
+            <pin num="1"/>
+            <pin num="2"/>
+          </pins>
+        </unit>
+      </units>
+    </comp>
+    <comp ref="SW_BOOT">
+      <value>BOOT</value>
+      <footprint>Button_Switch_SMD:SW_SPST_TS-1088-xR020</footprint>
+      <fields>
+        <field name="Footprint">Button_Switch_SMD:SW_SPST_TS-1088-xR020</field>
+        <field name="Datasheet"/>
+        <field name="Description"/>
+      </fields>
+      <libsource lib="hacking_box_v2-rescue" part="HB_SW" description=""/>
+      <property name="Sheetname" value="hacking_box_v2"/>
+      <property name="Sheetfile" value="hacking_box_v2.kicad_sch"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>00000000-0000-0000-0000-000071000030</tstamps>
+      <units>
+        <unit name="A">
+          <pins>
+            <pin num="1"/>
+            <pin num="2"/>
+          </pins>
+        </unit>
+      </units>
+    </comp>
+    <comp ref="SW_EN">
+      <value>RESET</value>
+      <footprint>Button_Switch_SMD:SW_SPST_TS-1088-xR020</footprint>
+      <fields>
+        <field name="Footprint">Button_Switch_SMD:SW_SPST_TS-1088-xR020</field>
+        <field name="Datasheet"/>
+        <field name="Description"/>
+      </fields>
+      <libsource lib="hacking_box_v2-rescue" part="HB_SW" description=""/>
+      <property name="Sheetname" value="hacking_box_v2"/>
+      <property name="Sheetfile" value="hacking_box_v2.kicad_sch"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>00000000-0000-0000-0000-000071000031</tstamps>
+      <units>
+        <unit name="A">
+          <pins>
+            <pin num="1"/>
+            <pin num="2"/>
+          </pins>
+        </unit>
+      </units>
+    </comp>
+    <comp ref="TP_3V3">
+      <value>TP</value>
+      <footprint>TestPoint:TestPoint_Pad_D1.5mm</footprint>
+      <fields>
+        <field name="Footprint">TestPoint:TestPoint_Pad_D1.5mm</field>
+        <field name="Datasheet"/>
+        <field name="Description"/>
+      </fields>
+      <libsource lib="hacking_box_v2-rescue" part="HB_TP" description=""/>
+      <property name="Sheetname" value="hacking_box_v2"/>
+      <property name="Sheetfile" value="hacking_box_v2.kicad_sch"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>00000000-0000-0000-0000-000071000032</tstamps>
+      <units>
+        <unit name="A">
+          <pins>
+            <pin num="1"/>
+          </pins>
+        </unit>
+      </units>
+    </comp>
+    <comp ref="TP_BOOT">
+      <value>TP</value>
+      <footprint>TestPoint:TestPoint_Pad_D1.5mm</footprint>
+      <fields>
+        <field name="Footprint">TestPoint:TestPoint_Pad_D1.5mm</field>
+        <field name="Datasheet"/>
+        <field name="Description"/>
+      </fields>
+      <libsource lib="hacking_box_v2-rescue" part="HB_TP" description=""/>
+      <property name="Sheetname" value="hacking_box_v2"/>
+      <property name="Sheetfile" value="hacking_box_v2.kicad_sch"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>00000000-0000-0000-0000-000071000033</tstamps>
+      <units>
+        <unit name="A">
+          <pins>
+            <pin num="1"/>
+          </pins>
+        </unit>
+      </units>
+    </comp>
+    <comp ref="TP_EN">
+      <value>TP</value>
+      <footprint>TestPoint:TestPoint_Pad_D1.5mm</footprint>
+      <fields>
+        <field name="Footprint">TestPoint:TestPoint_Pad_D1.5mm</field>
+        <field name="Datasheet"/>
+        <field name="Description"/>
+      </fields>
+      <libsource lib="hacking_box_v2-rescue" part="HB_TP" description=""/>
+      <property name="Sheetname" value="hacking_box_v2"/>
+      <property name="Sheetfile" value="hacking_box_v2.kicad_sch"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>00000000-0000-0000-0000-000071000034</tstamps>
+      <units>
+        <unit name="A">
+          <pins>
+            <pin num="1"/>
+          </pins>
+        </unit>
+      </units>
+    </comp>
+    <comp ref="TP_GND">
+      <value>TP</value>
+      <footprint>TestPoint:TestPoint_Pad_D1.5mm</footprint>
+      <fields>
+        <field name="Footprint">TestPoint:TestPoint_Pad_D1.5mm</field>
+        <field name="Datasheet"/>
+        <field name="Description"/>
+      </fields>
+      <libsource lib="hacking_box_v2-rescue" part="HB_TP" description=""/>
+      <property name="Sheetname" value="hacking_box_v2"/>
+      <property name="Sheetfile" value="hacking_box_v2.kicad_sch"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>00000000-0000-0000-0000-000071000035</tstamps>
+      <units>
+        <unit name="A">
+          <pins>
+            <pin num="1"/>
+          </pins>
+        </unit>
+      </units>
+    </comp>
+    <comp ref="TP_OLED_SCL">
+      <value>TP</value>
+      <footprint>TestPoint:TestPoint_Pad_D1.5mm</footprint>
+      <fields>
+        <field name="Footprint">TestPoint:TestPoint_Pad_D1.5mm</field>
+        <field name="Datasheet"/>
+        <field name="Description"/>
+      </fields>
+      <libsource lib="hacking_box_v2-rescue" part="HB_TP" description=""/>
+      <property name="Sheetname" value="hacking_box_v2"/>
+      <property name="Sheetfile" value="hacking_box_v2.kicad_sch"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>00000000-0000-0000-0000-000071000036</tstamps>
+      <units>
+        <unit name="A">
+          <pins>
+            <pin num="1"/>
+          </pins>
+        </unit>
+      </units>
+    </comp>
+    <comp ref="TP_OLED_SDA">
+      <value>TP</value>
+      <footprint>TestPoint:TestPoint_Pad_D1.5mm</footprint>
+      <fields>
+        <field name="Footprint">TestPoint:TestPoint_Pad_D1.5mm</field>
+        <field name="Datasheet"/>
+        <field name="Description"/>
+      </fields>
+      <libsource lib="hacking_box_v2-rescue" part="HB_TP" description=""/>
+      <property name="Sheetname" value="hacking_box_v2"/>
+      <property name="Sheetfile" value="hacking_box_v2.kicad_sch"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>00000000-0000-0000-0000-000071000037</tstamps>
+      <units>
+        <unit name="A">
+          <pins>
+            <pin num="1"/>
+          </pins>
+        </unit>
+      </units>
+    </comp>
+    <comp ref="TP_UART_RX">
+      <value>TP</value>
+      <footprint>TestPoint:TestPoint_Pad_D1.5mm</footprint>
+      <fields>
+        <field name="Footprint">TestPoint:TestPoint_Pad_D1.5mm</field>
+        <field name="Datasheet"/>
+        <field name="Description"/>
+      </fields>
+      <libsource lib="hacking_box_v2-rescue" part="HB_TP" description=""/>
+      <property name="Sheetname" value="hacking_box_v2"/>
+      <property name="Sheetfile" value="hacking_box_v2.kicad_sch"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>00000000-0000-0000-0000-000071000038</tstamps>
+      <units>
+        <unit name="A">
+          <pins>
+            <pin num="1"/>
+          </pins>
+        </unit>
+      </units>
+    </comp>
+    <comp ref="TP_UART_TX">
+      <value>TP</value>
+      <footprint>TestPoint:TestPoint_Pad_D1.5mm</footprint>
+      <fields>
+        <field name="Footprint">TestPoint:TestPoint_Pad_D1.5mm</field>
+        <field name="Datasheet"/>
+        <field name="Description"/>
+      </fields>
+      <libsource lib="hacking_box_v2-rescue" part="HB_TP" description=""/>
+      <property name="Sheetname" value="hacking_box_v2"/>
+      <property name="Sheetfile" value="hacking_box_v2.kicad_sch"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>00000000-0000-0000-0000-000071000039</tstamps>
+      <units>
+        <unit name="A">
+          <pins>
+            <pin num="1"/>
+          </pins>
+        </unit>
+      </units>
+    </comp>
+    <comp ref="TP_VBUS">
+      <value>TP</value>
+      <footprint>TestPoint:TestPoint_Pad_D1.5mm</footprint>
+      <fields>
+        <field name="Footprint">TestPoint:TestPoint_Pad_D1.5mm</field>
+        <field name="Datasheet"/>
+        <field name="Description"/>
+      </fields>
+      <libsource lib="hacking_box_v2-rescue" part="HB_TP" description=""/>
+      <property name="Sheetname" value="hacking_box_v2"/>
+      <property name="Sheetfile" value="hacking_box_v2.kicad_sch"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>00000000-0000-0000-0000-00007100003a</tstamps>
+      <units>
+        <unit name="A">
+          <pins>
+            <pin num="1"/>
+          </pins>
+        </unit>
+      </units>
+    </comp>
+    <comp ref="U1">
+      <value>ESP32-S3-WROOM-1-N8R8</value>
+      <footprint>RF_Module:ESP32-S3-WROOM-1</footprint>
+      <fields>
+        <field name="Footprint">RF_Module:ESP32-S3-WROOM-1</field>
+        <field name="Datasheet"/>
+        <field name="Description"/>
+      </fields>
+      <libsource lib="hacking_box_v2-rescue" part="HB_ESP32" description=""/>
+      <property name="Sheetname" value="hacking_box_v2"/>
+      <property name="Sheetfile" value="hacking_box_v2.kicad_sch"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>00000000-0000-0000-0000-00007100003b</tstamps>
+      <units>
+        <unit name="A">
+          <pins>
+            <pin num="1"/>
+            <pin num="2"/>
+            <pin num="3"/>
+            <pin num="4"/>
+            <pin num="5"/>
+            <pin num="6"/>
+            <pin num="7"/>
+            <pin num="8"/>
+            <pin num="9"/>
+            <pin num="10"/>
+            <pin num="11"/>
+            <pin num="12"/>
+            <pin num="13"/>
+            <pin num="14"/>
+            <pin num="15"/>
+            <pin num="16"/>
+            <pin num="17"/>
+            <pin num="18"/>
+            <pin num="19"/>
+            <pin num="20"/>
+            <pin num="21"/>
+            <pin num="22"/>
+            <pin num="23"/>
+            <pin num="24"/>
+            <pin num="25"/>
+            <pin num="26"/>
+            <pin num="27"/>
+            <pin num="28"/>
+            <pin num="29"/>
+            <pin num="30"/>
+            <pin num="31"/>
+            <pin num="32"/>
+            <pin num="33"/>
+            <pin num="34"/>
+            <pin num="35"/>
+            <pin num="36"/>
+            <pin num="37"/>
+            <pin num="38"/>
+            <pin num="39"/>
+            <pin num="40"/>
+            <pin num="41"/>
+          </pins>
+        </unit>
+      </units>
+    </comp>
+    <comp ref="U2">
+      <value>AMS1117-3.3</value>
+      <footprint>Package_TO_SOT_SMD:SOT-223-3_TabPin2</footprint>
+      <fields>
+        <field name="Footprint">Package_TO_SOT_SMD:SOT-223-3_TabPin2</field>
+        <field name="Datasheet"/>
+        <field name="Description"/>
+      </fields>
+      <libsource lib="hacking_box_v2-rescue" part="HB_REG3" description=""/>
+      <property name="Sheetname" value="hacking_box_v2"/>
+      <property name="Sheetfile" value="hacking_box_v2.kicad_sch"/>
+      <sheetpath names="/" tstamps="/"/>
+      <tstamps>00000000-0000-0000-0000-00007100003c</tstamps>
+      <units>
+        <unit name="A">
+          <pins>
+            <pin num="1"/>
+            <pin num="3"/>
+            <pin num="2"/>
+          </pins>
+        </unit>
+      </units>
+    </comp>
+  </components>
+  <libparts>
+    <libpart lib="hacking_box_v2-rescue" part="HB_BUZZER">
+      <fields>
+        <field name="Reference">BZ</field>
+        <field name="Value">HB_BUZZER</field>
+        <field name="Footprint"/>
+        <field name="Datasheet"/>
+        <field name="Description"/>
+        <field name="Field42"/>
+      </fields>
+      <pins>
+        <pin num="1" name="+" type="passive"/>
+        <pin num="2" name="-" type="passive"/>
+        <pin num="3" name="NC" type="passive"/>
+      </pins>
+    </libpart>
+    <libpart lib="hacking_box_v2-rescue" part="HB_C">
+      <fields>
+        <field name="Reference">C</field>
+        <field name="Value">HB_C</field>
+        <field name="Footprint"/>
+        <field name="Datasheet"/>
+        <field name="Description"/>
+        <field name="Field42"/>
+      </fields>
+      <pins>
+        <pin num="1" name="1" type="passive"/>
+        <pin num="2" name="2" type="passive"/>
+      </pins>
+    </libpart>
+    <libpart lib="hacking_box_v2-rescue" part="HB_CONN4">
+      <fields>
+        <field name="Reference">J</field>
+        <field name="Value">HB_CONN4</field>
+        <field name="Footprint"/>
+        <field name="Datasheet"/>
+        <field name="Description"/>
+        <field name="Field42"/>
+      </fields>
+      <pins>
+        <pin num="1" name="GND" type="passive"/>
+        <pin num="2" name="3V3" type="passive"/>
+        <pin num="3" name="TX" type="passive"/>
+        <pin num="4" name="RX" type="passive"/>
+      </pins>
+    </libpart>
+    <libpart lib="hacking_box_v2-rescue" part="HB_DIODE">
+      <fields>
+        <field name="Reference">D</field>
+        <field name="Value">HB_DIODE</field>
+        <field name="Footprint"/>
+        <field name="Datasheet"/>
+        <field name="Description"/>
+        <field name="Field42"/>
+      </fields>
+      <pins>
+        <pin num="1" name="K" type="passive"/>
+        <pin num="2" name="A" type="passive"/>
+      </pins>
+    </libpart>
+    <libpart lib="hacking_box_v2-rescue" part="HB_ESD6">
+      <fields>
+        <field name="Reference">D</field>
+        <field name="Value">HB_ESD6</field>
+        <field name="Footprint"/>
+        <field name="Datasheet"/>
+        <field name="Description"/>
+        <field name="Field42"/>
+      </fields>
+      <pins>
+        <pin num="1" name="IO1" type="passive"/>
+        <pin num="2" name="GND" type="passive"/>
+        <pin num="3" name="IO2" type="passive"/>
+        <pin num="4" name="IO2" type="passive"/>
+        <pin num="5" name="VBUS" type="passive"/>
+        <pin num="6" name="IO1" type="passive"/>
+      </pins>
+    </libpart>
+    <libpart lib="hacking_box_v2-rescue" part="HB_ESP32">
+      <fields>
+        <field name="Reference">U</field>
+        <field name="Value">HB_ESP32</field>
+        <field name="Footprint"/>
+        <field name="Datasheet"/>
+        <field name="Description"/>
+        <field name="Field42"/>
+      </fields>
+      <pins>
+        <pin num="1" name="GND" type="passive"/>
+        <pin num="2" name="3V3" type="passive"/>
+        <pin num="3" name="EN" type="passive"/>
+        <pin num="4" name="IO4" type="passive"/>
+        <pin num="5" name="IO5" type="passive"/>
+        <pin num="6" name="IO6" type="passive"/>
+        <pin num="7" name="IO7" type="passive"/>
+        <pin num="8" name="IO15" type="passive"/>
+        <pin num="9" name="IO16" type="passive"/>
+        <pin num="10" name="IO17" type="passive"/>
+        <pin num="11" name="IO18" type="passive"/>
+        <pin num="12" name="IO8" type="passive"/>
+        <pin num="13" name="USB_D-" type="passive"/>
+        <pin num="14" name="USB_D+" type="passive"/>
+        <pin num="15" name="IO3" type="passive"/>
+        <pin num="16" name="IO46" type="passive"/>
+        <pin num="17" name="IO9" type="passive"/>
+        <pin num="18" name="IO10" type="passive"/>
+        <pin num="19" name="IO11" type="passive"/>
+        <pin num="20" name="IO12" type="passive"/>
+        <pin num="21" name="IO13" type="passive"/>
+        <pin num="22" name="IO14" type="passive"/>
+        <pin num="23" name="IO21" type="passive"/>
+        <pin num="24" name="IO47" type="passive"/>
+        <pin num="25" name="IO48" type="passive"/>
+        <pin num="26" name="IO45" type="passive"/>
+        <pin num="27" name="IO0" type="passive"/>
+        <pin num="28" name="IO35" type="passive"/>
+        <pin num="29" name="IO36" type="passive"/>
+        <pin num="30" name="IO37" type="passive"/>
+        <pin num="31" name="IO38" type="passive"/>
+        <pin num="32" name="IO39" type="passive"/>
+        <pin num="33" name="IO40" type="passive"/>
+        <pin num="34" name="IO41" type="passive"/>
+        <pin num="35" name="IO42" type="passive"/>
+        <pin num="36" name="RXD0" type="passive"/>
+        <pin num="37" name="TXD0" type="passive"/>
+        <pin num="38" name="IO2" type="passive"/>
+        <pin num="39" name="IO1" type="passive"/>
+        <pin num="40" name="GND" type="passive"/>
+        <pin num="41" name="GND_EP" type="passive"/>
+      </pins>
+    </libpart>
+    <libpart lib="hacking_box_v2-rescue" part="HB_FET3">
+      <fields>
+        <field name="Reference">Q</field>
+        <field name="Value">HB_FET3</field>
+        <field name="Footprint"/>
+        <field name="Datasheet"/>
+        <field name="Description"/>
+        <field name="Field42"/>
+      </fields>
+      <pins>
+        <pin num="1" name="G" type="passive"/>
+        <pin num="2" name="S" type="passive"/>
+        <pin num="3" name="D" type="passive"/>
+      </pins>
+    </libpart>
+    <libpart lib="hacking_box_v2-rescue" part="HB_LED">
+      <fields>
+        <field name="Reference">D</field>
+        <field name="Value">HB_LED</field>
+        <field name="Footprint"/>
+        <field name="Datasheet"/>
+        <field name="Description"/>
+        <field name="Field42"/>
+      </fields>
+      <pins>
+        <pin num="1" name="K" type="passive"/>
+        <pin num="2" name="A" type="passive"/>
+      </pins>
+    </libpart>
+    <libpart lib="hacking_box_v2-rescue" part="HB_MECH">
+      <fields>
+        <field name="Reference">H</field>
+        <field name="Value">HB_MECH</field>
+        <field name="Footprint"/>
+        <field name="Datasheet"/>
+        <field name="Description"/>
+        <field name="Field42"/>
+      </fields>
+    </libpart>
+    <libpart lib="hacking_box_v2-rescue" part="HB_OLED">
+      <fields>
+        <field name="Reference">DS</field>
+        <field name="Value">HB_OLED</field>
+        <field name="Footprint"/>
+        <field name="Datasheet"/>
+        <field name="Description"/>
+        <field name="Field42"/>
+      </fields>
+      <pins>
+        <pin num="1" name="GND" type="passive"/>
+        <pin num="2" name="VCC" type="passive"/>
+        <pin num="3" name="SCL" type="passive"/>
+        <pin num="4" name="SDA" type="passive"/>
+      </pins>
+    </libpart>
+    <libpart lib="hacking_box_v2-rescue" part="HB_R">
+      <fields>
+        <field name="Reference">R</field>
+        <field name="Value">HB_R</field>
+        <field name="Footprint"/>
+        <field name="Datasheet"/>
+        <field name="Description"/>
+        <field name="Field42"/>
+      </fields>
+      <pins>
+        <pin num="1" name="1" type="passive"/>
+        <pin num="2" name="2" type="passive"/>
+      </pins>
+    </libpart>
+    <libpart lib="hacking_box_v2-rescue" part="HB_REG3">
+      <fields>
+        <field name="Reference">U</field>
+        <field name="Value">HB_REG3</field>
+        <field name="Footprint"/>
+        <field name="Datasheet"/>
+        <field name="Description"/>
+        <field name="Field42"/>
+      </fields>
+      <pins>
+        <pin num="1" name="GND" type="passive"/>
+        <pin num="2" name="OUT" type="passive"/>
+        <pin num="3" name="IN" type="passive"/>
+      </pins>
+    </libpart>
+    <libpart lib="hacking_box_v2-rescue" part="HB_SW">
+      <fields>
+        <field name="Reference">SW</field>
+        <field name="Value">HB_SW</field>
+        <field name="Footprint"/>
+        <field name="Datasheet"/>
+        <field name="Description"/>
+        <field name="Field42"/>
+      </fields>
+      <pins>
+        <pin num="1" name="IN" type="passive"/>
+        <pin num="2" name="GND" type="passive"/>
+      </pins>
+    </libpart>
+    <libpart lib="hacking_box_v2-rescue" part="HB_TP">
+      <fields>
+        <field name="Reference">TP</field>
+        <field name="Value">HB_TP</field>
+        <field name="Footprint"/>
+        <field name="Datasheet"/>
+        <field name="Description"/>
+        <field name="Field42"/>
+      </fields>
+      <pins>
+        <pin num="1" name="TEST" type="passive"/>
+      </pins>
+    </libpart>
+    <libpart lib="hacking_box_v2-rescue" part="HB_USB">
+      <fields>
+        <field name="Reference">J</field>
+        <field name="Value">HB_USB</field>
+        <field name="Footprint"/>
+        <field name="Datasheet"/>
+        <field name="Description"/>
+        <field name="Field42"/>
+      </fields>
+      <pins>
+        <pin num="A1" name="GND_A" type="passive"/>
+        <pin num="A4" name="VBUS_A" type="passive"/>
+        <pin num="A5" name="CC1" type="passive"/>
+        <pin num="A6" name="D+_A" type="passive"/>
+        <pin num="A7" name="D-_A" type="passive"/>
+        <pin num="A8" name="SBU1" type="passive"/>
+        <pin num="A9" name="VBUS_A2" type="passive"/>
+        <pin num="A12" name="GND_A2" type="passive"/>
+        <pin num="B1" name="GND_B" type="passive"/>
+        <pin num="B4" name="VBUS_B" type="passive"/>
+        <pin num="B5" name="CC2" type="passive"/>
+        <pin num="B6" name="D+_B" type="passive"/>
+        <pin num="B7" name="D-_B" type="passive"/>
+        <pin num="B8" name="SBU2" type="passive"/>
+        <pin num="B9" name="VBUS_B2" type="passive"/>
+        <pin num="B12" name="GND_B2" type="passive"/>
+        <pin num="SH" name="SHIELD" type="passive"/>
+      </pins>
+    </libpart>
+  </libparts>
+  <libraries>
+    <library logical="hacking_box_v2-rescue">
+      <uri>${KIPRJMOD}/hacking_box_v2-cache.lib</uri>
+    </library>
+  </libraries>
+  <nets>
+    <net code="1" name="3V3" class="Default">
+      <node ref="BZ1" pin="1" pinfunction="+_1" pintype="passive"/>
+      <node ref="C4" pin="1" pinfunction="1_1" pintype="passive"/>
+      <node ref="C5" pin="1" pinfunction="1_1" pintype="passive"/>
+      <node ref="C6" pin="1" pinfunction="1_1" pintype="passive"/>
+      <node ref="C7" pin="1" pinfunction="1_1" pintype="passive"/>
+      <node ref="C8" pin="1" pinfunction="1_1" pintype="passive"/>
+      <node ref="C9" pin="1" pinfunction="1_1" pintype="passive"/>
+      <node ref="C_OLED" pin="1" pinfunction="1_1" pintype="passive"/>
+      <node ref="D_BZ" pin="1" pinfunction="K_1" pintype="passive"/>
+      <node ref="OLED1" pin="2" pinfunction="VCC_2" pintype="passive"/>
+      <node ref="P_UART" pin="2" pinfunction="3V3_2" pintype="passive"/>
+      <node ref="R_BOOT" pin="1" pinfunction="1_1" pintype="passive"/>
+      <node ref="R_EN" pin="1" pinfunction="1_1" pintype="passive"/>
+      <node ref="R_SCL" pin="1" pinfunction="1_1" pintype="passive"/>
+      <node ref="R_SDA" pin="1" pinfunction="1_1" pintype="passive"/>
+      <node ref="TP_3V3" pin="1" pinfunction="TEST_1" pintype="passive"/>
+      <node ref="U1" pin="2" pinfunction="3V3_2" pintype="passive"/>
+      <node ref="U2" pin="2" pinfunction="OUT_2" pintype="passive"/>
+    </net>
+    <net code="2" name="BOOT_GPIO0" class="Default">
+      <node ref="R_BOOT" pin="2" pinfunction="2_2" pintype="passive"/>
+      <node ref="TP_BOOT" pin="1" pinfunction="TEST_1" pintype="passive"/>
+      <node ref="U1" pin="27" pinfunction="IO0_27" pintype="passive"/>
+    </net>
+    <net code="3" name="BUZZER_GATE" class="Default">
+      <node ref="Q_BZ" pin="1" pinfunction="G_1" pintype="passive"/>
+      <node ref="R_BZ" pin="2" pinfunction="2_2" pintype="passive"/>
+      <node ref="R_BZ_PD" pin="1" pinfunction="1_1" pintype="passive"/>
+    </net>
+    <net code="4" name="BUZZER_GPIO" class="Default">
+      <node ref="R_BZ" pin="1" pinfunction="1_1" pintype="passive"/>
+      <node ref="U1" pin="11" pinfunction="IO18_11" pintype="passive"/>
+    </net>
+    <net code="5" name="BUZZER_SW" class="Default">
+      <node ref="BZ1" pin="2" pinfunction="-_2" pintype="passive"/>
+      <node ref="D_BZ" pin="2" pinfunction="A_2" pintype="passive"/>
+      <node ref="Q_BZ" pin="3" pinfunction="D_3" pintype="passive"/>
+    </net>
+    <net code="6" name="CHAL_0" class="Default">
+      <node ref="P_CHAL0" pin="1" pinfunction="TEST_1" pintype="passive"/>
+      <node ref="R_CHAL0" pin="2" pinfunction="2_2" pintype="passive"/>
+    </net>
+    <net code="7" name="CHAL_0_MCU" class="Default">
+      <node ref="R_CHAL0" pin="1" pinfunction="1_1" pintype="passive"/>
+      <node ref="U1" pin="6" pinfunction="IO6_6" pintype="passive"/>
+    </net>
+    <net code="8" name="CHAL_1" class="Default">
+      <node ref="P_CHAL1" pin="1" pinfunction="TEST_1" pintype="passive"/>
+      <node ref="R_CHAL1" pin="2" pinfunction="2_2" pintype="passive"/>
+    </net>
+    <net code="9" name="CHAL_1_MCU" class="Default">
+      <node ref="R_CHAL1" pin="1" pinfunction="1_1" pintype="passive"/>
+      <node ref="U1" pin="7" pinfunction="IO7_7" pintype="passive"/>
+    </net>
+    <net code="10" name="CHAL_2" class="Default">
+      <node ref="P_CHAL2" pin="1" pinfunction="TEST_1" pintype="passive"/>
+      <node ref="R_CHAL2" pin="2" pinfunction="2_2" pintype="passive"/>
+    </net>
+    <net code="11" name="CHAL_2_MCU" class="Default">
+      <node ref="R_CHAL2" pin="1" pinfunction="1_1" pintype="passive"/>
+      <node ref="U1" pin="12" pinfunction="IO8_12" pintype="passive"/>
+    </net>
+    <net code="12" name="EN" class="Default">
+      <node ref="C_EN" pin="1" pinfunction="1_1" pintype="passive"/>
+      <node ref="R_EN" pin="2" pinfunction="2_2" pintype="passive"/>
+      <node ref="TP_EN" pin="1" pinfunction="TEST_1" pintype="passive"/>
+      <node ref="U1" pin="3" pinfunction="EN_3" pintype="passive"/>
+    </net>
+    <net code="13" name="GAME_LEFT" class="Default">
+      <node ref="SW_EN" pin="1" pinfunction="IN_1" pintype="passive"/>
+      <node ref="U1" pin="17" pinfunction="IO9_17" pintype="passive"/>
+    </net>
+    <net code="14" name="GAME_OK" class="Default">
+      <node ref="SW_BOOT" pin="1" pinfunction="IN_1" pintype="passive"/>
+      <node ref="U1" pin="18" pinfunction="IO10_18" pintype="passive"/>
+    </net>
+    <net code="15" name="GAME_RIGHT" class="Default">
+      <node ref="SW_ADMIN" pin="1" pinfunction="IN_1" pintype="passive"/>
+      <node ref="U1" pin="20" pinfunction="IO12_20" pintype="passive"/>
+    </net>
+    <net code="16" name="GND" class="Default">
+      <node ref="C1" pin="2" pinfunction="2_2" pintype="passive"/>
+      <node ref="C2" pin="2" pinfunction="2_2" pintype="passive"/>
+      <node ref="C3" pin="2" pinfunction="2_2" pintype="passive"/>
+      <node ref="C4" pin="2" pinfunction="2_2" pintype="passive"/>
+      <node ref="C5" pin="2" pinfunction="2_2" pintype="passive"/>
+      <node ref="C6" pin="2" pinfunction="2_2" pintype="passive"/>
+      <node ref="C7" pin="2" pinfunction="2_2" pintype="passive"/>
+      <node ref="C8" pin="2" pinfunction="2_2" pintype="passive"/>
+      <node ref="C9" pin="2" pinfunction="2_2" pintype="passive"/>
+      <node ref="C_EN" pin="2" pinfunction="2_2" pintype="passive"/>
+      <node ref="C_OLED" pin="2" pinfunction="2_2" pintype="passive"/>
+      <node ref="D1" pin="2" pinfunction="GND_2" pintype="passive"/>
+      <node ref="J1" pin="A1" pinfunction="GND_A_A1" pintype="passive"/>
+      <node ref="J1" pin="A12" pinfunction="GND_A2_A12" pintype="passive"/>
+      <node ref="J1" pin="B1" pinfunction="GND_B_B1" pintype="passive"/>
+      <node ref="J1" pin="B12" pinfunction="GND_B2_B12" pintype="passive"/>
+      <node ref="J1" pin="SH" pinfunction="SHIELD_SH" pintype="passive"/>
+      <node ref="LED1" pin="1" pinfunction="K_1" pintype="passive"/>
+      <node ref="LED2" pin="1" pinfunction="K_1" pintype="passive"/>
+      <node ref="LED3" pin="1" pinfunction="K_1" pintype="passive"/>
+      <node ref="LED4" pin="1" pinfunction="K_1" pintype="passive"/>
+      <node ref="LED5" pin="1" pinfunction="K_1" pintype="passive"/>
+      <node ref="OLED1" pin="1" pinfunction="GND_1" pintype="passive"/>
+      <node ref="P_UART" pin="1" pinfunction="GND_1" pintype="passive"/>
+      <node ref="Q_BZ" pin="2" pinfunction="S_2" pintype="passive"/>
+      <node ref="R1" pin="2" pinfunction="2_2" pintype="passive"/>
+      <node ref="R2" pin="2" pinfunction="2_2" pintype="passive"/>
+      <node ref="R_BZ_PD" pin="2" pinfunction="2_2" pintype="passive"/>
+      <node ref="SW_ADMIN" pin="2" pinfunction="GND_2" pintype="passive"/>
+      <node ref="SW_BOOT" pin="2" pinfunction="GND_2" pintype="passive"/>
+      <node ref="SW_EN" pin="2" pinfunction="GND_2" pintype="passive"/>
+      <node ref="TP_GND" pin="1" pinfunction="TEST_1" pintype="passive"/>
+      <node ref="U1" pin="1" pinfunction="GND_1" pintype="passive"/>
+      <node ref="U1" pin="40" pinfunction="GND_40" pintype="passive"/>
+      <node ref="U1" pin="41" pinfunction="GND_EP_41" pintype="passive"/>
+      <node ref="U2" pin="1" pinfunction="GND_1" pintype="passive"/>
+    </net>
+    <net code="17" name="OLED_SCL" class="Default">
+      <node ref="OLED1" pin="3" pinfunction="SCL_3" pintype="passive"/>
+      <node ref="R_SCL" pin="2" pinfunction="2_2" pintype="passive"/>
+      <node ref="TP_OLED_SCL" pin="1" pinfunction="TEST_1" pintype="passive"/>
+      <node ref="U1" pin="5" pinfunction="IO5_5" pintype="passive"/>
+    </net>
+    <net code="18" name="OLED_SDA" class="Default">
+      <node ref="OLED1" pin="4" pinfunction="SDA_4" pintype="passive"/>
+      <node ref="R_SDA" pin="2" pinfunction="2_2" pintype="passive"/>
+      <node ref="TP_OLED_SDA" pin="1" pinfunction="TEST_1" pintype="passive"/>
+      <node ref="U1" pin="4" pinfunction="IO4_4" pintype="passive"/>
+    </net>
+    <net code="19" name="PLAYER_UART_RX" class="Default">
+      <node ref="P_UART" pin="4" pinfunction="RX_4" pintype="passive"/>
+      <node ref="R_UART_RX" pin="2" pinfunction="2_2" pintype="passive"/>
+      <node ref="TP_UART_RX" pin="1" pinfunction="TEST_1" pintype="passive"/>
+    </net>
+    <net code="20" name="PLAYER_UART_TX" class="Default">
+      <node ref="P_UART" pin="3" pinfunction="TX_3" pintype="passive"/>
+      <node ref="R_UART_TX" pin="2" pinfunction="2_2" pintype="passive"/>
+      <node ref="TP_UART_TX" pin="1" pinfunction="TEST_1" pintype="passive"/>
+    </net>
+    <net code="21" name="STATUS_LED_1_A" class="Default">
+      <node ref="LED1" pin="2" pinfunction="A_2" pintype="passive"/>
+      <node ref="R_LED1" pin="2" pinfunction="2_2" pintype="passive"/>
+    </net>
+    <net code="22" name="STATUS_LED_1_MCU" class="Default">
+      <node ref="R_LED1" pin="1" pinfunction="1_1" pintype="passive"/>
+      <node ref="U1" pin="21" pinfunction="IO13_21" pintype="passive"/>
+    </net>
+    <net code="23" name="STATUS_LED_2_A" class="Default">
+      <node ref="LED2" pin="2" pinfunction="A_2" pintype="passive"/>
+      <node ref="R_LED2" pin="2" pinfunction="2_2" pintype="passive"/>
+    </net>
+    <net code="24" name="STATUS_LED_2_MCU" class="Default">
+      <node ref="R_LED2" pin="1" pinfunction="1_1" pintype="passive"/>
+      <node ref="U1" pin="22" pinfunction="IO14_22" pintype="passive"/>
+    </net>
+    <net code="25" name="STATUS_LED_3_A" class="Default">
+      <node ref="LED3" pin="2" pinfunction="A_2" pintype="passive"/>
+      <node ref="R_LED3" pin="2" pinfunction="2_2" pintype="passive"/>
+    </net>
+    <net code="26" name="STATUS_LED_3_MCU" class="Default">
+      <node ref="R_LED3" pin="1" pinfunction="1_1" pintype="passive"/>
+      <node ref="U1" pin="8" pinfunction="IO15_8" pintype="passive"/>
+    </net>
+    <net code="27" name="STATUS_LED_4_A" class="Default">
+      <node ref="LED4" pin="2" pinfunction="A_2" pintype="passive"/>
+      <node ref="R_LED4" pin="2" pinfunction="2_2" pintype="passive"/>
+    </net>
+    <net code="28" name="STATUS_LED_4_MCU" class="Default">
+      <node ref="R_LED4" pin="1" pinfunction="1_1" pintype="passive"/>
+      <node ref="U1" pin="9" pinfunction="IO16_9" pintype="passive"/>
+    </net>
+    <net code="29" name="STATUS_LED_5_A" class="Default">
+      <node ref="LED5" pin="2" pinfunction="A_2" pintype="passive"/>
+      <node ref="R_LED5" pin="2" pinfunction="2_2" pintype="passive"/>
+    </net>
+    <net code="30" name="STATUS_LED_5_MCU" class="Default">
+      <node ref="R_LED5" pin="1" pinfunction="1_1" pintype="passive"/>
+      <node ref="U1" pin="10" pinfunction="IO17_10" pintype="passive"/>
+    </net>
+    <net code="31" name="UART_RX_MCU" class="Default">
+      <node ref="R_UART_RX" pin="1" pinfunction="1_1" pintype="passive"/>
+      <node ref="U1" pin="36" pinfunction="RXD0_36" pintype="passive"/>
+    </net>
+    <net code="32" name="UART_TX_MCU" class="Default">
+      <node ref="R_UART_TX" pin="1" pinfunction="1_1" pintype="passive"/>
+      <node ref="U1" pin="37" pinfunction="TXD0_37" pintype="passive"/>
+    </net>
+    <net code="33" name="USB_CC1" class="Default">
+      <node ref="J1" pin="A5" pinfunction="CC1_A5" pintype="passive"/>
+      <node ref="R1" pin="1" pinfunction="1_1" pintype="passive"/>
+    </net>
+    <net code="34" name="USB_CC2" class="Default">
+      <node ref="J1" pin="B5" pinfunction="CC2_B5" pintype="passive"/>
+      <node ref="R2" pin="1" pinfunction="1_1" pintype="passive"/>
+    </net>
+    <net code="35" name="USB_D_N" class="USB">
+      <node ref="D1" pin="1" pinfunction="IO1_1" pintype="passive"/>
+      <node ref="D1" pin="6" pinfunction="IO1_6" pintype="passive"/>
+      <node ref="J1" pin="A7" pinfunction="D-_A_A7" pintype="passive"/>
+      <node ref="J1" pin="B7" pinfunction="D-_B_B7" pintype="passive"/>
+      <node ref="U1" pin="13" pinfunction="USB_D-_13" pintype="passive"/>
+    </net>
+    <net code="36" name="USB_D_P" class="USB">
+      <node ref="D1" pin="3" pinfunction="IO2_3" pintype="passive"/>
+      <node ref="D1" pin="4" pinfunction="IO2_4" pintype="passive"/>
+      <node ref="J1" pin="A6" pinfunction="D+_A_A6" pintype="passive"/>
+      <node ref="J1" pin="B6" pinfunction="D+_B_B6" pintype="passive"/>
+      <node ref="U1" pin="14" pinfunction="USB_D+_14" pintype="passive"/>
+    </net>
+    <net code="37" name="VBUS" class="Default">
+      <node ref="C1" pin="1" pinfunction="1_1" pintype="passive"/>
+      <node ref="C2" pin="1" pinfunction="1_1" pintype="passive"/>
+      <node ref="C3" pin="1" pinfunction="1_1" pintype="passive"/>
+      <node ref="D1" pin="5" pinfunction="VBUS_5" pintype="passive"/>
+      <node ref="J1" pin="A4" pinfunction="VBUS_A_A4" pintype="passive"/>
+      <node ref="J1" pin="A9" pinfunction="VBUS_A2_A9" pintype="passive"/>
+      <node ref="J1" pin="B4" pinfunction="VBUS_B_B4" pintype="passive"/>
+      <node ref="J1" pin="B9" pinfunction="VBUS_B2_B9" pintype="passive"/>
+      <node ref="TP_VBUS" pin="1" pinfunction="TEST_1" pintype="passive"/>
+      <node ref="U2" pin="3" pinfunction="IN_3" pintype="passive"/>
+    </net>
+    <net code="38" name="unconnected-(BZ1-NC-Pad3)" class="Default">
+      <node ref="BZ1" pin="3" pinfunction="NC_3" pintype="passive+no_connect"/>
+    </net>
+    <net code="39" name="unconnected-(J1-SBU1-PadA8)" class="Default">
+      <node ref="J1" pin="A8" pinfunction="SBU1_A8" pintype="passive+no_connect"/>
+    </net>
+    <net code="40" name="unconnected-(J1-SBU2-PadB8)" class="Default">
+      <node ref="J1" pin="B8" pinfunction="SBU2_B8" pintype="passive+no_connect"/>
+    </net>
+    <net code="41" name="unconnected-(U1-IO1-Pad39)" class="Default">
+      <node ref="U1" pin="39" pinfunction="IO1_39" pintype="passive+no_connect"/>
+    </net>
+    <net code="42" name="unconnected-(U1-IO2-Pad38)" class="Default">
+      <node ref="U1" pin="38" pinfunction="IO2_38" pintype="passive+no_connect"/>
+    </net>
+    <net code="43" name="unconnected-(U1-IO3-Pad15)" class="Default">
+      <node ref="U1" pin="15" pinfunction="IO3_15" pintype="passive+no_connect"/>
+    </net>
+    <net code="44" name="unconnected-(U1-IO11-Pad19)" class="Default">
+      <node ref="U1" pin="19" pinfunction="IO11_19" pintype="passive+no_connect"/>
+    </net>
+    <net code="45" name="unconnected-(U1-IO21-Pad23)" class="Default">
+      <node ref="U1" pin="23" pinfunction="IO21_23" pintype="passive+no_connect"/>
+    </net>
+    <net code="46" name="unconnected-(U1-IO35-Pad28)" class="Default">
+      <node ref="U1" pin="28" pinfunction="IO35_28" pintype="passive+no_connect"/>
+    </net>
+    <net code="47" name="unconnected-(U1-IO36-Pad29)" class="Default">
+      <node ref="U1" pin="29" pinfunction="IO36_29" pintype="passive+no_connect"/>
+    </net>
+    <net code="48" name="unconnected-(U1-IO37-Pad30)" class="Default">
+      <node ref="U1" pin="30" pinfunction="IO37_30" pintype="passive+no_connect"/>
+    </net>
+    <net code="49" name="unconnected-(U1-IO38-Pad31)" class="Default">
+      <node ref="U1" pin="31" pinfunction="IO38_31" pintype="passive+no_connect"/>
+    </net>
+    <net code="50" name="unconnected-(U1-IO39-Pad32)" class="Default">
+      <node ref="U1" pin="32" pinfunction="IO39_32" pintype="passive+no_connect"/>
+    </net>
+    <net code="51" name="unconnected-(U1-IO40-Pad33)" class="Default">
+      <node ref="U1" pin="33" pinfunction="IO40_33" pintype="passive+no_connect"/>
+    </net>
+    <net code="52" name="unconnected-(U1-IO41-Pad34)" class="Default">
+      <node ref="U1" pin="34" pinfunction="IO41_34" pintype="passive+no_connect"/>
+    </net>
+    <net code="53" name="unconnected-(U1-IO42-Pad35)" class="Default">
+      <node ref="U1" pin="35" pinfunction="IO42_35" pintype="passive+no_connect"/>
+    </net>
+    <net code="54" name="unconnected-(U1-IO45-Pad26)" class="Default">
+      <node ref="U1" pin="26" pinfunction="IO45_26" pintype="passive+no_connect"/>
+    </net>
+    <net code="55" name="unconnected-(U1-IO46-Pad16)" class="Default">
+      <node ref="U1" pin="16" pinfunction="IO46_16" pintype="passive+no_connect"/>
+    </net>
+    <net code="56" name="unconnected-(U1-IO47-Pad24)" class="Default">
+      <node ref="U1" pin="24" pinfunction="IO47_24" pintype="passive+no_connect"/>
+    </net>
+    <net code="57" name="unconnected-(U1-IO48-Pad25)" class="Default">
+      <node ref="U1" pin="25" pinfunction="IO48_25" pintype="passive+no_connect"/>
+    </net>
+  </nets>
+</export>

@@ -1,0 +1,297 @@
+** Drc report for hacking_box_v2.kicad_pcb **
+** Created on 2026-07-28T11:50:59 **
+** Report includes: Errors, Warnings **
+
+** Found 76 DRC violations **
+[courtyards_overlap]: Courtyards overlap
+    Rule: 부품자리 제약조건 기판 설정; error
+    @(88.0000 mm, 47.0000 mm): 풋프린트 D_BZ
+    @(85.5000 mm, 49.5000 mm): 풋프린트 R_BZ_PD
+[courtyards_overlap]: Courtyards overlap
+    Rule: 부품자리 제약조건 기판 설정; error
+    @(88.0000 mm, 47.0000 mm): 풋프린트 D_BZ
+    @(85.5000 mm, 46.5000 mm): 풋프린트 R_BZ
+[copper_edge_clearance]: 기판 모서리 공간거리 위반 (기판 구성 제약 모서리 공간거리 0.5000 mm; 실제값 0.0000 mm)
+    Rule: 기판 구성 제약 모서리; error
+    @(56.7933 mm, 104.7603 mm): 세그먼트 (Edge.Cuts)
+    @(58.1800 mm, 105.5500 mm): SH의 PTH 패드[GND]J1
+[copper_edge_clearance]: 기판 모서리 공간거리 위반 (기판 구성 제약 모서리 공간거리 0.5000 mm; 실제값 0.0000 mm)
+    Rule: 기판 구성 제약 모서리; error
+    @(65.2692 mm, 107.3129 mm): 세그먼트 (Edge.Cuts)
+    @(66.8200 mm, 105.5500 mm): SH의 PTH 패드[GND]J1
+[drill_out_of_range]: 홀 크기 범위를 벗어남 (보드 설정 제약 조건 최소 홀 0.3000 mm; 실제 값 0.2000 mm)
+    Rule: 보드 설정 제약 조건; error
+    @(85.7400 mm, 68.1000 mm): 41의 PTH 패드[GND]U1
+[drill_out_of_range]: 홀 크기 범위를 벗어남 (보드 설정 제약 조건 최소 홀 0.3000 mm; 실제 값 0.2000 mm)
+    Rule: 보드 설정 제약 조건; error
+    @(84.3400 mm, 68.1000 mm): 41의 PTH 패드[GND]U1
+[drill_out_of_range]: 홀 크기 범위를 벗어남 (보드 설정 제약 조건 최소 홀 0.3000 mm; 실제 값 0.2000 mm)
+    Rule: 보드 설정 제약 조건; error
+    @(86.4400 mm, 68.8000 mm): 41의 PTH 패드[GND]U1
+[drill_out_of_range]: 홀 크기 범위를 벗어남 (보드 설정 제약 조건 최소 홀 0.3000 mm; 실제 값 0.2000 mm)
+    Rule: 보드 설정 제약 조건; error
+    @(85.0400 mm, 68.8000 mm): 41의 PTH 패드[GND]U1
+[drill_out_of_range]: 홀 크기 범위를 벗어남 (보드 설정 제약 조건 최소 홀 0.3000 mm; 실제 값 0.2000 mm)
+    Rule: 보드 설정 제약 조건; error
+    @(83.6400 mm, 68.8000 mm): 41의 PTH 패드[GND]U1
+[drill_out_of_range]: 홀 크기 범위를 벗어남 (보드 설정 제약 조건 최소 홀 0.3000 mm; 실제 값 0.2000 mm)
+    Rule: 보드 설정 제약 조건; error
+    @(85.7400 mm, 69.5000 mm): 41의 PTH 패드[GND]U1
+[drill_out_of_range]: 홀 크기 범위를 벗어남 (보드 설정 제약 조건 최소 홀 0.3000 mm; 실제 값 0.2000 mm)
+    Rule: 보드 설정 제약 조건; error
+    @(84.3400 mm, 69.5000 mm): 41의 PTH 패드[GND]U1
+[drill_out_of_range]: 홀 크기 범위를 벗어남 (보드 설정 제약 조건 최소 홀 0.3000 mm; 실제 값 0.2000 mm)
+    Rule: 보드 설정 제약 조건; error
+    @(86.4400 mm, 70.2000 mm): 41의 PTH 패드[GND]U1
+[drill_out_of_range]: 홀 크기 범위를 벗어남 (보드 설정 제약 조건 최소 홀 0.3000 mm; 실제 값 0.2000 mm)
+    Rule: 보드 설정 제약 조건; error
+    @(85.0400 mm, 70.2000 mm): 41의 PTH 패드[GND]U1
+[drill_out_of_range]: 홀 크기 범위를 벗어남 (보드 설정 제약 조건 최소 홀 0.3000 mm; 실제 값 0.2000 mm)
+    Rule: 보드 설정 제약 조건; error
+    @(83.6400 mm, 70.2000 mm): 41의 PTH 패드[GND]U1
+[drill_out_of_range]: 홀 크기 범위를 벗어남 (보드 설정 제약 조건 최소 홀 0.3000 mm; 실제 값 0.2000 mm)
+    Rule: 보드 설정 제약 조건; error
+    @(85.7400 mm, 70.9000 mm): 41의 PTH 패드[GND]U1
+[drill_out_of_range]: 홀 크기 범위를 벗어남 (보드 설정 제약 조건 최소 홀 0.3000 mm; 실제 값 0.2000 mm)
+    Rule: 보드 설정 제약 조건; error
+    @(84.3400 mm, 70.9000 mm): 41의 PTH 패드[GND]U1
+[silk_edge_clearance]: Silkscreen clipped by board edge
+    Rule: 기판 구성 제약 실크; warning
+    @(24.3439 mm, 86.8013 mm): 세그먼트 (Edge.Cuts)
+    @(72.7746 mm, 25.8337 mm): 다각형 (B.Silkscreen)
+[silk_edge_clearance]: Silkscreen clipped by board edge
+    Rule: 기판 구성 제약 실크; warning
+    @(59.7246 mm, 107.3163 mm): 세그먼트 (Edge.Cuts)
+    @(57.8000 mm, 108.4000 mm): 세그먼트 of J1 on F.Silkscreen
+[text_height]: 텍스트 높이가 범위를 벗어남 (보드의 최대 실크 텍스트 높이 제한 최소 높이 0.8000 mm; 실제 0.5800 mm)
+    Rule: 보드의 최대 실크 텍스트 높이 제한; warning
+    @(30.0000 mm, 83.0000 mm): PCB 텍스트 'C0' (F.Silkscreen)
+[text_height]: 텍스트 높이가 범위를 벗어남 (보드의 최대 실크 텍스트 높이 제한 최소 높이 0.8000 mm; 실제 0.5800 mm)
+    Rule: 보드의 최대 실크 텍스트 높이 제한; warning
+    @(36.0000 mm, 83.0000 mm): PCB 텍스트 'C1' (F.Silkscreen)
+[text_height]: 텍스트 높이가 범위를 벗어남 (보드의 최대 실크 텍스트 높이 제한 최소 높이 0.8000 mm; 실제 0.5800 mm)
+    Rule: 보드의 최대 실크 텍스트 높이 제한; warning
+    @(42.0000 mm, 83.0000 mm): PCB 텍스트 'C2' (F.Silkscreen)
+[text_height]: 텍스트 높이가 범위를 벗어남 (보드의 최대 실크 텍스트 높이 제한 최소 높이 0.8000 mm; 실제 0.5800 mm)
+    Rule: 보드의 최대 실크 텍스트 높이 제한; warning
+    @(52.0000 mm, 55.9000 mm): PCB 텍스트 '1' (F.Silkscreen)
+[text_height]: 텍스트 높이가 범위를 벗어남 (보드의 최대 실크 텍스트 높이 제한 최소 높이 0.8000 mm; 실제 0.5800 mm)
+    Rule: 보드의 최대 실크 텍스트 높이 제한; warning
+    @(57.2500 mm, 55.9000 mm): PCB 텍스트 '2' (F.Silkscreen)
+[text_height]: 텍스트 높이가 범위를 벗어남 (보드의 최대 실크 텍스트 높이 제한 최소 높이 0.8000 mm; 실제 0.5800 mm)
+    Rule: 보드의 최대 실크 텍스트 높이 제한; warning
+    @(62.5000 mm, 55.9000 mm): PCB 텍스트 '3' (F.Silkscreen)
+[text_height]: 텍스트 높이가 범위를 벗어남 (보드의 최대 실크 텍스트 높이 제한 최소 높이 0.8000 mm; 실제 0.5800 mm)
+    Rule: 보드의 최대 실크 텍스트 높이 제한; warning
+    @(67.7500 mm, 55.9000 mm): PCB 텍스트 '4' (F.Silkscreen)
+[text_height]: 텍스트 높이가 범위를 벗어남 (보드의 최대 실크 텍스트 높이 제한 최소 높이 0.8000 mm; 실제 0.5800 mm)
+    Rule: 보드의 최대 실크 텍스트 높이 제한; warning
+    @(73.0000 mm, 55.9000 mm): PCB 텍스트 '5' (F.Silkscreen)
+[text_height]: 텍스트 높이가 범위를 벗어남 (보드의 최대 실크 텍스트 높이 제한 최소 높이 0.8000 mm; 실제 0.5800 mm)
+    Rule: 보드의 최대 실크 텍스트 높이 제한; warning
+    @(62.5000 mm, 23.2000 mm): PCB 텍스트 'Developed By @Z3r0c0k3_' (F.Silkscreen)
+[text_height]: 텍스트 높이가 범위를 벗어남 (보드의 최대 실크 텍스트 높이 제한 최소 높이 0.8000 mm; 실제 0.6200 mm)
+    Rule: 보드의 최대 실크 텍스트 높이 제한; warning
+    @(52.5000 mm, 84.5000 mm): PCB 텍스트 'RST' (F.Silkscreen)
+[text_height]: 텍스트 높이가 범위를 벗어남 (보드의 최대 실크 텍스트 높이 제한 최소 높이 0.8000 mm; 실제 0.6200 mm)
+    Rule: 보드의 최대 실크 텍스트 높이 제한; warning
+    @(62.5000 mm, 84.5000 mm): PCB 텍스트 'BOOT' (F.Silkscreen)
+[text_height]: 텍스트 높이가 범위를 벗어남 (보드의 최대 실크 텍스트 높이 제한 최소 높이 0.8000 mm; 실제 0.6200 mm)
+    Rule: 보드의 최대 실크 텍스트 높이 제한; warning
+    @(72.5000 mm, 84.5000 mm): PCB 텍스트 'ADMIN' (F.Silkscreen)
+[text_height]: 텍스트 높이가 범위를 벗어남 (보드의 최대 실크 텍스트 높이 제한 최소 높이 0.8000 mm; 실제 0.7200 mm)
+    Rule: 보드의 최대 실크 텍스트 높이 제한; warning
+    @(34.5000 mm, 27.5000 mm): PCB 텍스트 'UART' (F.Silkscreen)
+[text_height]: 텍스트 높이가 범위를 벗어남 (보드의 최대 실크 텍스트 높이 제한 최소 높이 0.8000 mm; 실제 0.7200 mm)
+    Rule: 보드의 최대 실크 텍스트 높이 제한; warning
+    @(62.5000 mm, 54.7000 mm): PCB 텍스트 'STATUS' (F.Silkscreen)
+[text_height]: 텍스트 높이가 범위를 벗어남 (보드의 최대 실크 텍스트 높이 제한 최소 높이 0.8000 mm; 실제 0.7200 mm)
+    Rule: 보드의 최대 실크 텍스트 높이 제한; warning
+    @(62.5000 mm, 91.8000 mm): PCB 텍스트 'USB-C' (F.Silkscreen)
+[text_height]: 텍스트 높이가 범위를 벗어남 (보드의 최대 실크 텍스트 높이 제한 최소 높이 0.8000 mm; 실제 0.5400 mm)
+    Rule: 보드의 최대 실크 텍스트 높이 제한; warning
+    @(28.0000 mm, 50.7000 mm): PCB 텍스트 '3V3' (B.Silkscreen)
+[text_height]: 텍스트 높이가 범위를 벗어남 (보드의 최대 실크 텍스트 높이 제한 최소 높이 0.8000 mm; 실제 0.5400 mm)
+    Rule: 보드의 최대 실크 텍스트 높이 제한; warning
+    @(28.0000 mm, 57.7000 mm): PCB 텍스트 'EN' (B.Silkscreen)
+[text_height]: 텍스트 높이가 범위를 벗어남 (보드의 최대 실크 텍스트 높이 제한 최소 높이 0.8000 mm; 실제 0.5400 mm)
+    Rule: 보드의 최대 실크 텍스트 높이 제한; warning
+    @(28.0000 mm, 64.7000 mm): PCB 텍스트 'RX' (B.Silkscreen)
+[text_height]: 텍스트 높이가 범위를 벗어남 (보드의 최대 실크 텍스트 높이 제한 최소 높이 0.8000 mm; 실제 0.5400 mm)
+    Rule: 보드의 최대 실크 텍스트 높이 제한; warning
+    @(34.0000 mm, 50.7000 mm): PCB 텍스트 'GND' (B.Silkscreen)
+[text_height]: 텍스트 높이가 범위를 벗어남 (보드의 최대 실크 텍스트 높이 제한 최소 높이 0.8000 mm; 실제 0.5400 mm)
+    Rule: 보드의 최대 실크 텍스트 높이 제한; warning
+    @(34.0000 mm, 57.7000 mm): PCB 텍스트 'BOOT' (B.Silkscreen)
+[text_height]: 텍스트 높이가 범위를 벗어남 (보드의 최대 실크 텍스트 높이 제한 최소 높이 0.8000 mm; 실제 0.5400 mm)
+    Rule: 보드의 최대 실크 텍스트 높이 제한; warning
+    @(34.0000 mm, 64.7000 mm): PCB 텍스트 'SCL' (B.Silkscreen)
+[text_height]: 텍스트 높이가 범위를 벗어남 (보드의 최대 실크 텍스트 높이 제한 최소 높이 0.8000 mm; 실제 0.5400 mm)
+    Rule: 보드의 최대 실크 텍스트 높이 제한; warning
+    @(40.0000 mm, 50.7000 mm): PCB 텍스트 '5V' (B.Silkscreen)
+[text_height]: 텍스트 높이가 범위를 벗어남 (보드의 최대 실크 텍스트 높이 제한 최소 높이 0.8000 mm; 실제 0.5400 mm)
+    Rule: 보드의 최대 실크 텍스트 높이 제한; warning
+    @(40.0000 mm, 57.7000 mm): PCB 텍스트 'TX' (B.Silkscreen)
+[text_height]: 텍스트 높이가 범위를 벗어남 (보드의 최대 실크 텍스트 높이 제한 최소 높이 0.8000 mm; 실제 0.5400 mm)
+    Rule: 보드의 최대 실크 텍스트 높이 제한; warning
+    @(40.0000 mm, 64.7000 mm): PCB 텍스트 'SDA' (B.Silkscreen)
+[text_height]: 텍스트 높이가 범위를 벗어남 (보드의 최대 실크 텍스트 높이 제한 최소 높이 0.8000 mm; 실제 0.7800 mm)
+    Rule: 보드의 최대 실크 텍스트 높이 제한; warning
+    @(62.5000 mm, 98.0000 mm): PCB 텍스트 'DKU Aegis' (B.Silkscreen)
+[silk_overlap]: Silkscreen clearance
+    Rule: 기판 구성 제약 실크; warning
+    @(86.0000 mm, 47.0000 mm): D_BZ 의 참조 필드
+    @(85.5000 mm, 48.0700 mm): R_BZ_PD 의 참조 필드
+[silk_overlap]: Silkscreen clearance
+    Rule: 기판 구성 제약 실크; warning
+    @(86.0000 mm, 47.0000 mm): D_BZ 의 참조 필드
+    @(85.5000 mm, 45.0700 mm): R_BZ 의 참조 필드
+[silk_overlap]: Silkscreen clearance
+    Rule: 기판 구성 제약 실크; warning
+    @(85.2627 mm, 45.9775 mm): 세그먼트 of R_BZ on F.Silkscreen
+    @(86.0000 mm, 47.0000 mm): D_BZ 의 참조 필드
+[silk_overlap]: Silkscreen clearance
+    Rule: 기판 구성 제약 실크; warning
+    @(87.0000 mm, 49.3600 mm): 세그먼트 of D_BZ on F.Silkscreen
+    @(85.5000 mm, 45.0700 mm): R_BZ 의 참조 필드
+[silk_overlap]: Silkscreen clearance
+    Rule: 기판 구성 제약 실크; warning
+    @(88.6000 mm, 48.0000 mm): Q_BZ 의 참조 필드
+    @(85.5000 mm, 48.0700 mm): R_BZ_PD 의 참조 필드
+[silk_overlap]: Silkscreen clearance
+    Rule: 기판 구성 제약 실크; warning
+    @(88.6000 mm, 48.0000 mm): Q_BZ 의 참조 필드
+    @(87.0000 mm, 49.3600 mm): 세그먼트 of D_BZ on F.Silkscreen
+[silk_overlap]: Silkscreen clearance
+    Rule: 기판 구성 제약 실크; warning
+    @(88.6000 mm, 48.0000 mm): Q_BZ 의 참조 필드
+    @(89.0000 mm, 49.3600 mm): 세그먼트 of D_BZ on F.Silkscreen
+[silk_overlap]: Silkscreen clearance
+    Rule: 기판 구성 제약 실크; warning
+    @(85.5000 mm, 48.0700 mm): R_BZ_PD 의 참조 필드
+    @(87.0000 mm, 49.3600 mm): 세그먼트 of D_BZ on F.Silkscreen
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; warning
+    @(27.0073 mm, 51.3192 mm): 세그먼트 (F.Silkscreen)
+    @(27.0000 mm, 53.9500 mm): 패드 1 [VBUS]의 C1 위F.Cu
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; warning
+    @(27.0073 mm, 51.3192 mm): 세그먼트 (F.Silkscreen)
+    @(27.0000 mm, 52.0500 mm): 패드 2 [GND]의 C1 위F.Cu
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; warning
+    @(26.3802 mm, 53.7190 mm): 세그먼트 (F.Silkscreen)
+    @(27.0000 mm, 53.9500 mm): 패드 1 [VBUS]의 C1 위F.Cu
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; warning
+    @(86.0000 mm, 47.0000 mm): D_BZ 의 참조 필드
+    @(86.3250 mm, 46.5000 mm): 패드 2 [BUZZER_GATE]의 R_BZ 위F.Cu
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; warning
+    @(88.6000 mm, 48.0000 mm): Q_BZ 의 참조 필드
+    @(88.0000 mm, 48.6500 mm): 패드 1 [3V3]의 D_BZ 위F.Cu
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; warning
+    @(87.3750 mm, 38.8750 mm): 직사각형 of BZ1 on F.Silkscreen
+    @(91.9475 mm, 43.2500 mm): 패드 2 [BUZZER_SW]의 BZ1 위F.Cu
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; warning
+    @(87.3750 mm, 38.8750 mm): 직사각형 of BZ1 on F.Silkscreen
+    @(88.0525 mm, 43.2500 mm): 패드 1 [3V3]의 BZ1 위F.Cu
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; warning
+    @(87.3750 mm, 38.8750 mm): 직사각형 of BZ1 on F.Silkscreen
+    @(88.0525 mm, 39.7500 mm): 패드 3 [<no net>]의 BZ1 위F.Cu
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; warning
+    @(85.5000 mm, 48.0700 mm): R_BZ_PD 의 참조 필드
+    @(88.0000 mm, 48.6500 mm): 패드 1 [3V3]의 D_BZ 위F.Cu
+[silk_overlap]: Silkscreen clearance
+    Rule: 기판 구성 제약 실크; warning
+    @(40.0000 mm, 53.0000 mm): 원 of TP_VBUS on B.Silkscreen
+    @(72.7746 mm, 25.8337 mm): 다각형 (B.Silkscreen)
+[silk_overlap]: Silkscreen clearance
+    Rule: 기판 구성 제약 실크; warning
+    @(40.0000 mm, 50.7000 mm): PCB 텍스트 '5V' (B.Silkscreen)
+    @(72.7746 mm, 25.8337 mm): 다각형 (B.Silkscreen)
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; warning
+    @(72.7746 mm, 25.8337 mm): 다각형 (B.Silkscreen)
+    @(51.0000 mm, 50.5000 mm): OLED1의 NPTH 패드
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; warning
+    @(72.7746 mm, 25.8337 mm): 다각형 (B.Silkscreen)
+    @(51.0000 mm, 27.5000 mm): OLED1의 NPTH 패드
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; warning
+    @(72.7746 mm, 25.8337 mm): 다각형 (B.Silkscreen)
+    @(74.0000 mm, 27.5000 mm): OLED1의 NPTH 패드
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; warning
+    @(72.7746 mm, 25.8337 mm): 다각형 (B.Silkscreen)
+    @(74.0000 mm, 50.5000 mm): OLED1의 NPTH 패드
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; warning
+    @(72.7746 mm, 25.8337 mm): 다각형 (B.Silkscreen)
+    @(63.7700 mm, 50.4300 mm): 3의 PTH 패드[OLED_SCL]OLED1
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; warning
+    @(72.7746 mm, 25.8337 mm): 다각형 (B.Silkscreen)
+    @(66.3100 mm, 50.4300 mm): 4의 PTH 패드[OLED_SDA]OLED1
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; warning
+    @(72.7746 mm, 25.8337 mm): 다각형 (B.Silkscreen)
+    @(58.6900 mm, 50.4300 mm): 1의 PTH 패드[GND]OLED1
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; warning
+    @(72.7746 mm, 25.8337 mm): 다각형 (B.Silkscreen)
+    @(61.2300 mm, 50.4300 mm): 2의 PTH 패드[3V3]OLED1
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; warning
+    @(72.7746 mm, 25.8337 mm): 다각형 (B.Silkscreen)
+    @(59.6100 mm, 101.9000 mm): J1의 NPTH 패드
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; warning
+    @(72.7746 mm, 25.8337 mm): 다각형 (B.Silkscreen)
+    @(58.1800 mm, 101.3700 mm): SH의 PTH 패드[GND]J1
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; warning
+    @(72.7746 mm, 25.8337 mm): 다각형 (B.Silkscreen)
+    @(58.1800 mm, 105.5500 mm): SH의 PTH 패드[GND]J1
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; warning
+    @(72.7746 mm, 25.8337 mm): 다각형 (B.Silkscreen)
+    @(65.3900 mm, 101.9000 mm): J1의 NPTH 패드
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; warning
+    @(72.7746 mm, 25.8337 mm): 다각형 (B.Silkscreen)
+    @(66.8200 mm, 101.3700 mm): SH의 PTH 패드[GND]J1
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; warning
+    @(72.7746 mm, 25.8337 mm): 다각형 (B.Silkscreen)
+    @(66.8200 mm, 105.5500 mm): SH의 PTH 패드[GND]J1
+
+** Found 3 unconnected pads **
+[unconnected_items]: Missing connection between items
+    Local override; error
+    @(58.1800 mm, 101.3700 mm): 배선 [GND] on F.Cu, 길이 1.3517 mm
+    @(58.1800 mm, 105.5500 mm): SH의 PTH 패드[GND]J1
+[unconnected_items]: Missing connection between items
+    Local override; error
+    @(65.9508 mm, 100.2542 mm): 배선 [GND] on F.Cu, 길이 0.2840 mm
+    @(59.2500 mm, 96.7513 mm): 배선 [GND] on F.Cu, 길이 3.7037 mm
+[unconnected_items]: Missing connection between items
+    Local override; error
+    @(66.8200 mm, 105.5500 mm): SH의 PTH 패드[GND]J1
+    @(66.8200 mm, 101.3700 mm): 배선 [GND] on F.Cu, 길이 1.1158 mm
+
+** Found 0 Footprint errors **
+
+** Ignored checks **
+    - Footprint has no courtyard defined
+    - Track endpoint not centered on via
+    - Tuning profile track geometries
+    - Footprint doesn't match symbol's footprint filters
+    - Footprint component type doesn't match footprint pads
+
+** End of Report **

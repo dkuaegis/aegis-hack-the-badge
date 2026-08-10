@@ -1,0 +1,186 @@
+(footprint "OLED_HS96L03W2C03"
+	(version 20260206)
+	(generator "pcbnew")
+	(generator_version "10.0")
+	(layer "F.Cu")
+	(descr "HS96L03W2C03 0.96 inch white SSD1315 I2C OLED module, hand-soldered with 2.54 mm 1x4 header")
+	(tags "OLED SSD1315 I2C 0.96 inch HS96L03W2C03 hand solder DeviceMart")
+	(property "Reference" "REF**"
+		(at 0 -15.2 0)
+		(layer "F.SilkS")
+		(hide yes)
+		(uuid "ac49fc5b-1662-4769-81cc-8bc365f8718d")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "Value" "HS96L03W2C03"
+		(at 0 15.2 0)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "57bf72f7-6690-4f4b-ad6f-f35d9135ae20")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "Datasheet" "${KIPRJMOD}/../reference/datasheets/HS96L03W2C03.pdf"
+		(at 0 0 0)
+		(unlocked yes)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "7fd99fa0-5412-43b4-b6f7-13893fa482b2")
+		(effects
+			(font
+				(size 1.27 1.27)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "Description" "Hand-soldered 128x64 white I2C OLED module; DeviceMart product 15963242"
+		(at 0 0 0)
+		(unlocked yes)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "6aae2a95-ae50-4a43-8aaa-2517581da3fb")
+		(effects
+			(font
+				(size 1.27 1.27)
+				(thickness 0.15)
+			)
+		)
+	)
+	(attr through_hole exclude_from_pos_files exclude_from_bom)
+	(fp_rect
+		(start -13.65 -13.9)
+		(end 13.65 13.9)
+		(stroke
+			(width 0.2)
+			(type solid)
+		)
+		(fill no)
+		(layer "F.SilkS")
+		(uuid "5a9f4561-4d28-43dc-9852-dda26e03dd8a")
+	)
+	(fp_rect
+		(start -10.872 -5.822)
+		(end 10.872 5.042)
+		(stroke
+			(width 0.18)
+			(type solid)
+		)
+		(fill no)
+		(layer "F.SilkS")
+		(uuid "64fe36ce-c17f-46be-8749-4f69c86b726c")
+	)
+	(fp_rect
+		(start -13.9 -14.15)
+		(end 13.9 14.15)
+		(stroke
+			(width 0.05)
+			(type solid)
+		)
+		(fill no)
+		(layer "F.CrtYd")
+		(uuid "e57a05f5-c129-4d88-acff-a7fd95f63614")
+	)
+	(fp_rect
+		(start -13.65 -13.9)
+		(end 13.65 13.9)
+		(stroke
+			(width 0.1)
+			(type solid)
+		)
+		(fill no)
+		(layer "F.Fab")
+		(uuid "6c7ae67e-135f-4e9a-8d19-8de6a07dc054")
+	)
+	(fp_text user "DISPLAY"
+		(at 0 0 0)
+		(layer "F.Fab")
+		(uuid "96e6664e-5b73-43fb-9ab4-f1bd6d49636c")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(pad "" np_thru_hole circle
+		(at -11.65 -11.9)
+		(size 2.2 2.2)
+		(drill 2.2)
+		(layers "*.Cu" "*.Mask")
+		(uuid "17a3d47d-995c-4490-9a13-0cf6f3ce54d6")
+	)
+	(pad "" np_thru_hole circle
+		(at 11.65 -11.9)
+		(size 2.2 2.2)
+		(drill 2.2)
+		(layers "*.Cu" "*.Mask")
+		(uuid "ea5bce64-3871-4940-a20d-2537847e3c66")
+	)
+	(pad "" np_thru_hole circle
+		(at -11.65 11.9)
+		(size 2.2 2.2)
+		(drill 2.2)
+		(layers "*.Cu" "*.Mask")
+		(uuid "1a6eb2c9-86b3-435d-8d0c-c4dbc0e18ac7")
+	)
+	(pad "" np_thru_hole circle
+		(at 11.65 11.9)
+		(size 2.2 2.2)
+		(drill 2.2)
+		(layers "*.Cu" "*.Mask")
+		(uuid "1b19b49b-fb02-47f8-9f22-bb8aa795e47e")
+	)
+	(pad "1" thru_hole rect
+		(at -3.81 -11.36)
+		(size 2 2)
+		(drill 1.1)
+		(layers "*.Cu" "*.Mask")
+		(remove_unused_layers no)
+		(uuid "a5514184-a768-41cb-849f-f53ad614e93f")
+	)
+	(pad "2" thru_hole circle
+		(at -1.27 -11.36)
+		(size 2 2)
+		(drill 1.1)
+		(layers "*.Cu" "*.Mask")
+		(remove_unused_layers no)
+		(uuid "061e9f19-5581-421b-8b8c-50761eb3b42d")
+	)
+	(pad "3" thru_hole circle
+		(at 1.27 -11.36)
+		(size 2 2)
+		(drill 1.1)
+		(layers "*.Cu" "*.Mask")
+		(remove_unused_layers no)
+		(uuid "3ee52a6b-f03c-4584-a9ec-fd458bd896bd")
+	)
+	(pad "4" thru_hole circle
+		(at 3.81 -11.36)
+		(size 2 2)
+		(drill 1.1)
+		(layers "*.Cu" "*.Mask")
+		(remove_unused_layers no)
+		(uuid "e1e61df8-2130-4a37-b95a-c01e06f0dfa0")
+	)
+	(embedded_fonts no)
+	(model "${KIPRJMOD}/hacking_box_v2.3dshapes/OLED_HS96L03W2C03.wrl"
+		(offset
+			(xyz 0 0 0)
+		)
+		(scale
+			(xyz 1 1 1)
+		)
+		(rotate
+			(xyz 0 0 0)
+		)
+	)
+)

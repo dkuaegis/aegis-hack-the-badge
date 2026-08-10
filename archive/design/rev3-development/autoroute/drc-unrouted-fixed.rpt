@@ -1,0 +1,860 @@
+** Drc report for hacking_box_v3_unrouted.kicad_pcb **
+** Created on 2026-07-28T11:46:43 **
+** Report includes: Errors, Warnings **
+
+** Found 117 DRC violations **
+[items_not_allowed]: 허용되지 않은 개체 (U1의 금지영역)
+    Rule: U1의 금지영역; error
+    @(74.0000 mm, 50.5000 mm): OLED1의 NPTH 패드
+[items_not_allowed]: 허용되지 않은 개체 (U1의 금지영역)
+    Rule: U1의 금지영역; error
+    @(61.2300 mm, 50.4300 mm): 2의 PTH 패드[3V3]OLED1
+[items_not_allowed]: 허용되지 않은 개체 (U1의 금지영역)
+    Rule: U1의 금지영역; error
+    @(63.7700 mm, 50.4300 mm): 3의 PTH 패드[OLED_SCL]OLED1
+[items_not_allowed]: 허용되지 않은 개체 (U1의 금지영역)
+    Rule: U1의 금지영역; error
+    @(66.3100 mm, 50.4300 mm): 4의 PTH 패드[OLED_SDA]OLED1
+[items_not_allowed]: 허용되지 않은 개체 (U1의 금지영역)
+    Rule: U1의 금지영역; error
+    @(62.5000 mm, 39.0000 mm): 풋프린트 OLED1
+[items_not_allowed]: 허용되지 않은 개체 (U1의 금지영역)
+    Rule: U1의 금지영역; error
+    @(70.2750 mm, 87.5000 mm): 패드 1 [ADMIN_UNLOCK]의 SW_ADMIN 위F.Cu
+[items_not_allowed]: 허용되지 않은 개체 (U1의 금지영역)
+    Rule: U1의 금지영역; error
+    @(74.7250 mm, 87.5000 mm): 패드 2 [GND]의 SW_ADMIN 위F.Cu
+[items_not_allowed]: 허용되지 않은 개체 (U1의 금지영역)
+    Rule: U1의 금지영역; error
+    @(72.5000 mm, 87.5000 mm): 풋프린트 SW_ADMIN
+[items_not_allowed]: 허용되지 않은 개체 (U1의 금지영역)
+    Rule: U1의 금지영역; error
+    @(70.6750 mm, 61.5000 mm): 패드 1 [STATUS_LED_5_MCU]의 R_LED5 위F.Cu
+[items_not_allowed]: 허용되지 않은 개체 (U1의 금지영역)
+    Rule: U1의 금지영역; error
+    @(72.3250 mm, 61.5000 mm): 패드 2 [STATUS_LED_5_A]의 R_LED5 위F.Cu
+[items_not_allowed]: 허용되지 않은 개체 (U1의 금지영역)
+    Rule: U1의 금지영역; error
+    @(71.5000 mm, 61.5000 mm): 풋프린트 R_LED5
+[items_not_allowed]: 허용되지 않은 개체 (U1의 금지영역)
+    Rule: U1의 금지영역; error
+    @(60.2750 mm, 87.5000 mm): 패드 1 [BOOT_GPIO0]의 SW_BOOT 위F.Cu
+[items_not_allowed]: 허용되지 않은 개체 (U1의 금지영역)
+    Rule: U1의 금지영역; error
+    @(64.7250 mm, 87.5000 mm): 패드 2 [GND]의 SW_BOOT 위F.Cu
+[items_not_allowed]: 허용되지 않은 개체 (U1의 금지영역)
+    Rule: U1의 금지영역; error
+    @(62.5000 mm, 87.5000 mm): 풋프린트 SW_BOOT
+[items_not_allowed]: 허용되지 않은 개체 (U1의 금지영역)
+    Rule: U1의 금지영역; error
+    @(61.6750 mm, 61.5000 mm): 패드 1 [STATUS_LED_3_MCU]의 R_LED3 위F.Cu
+[items_not_allowed]: 허용되지 않은 개체 (U1의 금지영역)
+    Rule: U1의 금지영역; error
+    @(63.3250 mm, 61.5000 mm): 패드 2 [STATUS_LED_3_A]의 R_LED3 위F.Cu
+[items_not_allowed]: 허용되지 않은 개체 (U1의 금지영역)
+    Rule: U1의 금지영역; error
+    @(62.5000 mm, 61.5000 mm): 풋프린트 R_LED3
+[items_not_allowed]: 허용되지 않은 개체 (U1의 금지영역)
+    Rule: U1의 금지영역; error
+    @(66.9250 mm, 61.5000 mm): 패드 1 [STATUS_LED_4_MCU]의 R_LED4 위F.Cu
+[items_not_allowed]: 허용되지 않은 개체 (U1의 금지영역)
+    Rule: U1의 금지영역; error
+    @(68.5750 mm, 61.5000 mm): 패드 2 [STATUS_LED_4_A]의 R_LED4 위F.Cu
+[items_not_allowed]: 허용되지 않은 개체 (U1의 금지영역)
+    Rule: U1의 금지영역; error
+    @(67.7500 mm, 61.5000 mm): 풋프린트 R_LED4
+[items_not_allowed]: 허용되지 않은 개체 (U1의 금지영역)
+    Rule: U1의 금지영역; error
+    @(61.7125 mm, 58.0000 mm): 패드 1 [GND]의 LED3 위F.Cu
+[items_not_allowed]: 허용되지 않은 개체 (U1의 금지영역)
+    Rule: U1의 금지영역; error
+    @(63.2875 mm, 58.0000 mm): 패드 2 [STATUS_LED_3_A]의 LED3 위F.Cu
+[items_not_allowed]: 허용되지 않은 개체 (U1의 금지영역)
+    Rule: U1의 금지영역; error
+    @(62.5000 mm, 58.0000 mm): 풋프린트 LED3
+[items_not_allowed]: 허용되지 않은 개체 (U1의 금지영역)
+    Rule: U1의 금지영역; error
+    @(72.2125 mm, 58.0000 mm): 패드 1 [GND]의 LED5 위F.Cu
+[items_not_allowed]: 허용되지 않은 개체 (U1의 금지영역)
+    Rule: U1의 금지영역; error
+    @(73.7875 mm, 58.0000 mm): 패드 2 [STATUS_LED_5_A]의 LED5 위F.Cu
+[items_not_allowed]: 허용되지 않은 개체 (U1의 금지영역)
+    Rule: U1의 금지영역; error
+    @(73.0000 mm, 58.0000 mm): 풋프린트 LED5
+[items_not_allowed]: 허용되지 않은 개체 (U1의 금지영역)
+    Rule: U1의 금지영역; error
+    @(66.9625 mm, 58.0000 mm): 패드 1 [GND]의 LED4 위F.Cu
+[items_not_allowed]: 허용되지 않은 개체 (U1의 금지영역)
+    Rule: U1의 금지영역; error
+    @(68.5375 mm, 58.0000 mm): 패드 2 [STATUS_LED_4_A]의 LED4 위F.Cu
+[items_not_allowed]: 허용되지 않은 개체 (U1의 금지영역)
+    Rule: U1의 금지영역; error
+    @(67.7500 mm, 58.0000 mm): 풋프린트 LED4
+[items_not_allowed]: 허용되지 않은 개체 (U1의 금지영역)
+    Rule: U1의 금지영역; error
+    @(61.3625 mm, 94.0500 mm): 패드 1 [USB_D_N]의 D1 위F.Cu
+[items_not_allowed]: 허용되지 않은 개체 (U1의 금지영역)
+    Rule: U1의 금지영역; error
+    @(61.3625 mm, 95.0000 mm): 패드 2 [GND]의 D1 위F.Cu
+[items_not_allowed]: 허용되지 않은 개체 (U1의 금지영역)
+    Rule: U1의 금지영역; error
+    @(63.6375 mm, 95.0000 mm): 패드 5 [VBUS]의 D1 위F.Cu
+[items_not_allowed]: 허용되지 않은 개체 (U1의 금지영역)
+    Rule: U1의 금지영역; error
+    @(63.6375 mm, 94.0500 mm): 패드 6 [USB_D_N]의 D1 위F.Cu
+[items_not_allowed]: 허용되지 않은 개체 (U1의 금지영역)
+    Rule: U1의 금지영역; error
+    @(62.5000 mm, 95.0000 mm): 풋프린트 D1
+[items_not_allowed]: 허용되지 않은 개체 (U1의 금지영역)
+    Rule: U1의 금지영역; error
+    @(76.5000 mm, 83.3250 mm): 패드 1 [3V3]의 R_BOOT 위F.Cu
+[items_not_allowed]: 허용되지 않은 개체 (U1의 금지영역)
+    Rule: U1의 금지영역; error
+    @(76.5000 mm, 81.6750 mm): 패드 2 [BOOT_GPIO0]의 R_BOOT 위F.Cu
+[items_not_allowed]: 허용되지 않은 개체 (U1의 금지영역)
+    Rule: U1의 금지영역; error
+    @(76.5000 mm, 82.5000 mm): 풋프린트 R_BOOT
+[courtyards_overlap]: Courtyards overlap
+    Rule: 부품자리 제약조건 기판 설정; error
+    @(62.5000 mm, 39.0000 mm): 풋프린트 OLED1
+    @(87.5000 mm, 71.0000 mm): 풋프린트 U1
+[npth_inside_courtyard]: NPTH inside courtyard
+    Local override; error
+    @(74.0000 mm, 50.5000 mm): OLED1의 NPTH 패드
+    @(87.5000 mm, 71.0000 mm): 풋프린트 U1
+[pth_inside_courtyard]: PTH inside courtyard
+    Local override; error
+    @(61.2300 mm, 50.4300 mm): 2의 PTH 패드[3V3]OLED1
+    @(87.5000 mm, 71.0000 mm): 풋프린트 U1
+[pth_inside_courtyard]: PTH inside courtyard
+    Local override; error
+    @(63.7700 mm, 50.4300 mm): 3의 PTH 패드[OLED_SCL]OLED1
+    @(87.5000 mm, 71.0000 mm): 풋프린트 U1
+[pth_inside_courtyard]: PTH inside courtyard
+    Local override; error
+    @(66.3100 mm, 50.4300 mm): 4의 PTH 패드[OLED_SDA]OLED1
+    @(87.5000 mm, 71.0000 mm): 풋프린트 U1
+[courtyards_overlap]: Courtyards overlap
+    Rule: 부품자리 제약조건 기판 설정; error
+    @(72.5000 mm, 87.5000 mm): 풋프린트 SW_ADMIN
+    @(87.5000 mm, 71.0000 mm): 풋프린트 U1
+[courtyards_overlap]: Courtyards overlap
+    Rule: 부품자리 제약조건 기판 설정; error
+    @(87.5000 mm, 71.0000 mm): 풋프린트 U1
+    @(71.5000 mm, 61.5000 mm): 풋프린트 R_LED5
+[courtyards_overlap]: Courtyards overlap
+    Rule: 부품자리 제약조건 기판 설정; error
+    @(87.5000 mm, 71.0000 mm): 풋프린트 U1
+    @(62.5000 mm, 87.5000 mm): 풋프린트 SW_BOOT
+[courtyards_overlap]: Courtyards overlap
+    Rule: 부품자리 제약조건 기판 설정; error
+    @(87.5000 mm, 71.0000 mm): 풋프린트 U1
+    @(62.5000 mm, 61.5000 mm): 풋프린트 R_LED3
+[courtyards_overlap]: Courtyards overlap
+    Rule: 부품자리 제약조건 기판 설정; error
+    @(87.5000 mm, 71.0000 mm): 풋프린트 U1
+    @(67.7500 mm, 61.5000 mm): 풋프린트 R_LED4
+[courtyards_overlap]: Courtyards overlap
+    Rule: 부품자리 제약조건 기판 설정; error
+    @(87.5000 mm, 71.0000 mm): 풋프린트 U1
+    @(62.5000 mm, 58.0000 mm): 풋프린트 LED3
+[courtyards_overlap]: Courtyards overlap
+    Rule: 부품자리 제약조건 기판 설정; error
+    @(87.5000 mm, 71.0000 mm): 풋프린트 U1
+    @(73.0000 mm, 58.0000 mm): 풋프린트 LED5
+[courtyards_overlap]: Courtyards overlap
+    Rule: 부품자리 제약조건 기판 설정; error
+    @(87.5000 mm, 71.0000 mm): 풋프린트 U1
+    @(67.7500 mm, 58.0000 mm): 풋프린트 LED4
+[courtyards_overlap]: Courtyards overlap
+    Rule: 부품자리 제약조건 기판 설정; error
+    @(87.5000 mm, 71.0000 mm): 풋프린트 U1
+    @(62.5000 mm, 95.0000 mm): 풋프린트 D1
+[courtyards_overlap]: Courtyards overlap
+    Rule: 부품자리 제약조건 기판 설정; error
+    @(87.5000 mm, 71.0000 mm): 풋프린트 U1
+    @(76.5000 mm, 82.5000 mm): 풋프린트 R_BOOT
+[copper_edge_clearance]: 기판 모서리 공간거리 위반 (기판 구성 제약 모서리 공간거리 0.5000 mm; 실제값 0.0000 mm)
+    Rule: 기판 구성 제약 모서리; error
+    @(56.7933 mm, 104.7603 mm): 세그먼트 (Edge.Cuts)
+    @(58.1800 mm, 105.5500 mm): SH의 PTH 패드[GND]J1
+[copper_edge_clearance]: 기판 모서리 공간거리 위반 (기판 구성 제약 모서리 공간거리 0.5000 mm; 실제값 0.0000 mm)
+    Rule: 기판 구성 제약 모서리; error
+    @(65.2692 mm, 107.3129 mm): 세그먼트 (Edge.Cuts)
+    @(66.8200 mm, 105.5500 mm): SH의 PTH 패드[GND]J1
+[drill_out_of_range]: 홀 크기 범위를 벗어남 (보드 설정 제약 조건 최소 홀 0.3000 mm; 실제 값 0.2000 mm)
+    Rule: 보드 설정 제약 조건; error
+    @(89.2600 mm, 73.9000 mm): 41의 PTH 패드[GND]U1
+[drill_out_of_range]: 홀 크기 범위를 벗어남 (보드 설정 제약 조건 최소 홀 0.3000 mm; 실제 값 0.2000 mm)
+    Rule: 보드 설정 제약 조건; error
+    @(90.6600 mm, 73.9000 mm): 41의 PTH 패드[GND]U1
+[drill_out_of_range]: 홀 크기 범위를 벗어남 (보드 설정 제약 조건 최소 홀 0.3000 mm; 실제 값 0.2000 mm)
+    Rule: 보드 설정 제약 조건; error
+    @(88.5600 mm, 73.2000 mm): 41의 PTH 패드[GND]U1
+[drill_out_of_range]: 홀 크기 범위를 벗어남 (보드 설정 제약 조건 최소 홀 0.3000 mm; 실제 값 0.2000 mm)
+    Rule: 보드 설정 제약 조건; error
+    @(89.9600 mm, 73.2000 mm): 41의 PTH 패드[GND]U1
+[drill_out_of_range]: 홀 크기 범위를 벗어남 (보드 설정 제약 조건 최소 홀 0.3000 mm; 실제 값 0.2000 mm)
+    Rule: 보드 설정 제약 조건; error
+    @(91.3600 mm, 73.2000 mm): 41의 PTH 패드[GND]U1
+[drill_out_of_range]: 홀 크기 범위를 벗어남 (보드 설정 제약 조건 최소 홀 0.3000 mm; 실제 값 0.2000 mm)
+    Rule: 보드 설정 제약 조건; error
+    @(89.2600 mm, 72.5000 mm): 41의 PTH 패드[GND]U1
+[drill_out_of_range]: 홀 크기 범위를 벗어남 (보드 설정 제약 조건 최소 홀 0.3000 mm; 실제 값 0.2000 mm)
+    Rule: 보드 설정 제약 조건; error
+    @(90.6600 mm, 72.5000 mm): 41의 PTH 패드[GND]U1
+[drill_out_of_range]: 홀 크기 범위를 벗어남 (보드 설정 제약 조건 최소 홀 0.3000 mm; 실제 값 0.2000 mm)
+    Rule: 보드 설정 제약 조건; error
+    @(88.5600 mm, 71.8000 mm): 41의 PTH 패드[GND]U1
+[drill_out_of_range]: 홀 크기 범위를 벗어남 (보드 설정 제약 조건 최소 홀 0.3000 mm; 실제 값 0.2000 mm)
+    Rule: 보드 설정 제약 조건; error
+    @(89.9600 mm, 71.8000 mm): 41의 PTH 패드[GND]U1
+[drill_out_of_range]: 홀 크기 범위를 벗어남 (보드 설정 제약 조건 최소 홀 0.3000 mm; 실제 값 0.2000 mm)
+    Rule: 보드 설정 제약 조건; error
+    @(91.3600 mm, 71.8000 mm): 41의 PTH 패드[GND]U1
+[drill_out_of_range]: 홀 크기 범위를 벗어남 (보드 설정 제약 조건 최소 홀 0.3000 mm; 실제 값 0.2000 mm)
+    Rule: 보드 설정 제약 조건; error
+    @(89.2600 mm, 71.1000 mm): 41의 PTH 패드[GND]U1
+[drill_out_of_range]: 홀 크기 범위를 벗어남 (보드 설정 제약 조건 최소 홀 0.3000 mm; 실제 값 0.2000 mm)
+    Rule: 보드 설정 제약 조건; error
+    @(90.6600 mm, 71.1000 mm): 41의 PTH 패드[GND]U1
+[silk_edge_clearance]: Silkscreen clipped by board edge
+    Rule: 기판 구성 제약 실크; warning
+    @(24.3439 mm, 86.8013 mm): 세그먼트 (Edge.Cuts)
+    @(72.7746 mm, 25.8337 mm): 다각형 (B.Silkscreen)
+[silk_edge_clearance]: Silkscreen clipped by board edge
+    Rule: 기판 구성 제약 실크; warning
+    @(59.7246 mm, 107.3163 mm): 세그먼트 (Edge.Cuts)
+    @(57.8000 mm, 108.4000 mm): 세그먼트 of J1 on F.Silkscreen
+[text_height]: 텍스트 높이가 범위를 벗어남 (보드의 최대 실크 텍스트 높이 제한 최소 높이 0.8000 mm; 실제 0.5800 mm)
+    Rule: 보드의 최대 실크 텍스트 높이 제한; warning
+    @(30.0000 mm, 83.0000 mm): PCB 텍스트 'C0' (F.Silkscreen)
+[text_height]: 텍스트 높이가 범위를 벗어남 (보드의 최대 실크 텍스트 높이 제한 최소 높이 0.8000 mm; 실제 0.5800 mm)
+    Rule: 보드의 최대 실크 텍스트 높이 제한; warning
+    @(36.0000 mm, 83.0000 mm): PCB 텍스트 'C1' (F.Silkscreen)
+[text_height]: 텍스트 높이가 범위를 벗어남 (보드의 최대 실크 텍스트 높이 제한 최소 높이 0.8000 mm; 실제 0.5800 mm)
+    Rule: 보드의 최대 실크 텍스트 높이 제한; warning
+    @(42.0000 mm, 83.0000 mm): PCB 텍스트 'C2' (F.Silkscreen)
+[text_height]: 텍스트 높이가 범위를 벗어남 (보드의 최대 실크 텍스트 높이 제한 최소 높이 0.8000 mm; 실제 0.5800 mm)
+    Rule: 보드의 최대 실크 텍스트 높이 제한; warning
+    @(52.0000 mm, 55.9000 mm): PCB 텍스트 '1' (F.Silkscreen)
+[text_height]: 텍스트 높이가 범위를 벗어남 (보드의 최대 실크 텍스트 높이 제한 최소 높이 0.8000 mm; 실제 0.5800 mm)
+    Rule: 보드의 최대 실크 텍스트 높이 제한; warning
+    @(57.2500 mm, 55.9000 mm): PCB 텍스트 '2' (F.Silkscreen)
+[text_height]: 텍스트 높이가 범위를 벗어남 (보드의 최대 실크 텍스트 높이 제한 최소 높이 0.8000 mm; 실제 0.5800 mm)
+    Rule: 보드의 최대 실크 텍스트 높이 제한; warning
+    @(62.5000 mm, 55.9000 mm): PCB 텍스트 '3' (F.Silkscreen)
+[text_height]: 텍스트 높이가 범위를 벗어남 (보드의 최대 실크 텍스트 높이 제한 최소 높이 0.8000 mm; 실제 0.5800 mm)
+    Rule: 보드의 최대 실크 텍스트 높이 제한; warning
+    @(67.7500 mm, 55.9000 mm): PCB 텍스트 '4' (F.Silkscreen)
+[text_height]: 텍스트 높이가 범위를 벗어남 (보드의 최대 실크 텍스트 높이 제한 최소 높이 0.8000 mm; 실제 0.5800 mm)
+    Rule: 보드의 최대 실크 텍스트 높이 제한; warning
+    @(73.0000 mm, 55.9000 mm): PCB 텍스트 '5' (F.Silkscreen)
+[text_height]: 텍스트 높이가 범위를 벗어남 (보드의 최대 실크 텍스트 높이 제한 최소 높이 0.8000 mm; 실제 0.5800 mm)
+    Rule: 보드의 최대 실크 텍스트 높이 제한; warning
+    @(62.5000 mm, 23.2000 mm): PCB 텍스트 'Developed By @Z3r0c0k3_' (F.Silkscreen)
+[text_height]: 텍스트 높이가 범위를 벗어남 (보드의 최대 실크 텍스트 높이 제한 최소 높이 0.8000 mm; 실제 0.6200 mm)
+    Rule: 보드의 최대 실크 텍스트 높이 제한; warning
+    @(52.5000 mm, 84.5000 mm): PCB 텍스트 'RST' (F.Silkscreen)
+[text_height]: 텍스트 높이가 범위를 벗어남 (보드의 최대 실크 텍스트 높이 제한 최소 높이 0.8000 mm; 실제 0.6200 mm)
+    Rule: 보드의 최대 실크 텍스트 높이 제한; warning
+    @(62.5000 mm, 84.5000 mm): PCB 텍스트 'BOOT' (F.Silkscreen)
+[text_height]: 텍스트 높이가 범위를 벗어남 (보드의 최대 실크 텍스트 높이 제한 최소 높이 0.8000 mm; 실제 0.6200 mm)
+    Rule: 보드의 최대 실크 텍스트 높이 제한; warning
+    @(72.5000 mm, 84.5000 mm): PCB 텍스트 'ADMIN' (F.Silkscreen)
+[text_height]: 텍스트 높이가 범위를 벗어남 (보드의 최대 실크 텍스트 높이 제한 최소 높이 0.8000 mm; 실제 0.7200 mm)
+    Rule: 보드의 최대 실크 텍스트 높이 제한; warning
+    @(34.5000 mm, 27.5000 mm): PCB 텍스트 'UART' (F.Silkscreen)
+[text_height]: 텍스트 높이가 범위를 벗어남 (보드의 최대 실크 텍스트 높이 제한 최소 높이 0.8000 mm; 실제 0.7200 mm)
+    Rule: 보드의 최대 실크 텍스트 높이 제한; warning
+    @(62.5000 mm, 54.7000 mm): PCB 텍스트 'STATUS' (F.Silkscreen)
+[text_height]: 텍스트 높이가 범위를 벗어남 (보드의 최대 실크 텍스트 높이 제한 최소 높이 0.8000 mm; 실제 0.7200 mm)
+    Rule: 보드의 최대 실크 텍스트 높이 제한; warning
+    @(62.5000 mm, 91.8000 mm): PCB 텍스트 'USB-C' (F.Silkscreen)
+[text_height]: 텍스트 높이가 범위를 벗어남 (보드의 최대 실크 텍스트 높이 제한 최소 높이 0.8000 mm; 실제 0.5400 mm)
+    Rule: 보드의 최대 실크 텍스트 높이 제한; warning
+    @(28.0000 mm, 50.7000 mm): PCB 텍스트 '3V3' (B.Silkscreen)
+[text_height]: 텍스트 높이가 범위를 벗어남 (보드의 최대 실크 텍스트 높이 제한 최소 높이 0.8000 mm; 실제 0.5400 mm)
+    Rule: 보드의 최대 실크 텍스트 높이 제한; warning
+    @(28.0000 mm, 57.7000 mm): PCB 텍스트 'EN' (B.Silkscreen)
+[text_height]: 텍스트 높이가 범위를 벗어남 (보드의 최대 실크 텍스트 높이 제한 최소 높이 0.8000 mm; 실제 0.5400 mm)
+    Rule: 보드의 최대 실크 텍스트 높이 제한; warning
+    @(28.0000 mm, 64.7000 mm): PCB 텍스트 'RX' (B.Silkscreen)
+[text_height]: 텍스트 높이가 범위를 벗어남 (보드의 최대 실크 텍스트 높이 제한 최소 높이 0.8000 mm; 실제 0.5400 mm)
+    Rule: 보드의 최대 실크 텍스트 높이 제한; warning
+    @(34.0000 mm, 50.7000 mm): PCB 텍스트 'GND' (B.Silkscreen)
+[text_height]: 텍스트 높이가 범위를 벗어남 (보드의 최대 실크 텍스트 높이 제한 최소 높이 0.8000 mm; 실제 0.5400 mm)
+    Rule: 보드의 최대 실크 텍스트 높이 제한; warning
+    @(34.0000 mm, 57.7000 mm): PCB 텍스트 'BOOT' (B.Silkscreen)
+[text_height]: 텍스트 높이가 범위를 벗어남 (보드의 최대 실크 텍스트 높이 제한 최소 높이 0.8000 mm; 실제 0.5400 mm)
+    Rule: 보드의 최대 실크 텍스트 높이 제한; warning
+    @(34.0000 mm, 64.7000 mm): PCB 텍스트 'SCL' (B.Silkscreen)
+[text_height]: 텍스트 높이가 범위를 벗어남 (보드의 최대 실크 텍스트 높이 제한 최소 높이 0.8000 mm; 실제 0.5400 mm)
+    Rule: 보드의 최대 실크 텍스트 높이 제한; warning
+    @(40.0000 mm, 50.7000 mm): PCB 텍스트 '5V' (B.Silkscreen)
+[text_height]: 텍스트 높이가 범위를 벗어남 (보드의 최대 실크 텍스트 높이 제한 최소 높이 0.8000 mm; 실제 0.5400 mm)
+    Rule: 보드의 최대 실크 텍스트 높이 제한; warning
+    @(40.0000 mm, 57.7000 mm): PCB 텍스트 'TX' (B.Silkscreen)
+[text_height]: 텍스트 높이가 범위를 벗어남 (보드의 최대 실크 텍스트 높이 제한 최소 높이 0.8000 mm; 실제 0.5400 mm)
+    Rule: 보드의 최대 실크 텍스트 높이 제한; warning
+    @(40.0000 mm, 64.7000 mm): PCB 텍스트 'SDA' (B.Silkscreen)
+[text_height]: 텍스트 높이가 범위를 벗어남 (보드의 최대 실크 텍스트 높이 제한 최소 높이 0.8000 mm; 실제 0.7800 mm)
+    Rule: 보드의 최대 실크 텍스트 높이 제한; warning
+    @(62.5000 mm, 98.0000 mm): PCB 텍스트 'DKU Aegis' (B.Silkscreen)
+[silk_overlap]: Silkscreen clearance
+    Rule: 기판 구성 제약 실크; warning
+    @(97.4026 mm, 48.4889 mm): 세그먼트 (F.Silkscreen)
+    @(97.0000 mm, 50.3600 mm): 세그먼트 of D_BZ on F.Silkscreen
+[silk_overlap]: Silkscreen clearance
+    Rule: 기판 구성 제약 실크; warning
+    @(88.6000 mm, 48.0000 mm): Q_BZ 의 참조 필드
+    @(85.5000 mm, 48.0700 mm): R_BZ_PD 의 참조 필드
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; warning
+    @(26.3802 mm, 53.7190 mm): 세그먼트 (F.Silkscreen)
+    @(27.0000 mm, 53.9500 mm): 패드 1 [VBUS]의 C1 위F.Cu
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; warning
+    @(27.0073 mm, 51.3192 mm): 세그먼트 (F.Silkscreen)
+    @(27.0000 mm, 53.9500 mm): 패드 1 [VBUS]의 C1 위F.Cu
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; warning
+    @(27.0073 mm, 51.3192 mm): 세그먼트 (F.Silkscreen)
+    @(27.0000 mm, 52.0500 mm): 패드 2 [GND]의 C1 위F.Cu
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; warning
+    @(89.3750 mm, 38.8750 mm): 직사각형 of BZ1 on F.Silkscreen
+    @(93.9475 mm, 43.2500 mm): 패드 2 [BUZZER_SW]의 BZ1 위F.Cu
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; warning
+    @(89.3750 mm, 38.8750 mm): 직사각형 of BZ1 on F.Silkscreen
+    @(90.0525 mm, 39.7500 mm): 패드 3 [<no net>]의 BZ1 위F.Cu
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; warning
+    @(89.3750 mm, 38.8750 mm): 직사각형 of BZ1 on F.Silkscreen
+    @(90.0525 mm, 43.2500 mm): 패드 1 [3V3]의 BZ1 위F.Cu
+[silk_overlap]: Silkscreen clearance
+    Rule: 기판 구성 제약 실크; warning
+    @(40.0000 mm, 53.0000 mm): 원 of TP_VBUS on B.Silkscreen
+    @(72.7746 mm, 25.8337 mm): 다각형 (B.Silkscreen)
+[silk_overlap]: Silkscreen clearance
+    Rule: 기판 구성 제약 실크; warning
+    @(40.0000 mm, 50.7000 mm): PCB 텍스트 '5V' (B.Silkscreen)
+    @(72.7746 mm, 25.8337 mm): 다각형 (B.Silkscreen)
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; warning
+    @(72.7746 mm, 25.8337 mm): 다각형 (B.Silkscreen)
+    @(51.0000 mm, 50.5000 mm): OLED1의 NPTH 패드
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; warning
+    @(72.7746 mm, 25.8337 mm): 다각형 (B.Silkscreen)
+    @(51.0000 mm, 27.5000 mm): OLED1의 NPTH 패드
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; warning
+    @(72.7746 mm, 25.8337 mm): 다각형 (B.Silkscreen)
+    @(74.0000 mm, 27.5000 mm): OLED1의 NPTH 패드
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; warning
+    @(72.7746 mm, 25.8337 mm): 다각형 (B.Silkscreen)
+    @(74.0000 mm, 50.5000 mm): OLED1의 NPTH 패드
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; warning
+    @(72.7746 mm, 25.8337 mm): 다각형 (B.Silkscreen)
+    @(63.7700 mm, 50.4300 mm): 3의 PTH 패드[OLED_SCL]OLED1
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; warning
+    @(72.7746 mm, 25.8337 mm): 다각형 (B.Silkscreen)
+    @(66.3100 mm, 50.4300 mm): 4의 PTH 패드[OLED_SDA]OLED1
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; warning
+    @(72.7746 mm, 25.8337 mm): 다각형 (B.Silkscreen)
+    @(58.6900 mm, 50.4300 mm): 1의 PTH 패드[GND]OLED1
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; warning
+    @(72.7746 mm, 25.8337 mm): 다각형 (B.Silkscreen)
+    @(61.2300 mm, 50.4300 mm): 2의 PTH 패드[3V3]OLED1
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; warning
+    @(72.7746 mm, 25.8337 mm): 다각형 (B.Silkscreen)
+    @(59.6100 mm, 101.9000 mm): J1의 NPTH 패드
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; warning
+    @(72.7746 mm, 25.8337 mm): 다각형 (B.Silkscreen)
+    @(58.1800 mm, 101.3700 mm): SH의 PTH 패드[GND]J1
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; warning
+    @(72.7746 mm, 25.8337 mm): 다각형 (B.Silkscreen)
+    @(58.1800 mm, 105.5500 mm): SH의 PTH 패드[GND]J1
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; warning
+    @(72.7746 mm, 25.8337 mm): 다각형 (B.Silkscreen)
+    @(65.3900 mm, 101.9000 mm): J1의 NPTH 패드
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; warning
+    @(72.7746 mm, 25.8337 mm): 다각형 (B.Silkscreen)
+    @(66.8200 mm, 101.3700 mm): SH의 PTH 패드[GND]J1
+[silk_over_copper]: Silkscreen clipped by solder mask
+    Local override; warning
+    @(72.7746 mm, 25.8337 mm): 다각형 (B.Silkscreen)
+    @(66.8200 mm, 105.5500 mm): SH의 PTH 패드[GND]J1
+
+** Found 112 unconnected pads **
+[unconnected_items]: Missing connection between items
+    Local override; error
+    @(28.0000 mm, 53.0000 mm): 패드 1 [3V3]의 TP_3V3 위B.Cu
+    @(31.3500 mm, 56.5000 mm): 패드 2 [3V3]의 U2 위F.Cu
+[unconnected_items]: Missing connection between items
+    Local override; error
+    @(31.3500 mm, 56.5000 mm): 패드 2 [3V3]의 U2 위F.Cu
+    @(37.6500 mm, 56.5000 mm): 패드 2 [3V3]의 U2 위F.Cu
+[unconnected_items]: Missing connection between items
+    Local override; error
+    @(42.0000 mm, 53.9500 mm): 패드 1 [3V3]의 C4 위F.Cu
+    @(42.0000 mm, 57.4500 mm): 패드 1 [3V3]의 C5 위F.Cu
+[unconnected_items]: Missing connection between items
+    Local override; error
+    @(42.0000 mm, 57.4500 mm): 패드 1 [3V3]의 C5 위F.Cu
+    @(37.6500 mm, 56.5000 mm): 패드 2 [3V3]의 U2 위F.Cu
+[unconnected_items]: Missing connection between items
+    Local override; error
+    @(42.0000 mm, 60.7750 mm): 패드 1 [3V3]의 C6 위F.Cu
+    @(42.0000 mm, 57.4500 mm): 패드 1 [3V3]의 C5 위F.Cu
+[unconnected_items]: Missing connection between items
+    Local override; error
+    @(44.0000 mm, 38.7750 mm): 패드 1 [3V3]의 C_OLED 위F.Cu
+    @(36.5400 mm, 31.5000 mm): 2의 PTH 패드[3V3]P_UART
+[unconnected_items]: Missing connection between items
+    Local override; error
+    @(44.0000 mm, 42.8250 mm): 패드 1 [3V3]의 R_SCL 위F.Cu
+    @(44.0000 mm, 38.7750 mm): 패드 1 [3V3]의 C_OLED 위F.Cu
+[unconnected_items]: Missing connection between items
+    Local override; error
+    @(44.0000 mm, 46.8250 mm): 패드 1 [3V3]의 R_SDA 위F.Cu
+    @(44.0000 mm, 42.8250 mm): 패드 1 [3V3]의 R_SCL 위F.Cu
+[unconnected_items]: Missing connection between items
+    Local override; error
+    @(44.0000 mm, 46.8250 mm): 패드 1 [3V3]의 R_SDA 위F.Cu
+    @(42.0000 mm, 53.9500 mm): 패드 1 [3V3]의 C4 위F.Cu
+[unconnected_items]: Missing connection between items
+    Local override; error
+    @(61.2300 mm, 50.4300 mm): 2의 PTH 패드[3V3]OLED1
+    @(44.0000 mm, 46.8250 mm): 패드 1 [3V3]의 R_SDA 위F.Cu
+[unconnected_items]: Missing connection between items
+    Local override; error
+    @(76.5000 mm, 83.3250 mm): 패드 1 [3V3]의 R_BOOT 위F.Cu
+    @(83.5100 mm, 79.7500 mm): 패드 2 [3V3]의 U1 위F.Cu
+[unconnected_items]: Missing connection between items
+    Local override; error
+    @(83.0000 mm, 59.9500 mm): 패드 1 [3V3]의 C7 위F.Cu
+    @(86.0000 mm, 59.7750 mm): 패드 1 [3V3]의 C8 위F.Cu
+[unconnected_items]: Missing connection between items
+    Local override; error
+    @(83.0000 mm, 59.9500 mm): 패드 1 [3V3]의 C7 위F.Cu
+    @(83.5100 mm, 79.7500 mm): 패드 2 [3V3]의 U1 위F.Cu
+[unconnected_items]: Missing connection between items
+    Local override; error
+    @(83.0000 mm, 59.9500 mm): 패드 1 [3V3]의 C7 위F.Cu
+    @(61.2300 mm, 50.4300 mm): 2의 PTH 패드[3V3]OLED1
+[unconnected_items]: Missing connection between items
+    Local override; error
+    @(89.0000 mm, 56.3250 mm): 패드 1 [3V3]의 R_EN 위F.Cu
+    @(86.0000 mm, 59.7750 mm): 패드 1 [3V3]의 C8 위F.Cu
+[unconnected_items]: Missing connection between items
+    Local override; error
+    @(96.0000 mm, 49.6500 mm): 패드 1 [3V3]의 D_BZ 위F.Cu
+    @(90.0525 mm, 43.2500 mm): 패드 1 [3V3]의 BZ1 위F.Cu
+[unconnected_items]: Missing connection between items
+    Local override; error
+    @(96.0000 mm, 53.9500 mm): 패드 1 [3V3]의 C9 위F.Cu
+    @(96.0000 mm, 49.6500 mm): 패드 1 [3V3]의 D_BZ 위F.Cu
+[unconnected_items]: Missing connection between items
+    Local override; error
+    @(96.0000 mm, 53.9500 mm): 패드 1 [3V3]의 C9 위F.Cu
+    @(89.0000 mm, 56.3250 mm): 패드 1 [3V3]의 R_EN 위F.Cu
+[unconnected_items]: Missing connection between items
+    Local override; error
+    @(27.0000 mm, 52.0500 mm): 패드 2 [GND]의 C1 위F.Cu
+    @(27.0000 mm, 55.7250 mm): 패드 2 [GND]의 C2 위F.Cu
+[unconnected_items]: Missing connection between items
+    Local override; error
+    @(27.0000 mm, 55.7250 mm): 패드 2 [GND]의 C2 위F.Cu
+    @(27.0000 mm, 59.0500 mm): 패드 2 [GND]의 C3 위F.Cu
+[unconnected_items]: Missing connection between items
+    Local override; error
+    @(27.0000 mm, 55.7250 mm): 패드 2 [GND]의 C2 위F.Cu
+    @(31.3500 mm, 54.2000 mm): 패드 1 [GND]의 U2 위F.Cu
+[unconnected_items]: Missing connection between items
+    Local override; error
+    @(34.0000 mm, 31.5000 mm): 1의 PTH 패드[GND]P_UART
+    @(44.0000 mm, 37.2250 mm): 패드 2 [GND]의 C_OLED 위F.Cu
+[unconnected_items]: Missing connection between items
+    Local override; error
+    @(34.0000 mm, 53.0000 mm): 패드 1 [GND]의 TP_GND 위B.Cu
+    @(31.3500 mm, 54.2000 mm): 패드 1 [GND]의 U2 위F.Cu
+[unconnected_items]: Missing connection between items
+    Local override; error
+    @(34.0000 mm, 53.0000 mm): 패드 1 [GND]의 TP_GND 위B.Cu
+    @(42.0000 mm, 52.0500 mm): 패드 2 [GND]의 C4 위F.Cu
+[unconnected_items]: Missing connection between items
+    Local override; error
+    @(42.0000 mm, 52.0500 mm): 패드 2 [GND]의 C4 위F.Cu
+    @(44.0000 mm, 37.2250 mm): 패드 2 [GND]의 C_OLED 위F.Cu
+[unconnected_items]: Missing connection between items
+    Local override; error
+    @(42.0000 mm, 55.5500 mm): 패드 2 [GND]의 C5 위F.Cu
+    @(42.0000 mm, 52.0500 mm): 패드 2 [GND]의 C4 위F.Cu
+[unconnected_items]: Missing connection between items
+    Local override; error
+    @(42.0000 mm, 55.5500 mm): 패드 2 [GND]의 C5 위F.Cu
+    @(42.0000 mm, 59.2250 mm): 패드 2 [GND]의 C6 위F.Cu
+[unconnected_items]: Missing connection between items
+    Local override; error
+    @(51.2125 mm, 58.0000 mm): 패드 1 [GND]의 LED1 위F.Cu
+    @(56.4625 mm, 58.0000 mm): 패드 1 [GND]의 LED2 위F.Cu
+[unconnected_items]: Missing connection between items
+    Local override; error
+    @(51.2125 mm, 58.0000 mm): 패드 1 [GND]의 LED1 위F.Cu
+    @(42.0000 mm, 59.2250 mm): 패드 2 [GND]의 C6 위F.Cu
+[unconnected_items]: Missing connection between items
+    Local override; error
+    @(54.7250 mm, 87.5000 mm): 패드 2 [GND]의 SW_EN 위F.Cu
+    @(55.3250 mm, 96.5000 mm): 패드 2 [GND]의 R1 위F.Cu
+[unconnected_items]: Missing connection between items
+    Local override; error
+    @(55.3250 mm, 96.5000 mm): 패드 2 [GND]의 R1 위F.Cu
+    @(59.2500 mm, 100.4550 mm): 패드 B12 [GND]의 J1 위F.Cu
+[unconnected_items]: Missing connection between items
+    Local override; error
+    @(56.4625 mm, 58.0000 mm): 패드 1 [GND]의 LED2 위F.Cu
+    @(61.7125 mm, 58.0000 mm): 패드 1 [GND]의 LED3 위F.Cu
+[unconnected_items]: Missing connection between items
+    Local override; error
+    @(58.1800 mm, 101.3700 mm): SH의 PTH 패드[GND]J1
+    @(59.2500 mm, 100.4550 mm): 패드 B12 [GND]의 J1 위F.Cu
+[unconnected_items]: Missing connection between items
+    Local override; error
+    @(58.1800 mm, 105.5500 mm): SH의 PTH 패드[GND]J1
+    @(58.1800 mm, 101.3700 mm): SH의 PTH 패드[GND]J1
+[unconnected_items]: Missing connection between items
+    Local override; error
+    @(58.6900 mm, 50.4300 mm): 1의 PTH 패드[GND]OLED1
+    @(56.4625 mm, 58.0000 mm): 패드 1 [GND]의 LED2 위F.Cu
+[unconnected_items]: Missing connection between items
+    Local override; error
+    @(59.2500 mm, 100.4550 mm): 패드 B12 [GND]의 J1 위F.Cu
+    @(65.7500 mm, 100.4550 mm): 패드 B1 [GND]의 J1 위F.Cu
+[unconnected_items]: Missing connection between items
+    Local override; error
+    @(61.3625 mm, 95.0000 mm): 패드 2 [GND]의 D1 위F.Cu
+    @(59.2500 mm, 100.4550 mm): 패드 B12 [GND]의 J1 위F.Cu
+[unconnected_items]: Missing connection between items
+    Local override; error
+    @(64.7250 mm, 87.5000 mm): 패드 2 [GND]의 SW_BOOT 위F.Cu
+    @(61.3625 mm, 95.0000 mm): 패드 2 [GND]의 D1 위F.Cu
+[unconnected_items]: Missing connection between items
+    Local override; error
+    @(65.7500 mm, 100.4550 mm): 패드 B1 [GND]의 J1 위F.Cu
+    @(66.8200 mm, 101.3700 mm): SH의 PTH 패드[GND]J1
+[unconnected_items]: Missing connection between items
+    Local override; error
+    @(66.8200 mm, 101.3700 mm): SH의 PTH 패드[GND]J1
+    @(66.8200 mm, 105.5500 mm): SH의 PTH 패드[GND]J1
+[unconnected_items]: Missing connection between items
+    Local override; error
+    @(66.8200 mm, 101.3700 mm): SH의 PTH 패드[GND]J1
+    @(71.3250 mm, 96.5000 mm): 패드 2 [GND]의 R2 위F.Cu
+[unconnected_items]: Missing connection between items
+    Local override; error
+    @(66.9625 mm, 58.0000 mm): 패드 1 [GND]의 LED4 위F.Cu
+    @(61.7125 mm, 58.0000 mm): 패드 1 [GND]의 LED3 위F.Cu
+[unconnected_items]: Missing connection between items
+    Local override; error
+    @(66.9625 mm, 58.0000 mm): 패드 1 [GND]의 LED4 위F.Cu
+    @(72.2125 mm, 58.0000 mm): 패드 1 [GND]의 LED5 위F.Cu
+[unconnected_items]: Missing connection between items
+    Local override; error
+    @(74.7250 mm, 87.5000 mm): 패드 2 [GND]의 SW_ADMIN 위F.Cu
+    @(71.3250 mm, 96.5000 mm): 패드 2 [GND]의 R2 위F.Cu
+[unconnected_items]: Missing connection between items
+    Local override; error
+    @(82.2400 mm, 62.2500 mm): 패드 40 [GND]의 U1 위F.Cu
+    @(89.2600 mm, 71.1000 mm): 41의 PTH 패드[GND]U1
+[unconnected_items]: Missing connection between items
+    Local override; error
+    @(82.2400 mm, 79.7500 mm): 패드 1 [GND]의 U1 위F.Cu
+    @(88.5600 mm, 73.2000 mm): 41의 PTH 패드[GND]U1
+[unconnected_items]: Missing connection between items
+    Local override; error
+    @(82.2400 mm, 79.7500 mm): 패드 1 [GND]의 U1 위F.Cu
+    @(74.7250 mm, 87.5000 mm): 패드 2 [GND]의 SW_ADMIN 위F.Cu
+[unconnected_items]: Missing connection between items
+    Local override; error
+    @(83.0000 mm, 58.0500 mm): 패드 2 [GND]의 C7 위F.Cu
+    @(86.0000 mm, 58.2250 mm): 패드 2 [GND]의 C8 위F.Cu
+[unconnected_items]: Missing connection between items
+    Local override; error
+    @(83.0000 mm, 58.0500 mm): 패드 2 [GND]의 C7 위F.Cu
+    @(82.2400 mm, 62.2500 mm): 패드 40 [GND]의 U1 위F.Cu
+[unconnected_items]: Missing connection between items
+    Local override; error
+    @(83.0000 mm, 58.0500 mm): 패드 2 [GND]의 C7 위F.Cu
+    @(72.2125 mm, 58.0000 mm): 패드 1 [GND]의 LED5 위F.Cu
+[unconnected_items]: Missing connection between items
+    Local override; error
+    @(86.3250 mm, 49.5000 mm): 패드 2 [GND]의 R_BZ_PD 위F.Cu
+    @(91.9500 mm, 48.9375 mm): 패드 2 [GND]의 Q_BZ 위F.Cu
+[unconnected_items]: Missing connection between items
+    Local override; error
+    @(86.3250 mm, 49.5000 mm): 패드 2 [GND]의 R_BZ_PD 위F.Cu
+    @(86.0000 mm, 58.2250 mm): 패드 2 [GND]의 C8 위F.Cu
+[unconnected_items]: Missing connection between items
+    Local override; error
+    @(89.0000 mm, 58.2250 mm): 패드 2 [GND]의 C_EN 위F.Cu
+    @(86.0000 mm, 58.2250 mm): 패드 2 [GND]의 C8 위F.Cu
+[unconnected_items]: Missing connection between items
+    Local override; error
+    @(96.0000 mm, 52.0500 mm): 패드 2 [GND]의 C9 위F.Cu
+    @(91.9500 mm, 48.9375 mm): 패드 2 [GND]의 Q_BZ 위F.Cu
+[unconnected_items]: Missing connection between items
+    Local override; error
+    @(39.0800 mm, 31.5000 mm): 3의 PTH 패드[PLAYER_UART_TX]P_UART
+    @(40.0000 mm, 60.0000 mm): 패드 1 [PLAYER_UART_TX]의 TP_UART_TX 위B.Cu
+[unconnected_items]: Missing connection between items
+    Local override; error
+    @(46.0000 mm, 28.6750 mm): 패드 2 [PLAYER_UART_TX]의 R_UART_TX 위F.Cu
+    @(39.0800 mm, 31.5000 mm): 3의 PTH 패드[PLAYER_UART_TX]P_UART
+[unconnected_items]: Missing connection between items
+    Local override; error
+    @(41.6200 mm, 31.5000 mm): 4의 PTH 패드[PLAYER_UART_RX]P_UART
+    @(28.0000 mm, 67.0000 mm): 패드 1 [PLAYER_UART_RX]의 TP_UART_RX 위B.Cu
+[unconnected_items]: Missing connection between items
+    Local override; error
+    @(46.0000 mm, 32.1750 mm): 패드 2 [PLAYER_UART_RX]의 R_UART_RX 위F.Cu
+    @(41.6200 mm, 31.5000 mm): 4의 PTH 패드[PLAYER_UART_RX]P_UART
+[unconnected_items]: Missing connection between items
+    Local override; error
+    @(44.0000 mm, 41.1750 mm): 패드 2 [OLED_SCL]의 R_SCL 위F.Cu
+    @(34.0000 mm, 67.0000 mm): 패드 1 [OLED_SCL]의 TP_OLED_SCL 위B.Cu
+[unconnected_items]: Missing connection between items
+    Local override; error
+    @(63.7700 mm, 50.4300 mm): 3의 PTH 패드[OLED_SCL]OLED1
+    @(44.0000 mm, 41.1750 mm): 패드 2 [OLED_SCL]의 R_SCL 위F.Cu
+[unconnected_items]: Missing connection between items
+    Local override; error
+    @(87.3200 mm, 79.7500 mm): 패드 5 [OLED_SCL]의 U1 위F.Cu
+    @(63.7700 mm, 50.4300 mm): 3의 PTH 패드[OLED_SCL]OLED1
+[unconnected_items]: Missing connection between items
+    Local override; error
+    @(44.0000 mm, 45.1750 mm): 패드 2 [OLED_SDA]의 R_SDA 위F.Cu
+    @(40.0000 mm, 67.0000 mm): 패드 1 [OLED_SDA]의 TP_OLED_SDA 위B.Cu
+[unconnected_items]: Missing connection between items
+    Local override; error
+    @(66.3100 mm, 50.4300 mm): 4의 PTH 패드[OLED_SDA]OLED1
+    @(44.0000 mm, 45.1750 mm): 패드 2 [OLED_SDA]의 R_SDA 위F.Cu
+[unconnected_items]: Missing connection between items
+    Local override; error
+    @(86.0500 mm, 79.7500 mm): 패드 4 [OLED_SDA]의 U1 위F.Cu
+    @(66.3100 mm, 50.4300 mm): 4의 PTH 패드[OLED_SDA]OLED1
+[unconnected_items]: Missing connection between items
+    Local override; error
+    @(36.0000 mm, 77.3250 mm): 패드 1 [CHAL_1_MCU]의 R_CHAL1 위F.Cu
+    @(89.8600 mm, 79.7500 mm): 패드 7 [CHAL_1_MCU]의 U1 위F.Cu
+[unconnected_items]: Missing connection between items
+    Local override; error
+    @(36.0000 mm, 75.6750 mm): 패드 2 [CHAL_1]의 R_CHAL1 위F.Cu
+    @(36.0000 mm, 80.5000 mm): 패드 1 [CHAL_1]의 P_CHAL1 위F.Cu
+[unconnected_items]: Missing connection between items
+    Local override; error
+    @(70.2750 mm, 87.5000 mm): 패드 1 [ADMIN_UNLOCK]의 SW_ADMIN 위F.Cu
+    @(100.0000 mm, 71.6350 mm): 패드 20 [ADMIN_UNLOCK]의 U1 위F.Cu
+[unconnected_items]: Missing connection between items
+    Local override; error
+    @(52.7875 mm, 58.0000 mm): 패드 2 [STATUS_LED_1_A]의 LED1 위F.Cu
+    @(52.8250 mm, 61.5000 mm): 패드 2 [STATUS_LED_1_A]의 R_LED1 위F.Cu
+[unconnected_items]: Missing connection between items
+    Local override; error
+    @(28.0000 mm, 60.0000 mm): 패드 1 [EN]의 TP_EN 위B.Cu
+    @(50.2750 mm, 87.5000 mm): 패드 1 [EN]의 SW_EN 위F.Cu
+[unconnected_items]: Missing connection between items
+    Local override; error
+    @(50.2750 mm, 87.5000 mm): 패드 1 [EN]의 SW_EN 위F.Cu
+    @(84.7800 mm, 79.7500 mm): 패드 3 [EN]의 U1 위F.Cu
+[unconnected_items]: Missing connection between items
+    Local override; error
+    @(84.7800 mm, 79.7500 mm): 패드 3 [EN]의 U1 위F.Cu
+    @(89.0000 mm, 59.7750 mm): 패드 1 [EN]의 C_EN 위F.Cu
+[unconnected_items]: Missing connection between items
+    Local override; error
+    @(89.0000 mm, 59.7750 mm): 패드 1 [EN]의 C_EN 위F.Cu
+    @(89.0000 mm, 54.6750 mm): 패드 2 [EN]의 R_EN 위F.Cu
+[unconnected_items]: Missing connection between items
+    Local override; error
+    @(27.0000 mm, 53.9500 mm): 패드 1 [VBUS]의 C1 위F.Cu
+    @(27.0000 mm, 57.2750 mm): 패드 1 [VBUS]의 C2 위F.Cu
+[unconnected_items]: Missing connection between items
+    Local override; error
+    @(27.0000 mm, 57.2750 mm): 패드 1 [VBUS]의 C2 위F.Cu
+    @(27.0000 mm, 60.9500 mm): 패드 1 [VBUS]의 C3 위F.Cu
+[unconnected_items]: Missing connection between items
+    Local override; error
+    @(31.3500 mm, 58.8000 mm): 패드 3 [VBUS]의 U2 위F.Cu
+    @(27.0000 mm, 57.2750 mm): 패드 1 [VBUS]의 C2 위F.Cu
+[unconnected_items]: Missing connection between items
+    Local override; error
+    @(31.3500 mm, 58.8000 mm): 패드 3 [VBUS]의 U2 위F.Cu
+    @(40.0000 mm, 53.0000 mm): 패드 1 [VBUS]의 TP_VBUS 위B.Cu
+[unconnected_items]: Missing connection between items
+    Local override; error
+    @(60.0500 mm, 100.4550 mm): 패드 B9 [VBUS]의 J1 위F.Cu
+    @(64.9500 mm, 100.4550 mm): 패드 B4 [VBUS]의 J1 위F.Cu
+[unconnected_items]: Missing connection between items
+    Local override; error
+    @(63.6375 mm, 95.0000 mm): 패드 5 [VBUS]의 D1 위F.Cu
+    @(40.0000 mm, 53.0000 mm): 패드 1 [VBUS]의 TP_VBUS 위B.Cu
+[unconnected_items]: Missing connection between items
+    Local override; error
+    @(64.9500 mm, 100.4550 mm): 패드 B4 [VBUS]의 J1 위F.Cu
+    @(63.6375 mm, 95.0000 mm): 패드 5 [VBUS]의 D1 위F.Cu
+[unconnected_items]: Missing connection between items
+    Local override; error
+    @(53.6750 mm, 96.5000 mm): 패드 1 [USB_CC1]의 R1 위F.Cu
+    @(61.2500 mm, 100.4550 mm): 패드 A5 [USB_CC1]의 J1 위F.Cu
+[unconnected_items]: Missing connection between items
+    Local override; error
+    @(62.2500 mm, 100.4550 mm): 패드 A6 [USB_D_P]의 J1 위F.Cu
+    @(63.2500 mm, 100.4550 mm): 패드 B6 [USB_D_P]의 J1 위F.Cu
+[unconnected_items]: Missing connection between items
+    Local override; error
+    @(63.2500 mm, 100.4550 mm): 패드 B6 [USB_D_P]의 J1 위F.Cu
+    @(63.6375 mm, 95.9500 mm): 패드 4 [USB_D_P]의 D1 위F.Cu
+[unconnected_items]: Missing connection between items
+    Local override; error
+    @(63.6375 mm, 95.9500 mm): 패드 4 [USB_D_P]의 D1 위F.Cu
+    @(61.3625 mm, 95.9500 mm): 패드 3 [USB_D_P]의 D1 위F.Cu
+[unconnected_items]: Missing connection between items
+    Local override; error
+    @(98.7500 mm, 79.7500 mm): 패드 14 [USB_D_P]의 U1 위F.Cu
+    @(63.6375 mm, 95.9500 mm): 패드 4 [USB_D_P]의 D1 위F.Cu
+[unconnected_items]: Missing connection between items
+    Local override; error
+    @(61.3625 mm, 94.0500 mm): 패드 1 [USB_D_N]의 D1 위F.Cu
+    @(61.7500 mm, 100.4550 mm): 패드 B7 [USB_D_N]의 J1 위F.Cu
+[unconnected_items]: Missing connection between items
+    Local override; error
+    @(61.7500 mm, 100.4550 mm): 패드 B7 [USB_D_N]의 J1 위F.Cu
+    @(62.7500 mm, 100.4550 mm): 패드 A7 [USB_D_N]의 J1 위F.Cu
+[unconnected_items]: Missing connection between items
+    Local override; error
+    @(63.6375 mm, 94.0500 mm): 패드 6 [USB_D_N]의 D1 위F.Cu
+    @(61.3625 mm, 94.0500 mm): 패드 1 [USB_D_N]의 D1 위F.Cu
+[unconnected_items]: Missing connection between items
+    Local override; error
+    @(97.4800 mm, 79.7500 mm): 패드 13 [USB_D_N]의 U1 위F.Cu
+    @(63.6375 mm, 94.0500 mm): 패드 6 [USB_D_N]의 D1 위F.Cu
+[unconnected_items]: Missing connection between items
+    Local override; error
+    @(64.2500 mm, 100.4550 mm): 패드 B5 [USB_CC2]의 J1 위F.Cu
+    @(69.6750 mm, 96.5000 mm): 패드 1 [USB_CC2]의 R2 위F.Cu
+[unconnected_items]: Missing connection between items
+    Local override; error
+    @(86.3250 mm, 46.5000 mm): 패드 2 [BUZZER_GATE]의 R_BZ 위F.Cu
+    @(84.6750 mm, 49.5000 mm): 패드 1 [BUZZER_GATE]의 R_BZ_PD 위F.Cu
+[unconnected_items]: Missing connection between items
+    Local override; error
+    @(90.0500 mm, 48.9375 mm): 패드 1 [BUZZER_GATE]의 Q_BZ 위F.Cu
+    @(86.3250 mm, 46.5000 mm): 패드 2 [BUZZER_GATE]의 R_BZ 위F.Cu
+[unconnected_items]: Missing connection between items
+    Local override; error
+    @(93.9475 mm, 43.2500 mm): 패드 2 [BUZZER_SW]의 BZ1 위F.Cu
+    @(91.0000 mm, 47.0625 mm): 패드 3 [BUZZER_SW]의 Q_BZ 위F.Cu
+[unconnected_items]: Missing connection between items
+    Local override; error
+    @(96.0000 mm, 46.3500 mm): 패드 2 [BUZZER_SW]의 D_BZ 위F.Cu
+    @(93.9475 mm, 43.2500 mm): 패드 2 [BUZZER_SW]의 BZ1 위F.Cu
+[unconnected_items]: Missing connection between items
+    Local override; error
+    @(30.0000 mm, 77.3250 mm): 패드 1 [CHAL_0_MCU]의 R_CHAL0 위F.Cu
+    @(88.5900 mm, 79.7500 mm): 패드 6 [CHAL_0_MCU]의 U1 위F.Cu
+[unconnected_items]: Missing connection between items
+    Local override; error
+    @(61.6750 mm, 61.5000 mm): 패드 1 [STATUS_LED_3_MCU]의 R_LED3 위F.Cu
+    @(91.1300 mm, 79.7500 mm): 패드 8 [STATUS_LED_3_MCU]의 U1 위F.Cu
+[unconnected_items]: Missing connection between items
+    Local override; error
+    @(66.9250 mm, 61.5000 mm): 패드 1 [STATUS_LED_4_MCU]의 R_LED4 위F.Cu
+    @(92.4000 mm, 79.7500 mm): 패드 9 [STATUS_LED_4_MCU]의 U1 위F.Cu
+[unconnected_items]: Missing connection between items
+    Local override; error
+    @(70.6750 mm, 61.5000 mm): 패드 1 [STATUS_LED_5_MCU]의 R_LED5 위F.Cu
+    @(93.6700 mm, 79.7500 mm): 패드 10 [STATUS_LED_5_MCU]의 U1 위F.Cu
+[unconnected_items]: Missing connection between items
+    Local override; error
+    @(84.6750 mm, 46.5000 mm): 패드 1 [BUZZER_GPIO]의 R_BZ 위F.Cu
+    @(94.9400 mm, 79.7500 mm): 패드 11 [BUZZER_GPIO]의 U1 위F.Cu
+[unconnected_items]: Missing connection between items
+    Local override; error
+    @(42.0000 mm, 77.3250 mm): 패드 1 [CHAL_2_MCU]의 R_CHAL2 위F.Cu
+    @(96.2100 mm, 79.7500 mm): 패드 12 [CHAL_2_MCU]의 U1 위F.Cu
+[unconnected_items]: Missing connection between items
+    Local override; error
+    @(51.1750 mm, 61.5000 mm): 패드 1 [STATUS_LED_1_MCU]의 R_LED1 위F.Cu
+    @(100.0000 mm, 70.3650 mm): 패드 21 [STATUS_LED_1_MCU]의 U1 위F.Cu
+[unconnected_items]: Missing connection between items
+    Local override; error
+    @(56.4250 mm, 61.5000 mm): 패드 1 [STATUS_LED_2_MCU]의 R_LED2 위F.Cu
+    @(100.0000 mm, 69.0950 mm): 패드 22 [STATUS_LED_2_MCU]의 U1 위F.Cu
+[unconnected_items]: Missing connection between items
+    Local override; error
+    @(34.0000 mm, 60.0000 mm): 패드 1 [BOOT_GPIO0]의 TP_BOOT 위B.Cu
+    @(60.2750 mm, 87.5000 mm): 패드 1 [BOOT_GPIO0]의 SW_BOOT 위F.Cu
+[unconnected_items]: Missing connection between items
+    Local override; error
+    @(60.2750 mm, 87.5000 mm): 패드 1 [BOOT_GPIO0]의 SW_BOOT 위F.Cu
+    @(76.5000 mm, 81.6750 mm): 패드 2 [BOOT_GPIO0]의 R_BOOT 위F.Cu
+[unconnected_items]: Missing connection between items
+    Local override; error
+    @(76.5000 mm, 81.6750 mm): 패드 2 [BOOT_GPIO0]의 R_BOOT 위F.Cu
+    @(98.7500 mm, 62.2500 mm): 패드 27 [BOOT_GPIO0]의 U1 위F.Cu
+[unconnected_items]: Missing connection between items
+    Local override; error
+    @(46.0000 mm, 33.8250 mm): 패드 1 [UART_RX_MCU]의 R_UART_RX 위F.Cu
+    @(87.3200 mm, 62.2500 mm): 패드 36 [UART_RX_MCU]의 U1 위F.Cu
+[unconnected_items]: Missing connection between items
+    Local override; error
+    @(46.0000 mm, 30.3250 mm): 패드 1 [UART_TX_MCU]의 R_UART_TX 위F.Cu
+    @(86.0500 mm, 62.2500 mm): 패드 37 [UART_TX_MCU]의 U1 위F.Cu
+[unconnected_items]: Missing connection between items
+    Local override; error
+    @(72.3250 mm, 61.5000 mm): 패드 2 [STATUS_LED_5_A]의 R_LED5 위F.Cu
+    @(73.7875 mm, 58.0000 mm): 패드 2 [STATUS_LED_5_A]의 LED5 위F.Cu
+[unconnected_items]: Missing connection between items
+    Local override; error
+    @(63.2875 mm, 58.0000 mm): 패드 2 [STATUS_LED_3_A]의 LED3 위F.Cu
+    @(63.3250 mm, 61.5000 mm): 패드 2 [STATUS_LED_3_A]의 R_LED3 위F.Cu
+[unconnected_items]: Missing connection between items
+    Local override; error
+    @(68.5375 mm, 58.0000 mm): 패드 2 [STATUS_LED_4_A]의 LED4 위F.Cu
+    @(68.5750 mm, 61.5000 mm): 패드 2 [STATUS_LED_4_A]의 R_LED4 위F.Cu
+[unconnected_items]: Missing connection between items
+    Local override; error
+    @(30.0000 mm, 75.6750 mm): 패드 2 [CHAL_0]의 R_CHAL0 위F.Cu
+    @(30.0000 mm, 80.5000 mm): 패드 1 [CHAL_0]의 P_CHAL0 위F.Cu
+[unconnected_items]: Missing connection between items
+    Local override; error
+    @(42.0000 mm, 75.6750 mm): 패드 2 [CHAL_2]의 R_CHAL2 위F.Cu
+    @(42.0000 mm, 80.5000 mm): 패드 1 [CHAL_2]의 P_CHAL2 위F.Cu
+[unconnected_items]: Missing connection between items
+    Local override; error
+    @(58.0375 mm, 58.0000 mm): 패드 2 [STATUS_LED_2_A]의 LED2 위F.Cu
+    @(58.0750 mm, 61.5000 mm): 패드 2 [STATUS_LED_2_A]의 R_LED2 위F.Cu
+
+** Found 0 Footprint errors **
+
+** Ignored checks **
+    - Footprint has no courtyard defined
+    - Track endpoint not centered on via
+    - Tuning profile track geometries
+    - Footprint doesn't match symbol's footprint filters
+    - Footprint component type doesn't match footprint pads
+
+** End of Report **

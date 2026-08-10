@@ -1,0 +1,125 @@
+#VRML V2.0 utf8
+
+WorldInfo {
+  title "HS96L03W2C03 0.96 inch white I2C OLED module"
+}
+
+DEF BOARD_MATERIAL Appearance {
+  material Material {
+    diffuseColor 0.02 0.22 0.46
+    specularColor 0.08 0.12 0.16
+    shininess 0.25
+  }
+}
+
+DEF FRAME_MATERIAL Appearance {
+  material Material {
+    diffuseColor 0.68 0.70 0.72
+    specularColor 0.35 0.35 0.35
+    shininess 0.45
+  }
+}
+
+DEF GLASS_MATERIAL Appearance {
+  material Material {
+    diffuseColor 0.015 0.02 0.025
+    specularColor 0.16 0.20 0.24
+    shininess 0.65
+  }
+}
+
+DEF HEADER_MATERIAL Appearance {
+  material Material {
+    diffuseColor 0.025 0.025 0.025
+    specularColor 0.04 0.04 0.04
+    shininess 0.15
+  }
+}
+
+DEF GOLD_MATERIAL Appearance {
+  material Material {
+    diffuseColor 0.82 0.57 0.08
+    specularColor 0.46 0.32 0.08
+    shininess 0.55
+  }
+}
+
+Transform {
+  translation 0 0 0.23622
+  children [
+    Shape {
+      appearance USE BOARD_MATERIAL
+      geometry Box { size 10.74803 10.94488 0.47244 }
+    }
+  ]
+}
+
+Transform {
+  translation 0 -0.15354 0.59055
+  children [
+    Shape {
+      appearance USE FRAME_MATERIAL
+      geometry Box { size 9.74016 6.65354 0.23622 }
+    }
+  ]
+}
+
+Transform {
+  translation 0 -0.15354 0.72835
+  children [
+    Shape {
+      appearance USE GLASS_MATERIAL
+      geometry Box { size 8.56063 4.27717 0.07874 }
+    }
+  ]
+}
+
+Transform {
+  translation 0 4.47244 0.62992
+  children [
+    Shape {
+      appearance USE HEADER_MATERIAL
+      geometry Box { size 4.29134 0.43307 0.78740 }
+    }
+  ]
+}
+
+Transform {
+  translation -1.50000 4.47244 0.90551
+  children [
+    Shape {
+      appearance USE GOLD_MATERIAL
+      geometry Box { size 0.29528 0.29528 1.33858 }
+    }
+  ]
+}
+
+Transform {
+  translation -0.50000 4.47244 0.90551
+  children [
+    Shape {
+      appearance USE GOLD_MATERIAL
+      geometry Box { size 0.29528 0.29528 1.33858 }
+    }
+  ]
+}
+
+Transform {
+  translation 0.50000 4.47244 0.90551
+  children [
+    Shape {
+      appearance USE GOLD_MATERIAL
+      geometry Box { size 0.29528 0.29528 1.33858 }
+    }
+  ]
+}
+
+Transform {
+  translation 1.50000 4.47244 0.90551
+  children [
+    Shape {
+      appearance USE GOLD_MATERIAL
+      geometry Box { size 0.29528 0.29528 1.33858 }
+    }
+  ]
+}
