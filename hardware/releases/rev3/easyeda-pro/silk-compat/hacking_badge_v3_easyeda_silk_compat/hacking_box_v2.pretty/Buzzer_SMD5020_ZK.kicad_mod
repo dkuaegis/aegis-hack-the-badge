@@ -1,0 +1,140 @@
+(footprint "Buzzer_SMD5020_ZK"
+	(version 20240108)
+	(generator "pcbnew")
+	(layer "F.Cu")
+	(descr "XHXDZ SMD5020-ZK passive electromagnetic buzzer, JLCPCB C49246955")
+	(tags "buzzer passive electromagnetic SMD 5.3x5.3")
+	(property "Reference" "BZ**"
+		(at 0 -3.7 0)
+		(layer "F.SilkS")
+		(effects
+			(font
+				(size 0.8 0.8)
+				(thickness 0.12)
+			)
+		)
+	)
+	(property "Value" "SMD5020-ZK"
+		(at 0 3.7 0)
+		(layer "F.Fab")
+		(effects
+			(font
+				(size 0.8 0.8)
+				(thickness 0.12)
+			)
+		)
+	)
+	(property "Datasheet" "https://jlcpcb.com/partdetail/XHXDZ-SMD5020ZK/C49246955"
+		(at 0 0 0)
+		(layer "F.Fab")
+		(hide yes)
+		(effects
+			(font
+				(size 1.27 1.27)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "Description" "3 V, 4 kHz, 100 mA passive electromagnetic buzzer"
+		(at 0 0 0)
+		(layer "F.Fab")
+		(hide yes)
+		(effects
+			(font
+				(size 1.27 1.27)
+				(thickness 0.15)
+			)
+		)
+	)
+	(property "LCSC" "C49246955"
+		(at 0 0 0)
+		(layer "F.Fab")
+		(hide yes)
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+		)
+	)
+	(attr smd)
+	(fp_rect
+		(start -2.625 -2.625)
+		(end 2.625 2.625)
+		(stroke
+			(width 0.15)
+			(type solid)
+		)
+		(fill none)
+		(layer "F.SilkS")
+	)
+	(fp_rect
+		(start -2.8 -2.8)
+		(end 2.8 2.8)
+		(stroke
+			(width 0.05)
+			(type solid)
+		)
+		(fill none)
+		(layer "F.CrtYd")
+	)
+	(fp_rect
+		(start -2.625 -2.625)
+		(end 2.625 2.625)
+		(stroke
+			(width 0.1)
+			(type solid)
+		)
+		(fill none)
+		(layer "F.Fab")
+	)
+	(fp_text user "+"
+		(at -1.95 0.35 0)
+		(layer "F.SilkS")
+		(effects
+			(font
+				(size 0.8 0.8)
+				(thickness 0.13)
+			)
+		)
+	)
+	(fp_circle
+		(center 0 0)
+		(end 0.65 0)
+		(stroke
+			(width 0.1)
+			(type solid)
+		)
+		(fill none)
+		(layer "F.Fab")
+	)
+	(pad "1" smd roundrect
+		(at -1.9475 1.75)
+		(size 2.1 1.13)
+		(layers "F.Cu" "F.Paste" "F.Mask")
+		(roundrect_rratio 0.15)
+	)
+	(pad "2" smd roundrect
+		(at 1.9475 1.75)
+		(size 2.1 1.13)
+		(layers "F.Cu" "F.Paste" "F.Mask")
+		(roundrect_rratio 0.15)
+	)
+	(pad "3" smd roundrect
+		(at -1.9475 -1.75)
+		(size 2.1 1.13)
+		(layers "F.Cu" "F.Paste" "F.Mask")
+		(roundrect_rratio 0.15)
+	)
+	(model "${KICAD10_3DMODEL_DIR}/Buzzer_Beeper.3dshapes/MagneticBuzzer_Kingstate_KCG0601.step"
+		(offset
+			(xyz 0 0 0)
+		)
+		(scale
+			(xyz 0.84 0.84 0.67)
+		)
+		(rotate
+			(xyz 0 0 0)
+		)
+	)
+)

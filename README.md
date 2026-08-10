@@ -64,11 +64,14 @@ EasyEDA Pro import package:
 
 | Purpose | File |
 | --- | --- |
-| Import current KiCad source into EasyEDA Pro | `hardware/releases/rev3/easyeda-pro/upload/hacking_badge_v3_easyeda_pro_kicad_import.zip` |
+| Recommended EasyEDA Pro import with compatible silkscreen artwork | `hardware/releases/rev3/easyeda-pro/upload/hacking_badge_v3_easyeda_pro_silk_compat_import.zip` |
+| Raw KiCad source import for comparison | `hardware/releases/rev3/easyeda-pro/upload/hacking_badge_v3_easyeda_pro_kicad_import.zip` |
 | Previous EasyEDA Pro project archive reference | `hardware/releases/rev3/easyeda-pro/reference/ProPrj_hack_the_badge_rev.3.epro2` |
 
 Use the JLCPCB release package for actual fabrication unless the EasyEDA Pro
-conversion has been visually and electrically revalidated.
+conversion has been visually and electrically revalidated. The recommended
+EasyEDA Pro ZIP converts filled silkscreen logos into dense line artwork so the
+logos remain visible after import.
 
 ## Verification
 

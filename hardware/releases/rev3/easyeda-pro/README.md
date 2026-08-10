@@ -7,20 +7,25 @@ workflow.
 
 | Purpose | File |
 | --- | --- |
-| Current KiCad source import package | `upload/hacking_badge_v3_easyeda_pro_kicad_import.zip` |
+| Recommended EasyEDA Pro import package | `upload/hacking_badge_v3_easyeda_pro_silk_compat_import.zip` |
+| Raw KiCad source import package | `upload/hacking_badge_v3_easyeda_pro_kicad_import.zip` |
 | Previous EasyEDA Pro archive reference | `reference/ProPrj_hack_the_badge_rev.3.epro2` |
 
-Use the KiCad import package first when the goal is to recreate the current
-production KiCad design inside EasyEDA Pro. The `.epro2` file is kept as a
-reference/native archive candidate, but it was generated before the final KiCad
-release checks and must not be assumed to be identical without review.
+Use the silkscreen-compatible import package first when the goal is sponsor
+review or coupon use in EasyEDA Pro. It is derived from the current production
+KiCad design, but converts filled silkscreen polygons into dense line artwork
+because EasyEDA Pro's KiCad importer can otherwise show complex filled logos as
+hollow outlines. The raw KiCad import package is kept only as a reference for
+format comparison. The `.epro2` file is kept as a reference/native archive
+candidate, but it was generated before the final KiCad release checks and must
+not be assumed to be identical without review.
 
 ## Import Procedure
 
 1. Open EasyEDA Pro.
 2. Use the start page import flow for KiCad files, or use the EasyEDA Pro Format
    Converter if direct import fails.
-3. Select `upload/hacking_badge_v3_easyeda_pro_kicad_import.zip`.
+3. Select `upload/hacking_badge_v3_easyeda_pro_silk_compat_import.zip`.
 4. After import, open both schematic and PCB.
 5. Rebuild/refill copper zones only if EasyEDA Pro asks for it, then compare
    against the KiCad release previews and Gerbers.
@@ -35,6 +40,9 @@ release checks and must not be assumed to be identical without review.
   `Developed By @Z3r0c0k3_`, full Aegis logo, and sponsor mark.
 - Rear silkscreen preserves the filled Aegis silhouette and MSG CTF negative
   mark.
+- Filled logo areas may look lightly striped at extreme zoom because the
+  EasyEDA-compatible package uses dense silkscreen lines instead of KiCad
+  filled polygons.
 - `C0`, `C1`, `C2` challenge pads route through 1 kOhm series resistors to
   ESP32-S3 GPIO6, GPIO7, GPIO8.
 - OLED pin order remains `GND, VCC, SCL, SDA`.
