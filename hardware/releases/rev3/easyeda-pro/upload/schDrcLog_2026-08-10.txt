@@ -1,0 +1,99 @@
+2026-08-10 13:37:33[Fatal Error] :  Component $2I151 lacks of property "Footprint".
+2026-08-10 13:37:33[Info] :  The property "Designator" of Component $2I164 doesn't match the suggestion rule. Suggesting the Designator value combine into: English letters + numeric or question mark.
+2026-08-10 13:37:33[Fatal Error] :  Component $2I164 lacks of property "Footprint".
+2026-08-10 13:37:33[Fatal Error] :  Component $2I167 lacks of property "Footprint".
+2026-08-10 13:37:33[Info] :  The property "Designator" of Component $2I161 doesn't match the suggestion rule. Suggesting the Designator value combine into: English letters + numeric or question mark.
+2026-08-10 13:37:33[Info] :  The property "Designator" of Component $2I162 doesn't match the suggestion rule. Suggesting the Designator value combine into: English letters + numeric or question mark.
+2026-08-10 13:37:33[Fatal Error] :  Component $2I173 lacks of property "Footprint".
+2026-08-10 13:37:33[Info] :  The property "Designator" of Component $2I178 doesn't match the suggestion rule. Suggesting the Designator value combine into: English letters + numeric or question mark.
+2026-08-10 13:37:33[Fatal Error] :  Component $2I178 lacks of property "Footprint".
+2026-08-10 13:37:33[Info] :  The property "Designator" of Component $2I200 doesn't match the suggestion rule. Suggesting the Designator value combine into: English letters + numeric or question mark.
+2026-08-10 13:37:33[Info] :  The property "Designator" of Component $2I201 doesn't match the suggestion rule. Suggesting the Designator value combine into: English letters + numeric or question mark.
+2026-08-10 13:37:33[Info] :  The property "Designator" of Component $2I202 doesn't match the suggestion rule. Suggesting the Designator value combine into: English letters + numeric or question mark.
+2026-08-10 13:37:33[Info] :  The property "Designator" of Component $2I203 doesn't match the suggestion rule. Suggesting the Designator value combine into: English letters + numeric or question mark.
+2026-08-10 13:37:33[Info] :  The property "Designator" of Component $2I204 doesn't match the suggestion rule. Suggesting the Designator value combine into: English letters + numeric or question mark.
+2026-08-10 13:37:33[Info] :  The property "Designator" of Component $2I205 doesn't match the suggestion rule. Suggesting the Designator value combine into: English letters + numeric or question mark.
+2026-08-10 13:37:33[Info] :  The property "Designator" of Component $2I206 doesn't match the suggestion rule. Suggesting the Designator value combine into: English letters + numeric or question mark.
+2026-08-10 13:37:33[Info] :  The property "Designator" of Component $2I207 doesn't match the suggestion rule. Suggesting the Designator value combine into: English letters + numeric or question mark.
+2026-08-10 13:37:33[Info] :  The property "Designator" of Component $2I208 doesn't match the suggestion rule. Suggesting the Designator value combine into: English letters + numeric or question mark.
+2026-08-10 13:37:33[Fatal Error] :  Component $2I209 lacks of property "Footprint".
+2026-08-10 13:37:33[Info] :  The property "Designator" of Component $2I177 doesn't match the suggestion rule. Suggesting the Designator value combine into: English letters + numeric or question mark.
+2026-08-10 13:37:33[Fatal Error] :  Component $2I210 lacks of property "Footprint".
+2026-08-10 13:37:33[Info] :  The property "Designator" of Component $2I181 doesn't match the suggestion rule. Suggesting the Designator value combine into: English letters + numeric or question mark.
+2026-08-10 13:37:33[Info] :  The property "Designator" of Component $2I182 doesn't match the suggestion rule. Suggesting the Designator value combine into: English letters + numeric or question mark.
+2026-08-10 13:37:33[Info] :  The property "Designator" of Component $2I183 doesn't match the suggestion rule. Suggesting the Designator value combine into: English letters + numeric or question mark.
+2026-08-10 13:37:33[Info] :  The property "Designator" of Component $2I187 doesn't match the suggestion rule. Suggesting the Designator value combine into: English letters + numeric or question mark.
+2026-08-10 13:37:33[Info] :  The property "Designator" of Component $2I193 doesn't match the suggestion rule. Suggesting the Designator value combine into: English letters + numeric or question mark.
+2026-08-10 13:37:33[Info] :  The property "Designator" of Component $2I194 doesn't match the suggestion rule. Suggesting the Designator value combine into: English letters + numeric or question mark.
+2026-08-10 13:37:33[Info] :  The property "Designator" of Component $2I195 doesn't match the suggestion rule. Suggesting the Designator value combine into: English letters + numeric or question mark.
+2026-08-10 13:37:33[Info] :  The property "Designator" of Component $2I196 doesn't match the suggestion rule. Suggesting the Designator value combine into: English letters + numeric or question mark.
+2026-08-10 13:37:33[Info] :  The property "Designator" of Component $2I197 doesn't match the suggestion rule. Suggesting the Designator value combine into: English letters + numeric or question mark.
+2026-08-10 13:37:33[Info] :  The property "Designator" of Component $2I198 doesn't match the suggestion rule. Suggesting the Designator value combine into: English letters + numeric or question mark.
+2026-08-10 13:37:33[Info] :  The property "Designator" of Component $2I199 doesn't match the suggestion rule. Suggesting the Designator value combine into: English letters + numeric or question mark.
+2026-08-10 13:37:33[Info] :  The pin of the component hacking_box_v2-rescue_HB_MECH does not correspond to the pad (Pad has no corresponding pin: ): $2I165,$2I166
+2026-08-10 13:37:44[Fatal Error] :  Component $2I151 lacks of property "Footprint".
+2026-08-10 13:37:44[Info] :  The property "Designator" of Component $2I164 doesn't match the suggestion rule. Suggesting the Designator value combine into: English letters + numeric or question mark.
+2026-08-10 13:37:44[Fatal Error] :  Component $2I164 lacks of property "Footprint".
+2026-08-10 13:37:44[Fatal Error] :  Component $2I167 lacks of property "Footprint".
+2026-08-10 13:37:44[Info] :  The property "Designator" of Component $2I161 doesn't match the suggestion rule. Suggesting the Designator value combine into: English letters + numeric or question mark.
+2026-08-10 13:37:44[Info] :  The property "Designator" of Component $2I162 doesn't match the suggestion rule. Suggesting the Designator value combine into: English letters + numeric or question mark.
+2026-08-10 13:37:44[Fatal Error] :  Component $2I173 lacks of property "Footprint".
+2026-08-10 13:37:44[Info] :  The property "Designator" of Component $2I178 doesn't match the suggestion rule. Suggesting the Designator value combine into: English letters + numeric or question mark.
+2026-08-10 13:37:44[Fatal Error] :  Component $2I178 lacks of property "Footprint".
+2026-08-10 13:37:44[Info] :  The property "Designator" of Component $2I200 doesn't match the suggestion rule. Suggesting the Designator value combine into: English letters + numeric or question mark.
+2026-08-10 13:37:44[Info] :  The property "Designator" of Component $2I201 doesn't match the suggestion rule. Suggesting the Designator value combine into: English letters + numeric or question mark.
+2026-08-10 13:37:44[Info] :  The property "Designator" of Component $2I202 doesn't match the suggestion rule. Suggesting the Designator value combine into: English letters + numeric or question mark.
+2026-08-10 13:37:44[Info] :  The property "Designator" of Component $2I203 doesn't match the suggestion rule. Suggesting the Designator value combine into: English letters + numeric or question mark.
+2026-08-10 13:37:44[Info] :  The property "Designator" of Component $2I204 doesn't match the suggestion rule. Suggesting the Designator value combine into: English letters + numeric or question mark.
+2026-08-10 13:37:44[Info] :  The property "Designator" of Component $2I205 doesn't match the suggestion rule. Suggesting the Designator value combine into: English letters + numeric or question mark.
+2026-08-10 13:37:44[Info] :  The property "Designator" of Component $2I206 doesn't match the suggestion rule. Suggesting the Designator value combine into: English letters + numeric or question mark.
+2026-08-10 13:37:44[Info] :  The property "Designator" of Component $2I207 doesn't match the suggestion rule. Suggesting the Designator value combine into: English letters + numeric or question mark.
+2026-08-10 13:37:44[Info] :  The property "Designator" of Component $2I208 doesn't match the suggestion rule. Suggesting the Designator value combine into: English letters + numeric or question mark.
+2026-08-10 13:37:44[Fatal Error] :  Component $2I209 lacks of property "Footprint".
+2026-08-10 13:37:44[Info] :  The property "Designator" of Component $2I177 doesn't match the suggestion rule. Suggesting the Designator value combine into: English letters + numeric or question mark.
+2026-08-10 13:37:44[Fatal Error] :  Component $2I210 lacks of property "Footprint".
+2026-08-10 13:37:44[Info] :  The property "Designator" of Component $2I181 doesn't match the suggestion rule. Suggesting the Designator value combine into: English letters + numeric or question mark.
+2026-08-10 13:37:44[Info] :  The property "Designator" of Component $2I182 doesn't match the suggestion rule. Suggesting the Designator value combine into: English letters + numeric or question mark.
+2026-08-10 13:37:44[Info] :  The property "Designator" of Component $2I183 doesn't match the suggestion rule. Suggesting the Designator value combine into: English letters + numeric or question mark.
+2026-08-10 13:37:44[Info] :  The property "Designator" of Component $2I187 doesn't match the suggestion rule. Suggesting the Designator value combine into: English letters + numeric or question mark.
+2026-08-10 13:37:44[Info] :  The property "Designator" of Component $2I193 doesn't match the suggestion rule. Suggesting the Designator value combine into: English letters + numeric or question mark.
+2026-08-10 13:37:44[Info] :  The property "Designator" of Component $2I194 doesn't match the suggestion rule. Suggesting the Designator value combine into: English letters + numeric or question mark.
+2026-08-10 13:37:44[Info] :  The property "Designator" of Component $2I195 doesn't match the suggestion rule. Suggesting the Designator value combine into: English letters + numeric or question mark.
+2026-08-10 13:37:44[Info] :  The property "Designator" of Component $2I196 doesn't match the suggestion rule. Suggesting the Designator value combine into: English letters + numeric or question mark.
+2026-08-10 13:37:44[Info] :  The property "Designator" of Component $2I197 doesn't match the suggestion rule. Suggesting the Designator value combine into: English letters + numeric or question mark.
+2026-08-10 13:37:44[Info] :  The property "Designator" of Component $2I198 doesn't match the suggestion rule. Suggesting the Designator value combine into: English letters + numeric or question mark.
+2026-08-10 13:37:44[Info] :  The property "Designator" of Component $2I199 doesn't match the suggestion rule. Suggesting the Designator value combine into: English letters + numeric or question mark.
+2026-08-10 13:37:44[Info] :  The pin of the component hacking_box_v2-rescue_HB_MECH does not correspond to the pad (Pad has no corresponding pin: ): $2I165,$2I166
+2026-08-10 13:37:53[Fatal Error] :  Component $2I151 lacks of property "Footprint".
+2026-08-10 13:37:53[Info] :  The property "Designator" of Component $2I164 doesn't match the suggestion rule. Suggesting the Designator value combine into: English letters + numeric or question mark.
+2026-08-10 13:37:53[Fatal Error] :  Component $2I164 lacks of property "Footprint".
+2026-08-10 13:37:53[Fatal Error] :  Component $2I167 lacks of property "Footprint".
+2026-08-10 13:37:53[Info] :  The property "Designator" of Component $2I161 doesn't match the suggestion rule. Suggesting the Designator value combine into: English letters + numeric or question mark.
+2026-08-10 13:37:53[Info] :  The property "Designator" of Component $2I162 doesn't match the suggestion rule. Suggesting the Designator value combine into: English letters + numeric or question mark.
+2026-08-10 13:37:53[Fatal Error] :  Component $2I173 lacks of property "Footprint".
+2026-08-10 13:37:53[Info] :  The property "Designator" of Component $2I178 doesn't match the suggestion rule. Suggesting the Designator value combine into: English letters + numeric or question mark.
+2026-08-10 13:37:53[Fatal Error] :  Component $2I178 lacks of property "Footprint".
+2026-08-10 13:37:53[Info] :  The property "Designator" of Component $2I200 doesn't match the suggestion rule. Suggesting the Designator value combine into: English letters + numeric or question mark.
+2026-08-10 13:37:53[Info] :  The property "Designator" of Component $2I201 doesn't match the suggestion rule. Suggesting the Designator value combine into: English letters + numeric or question mark.
+2026-08-10 13:37:53[Info] :  The property "Designator" of Component $2I202 doesn't match the suggestion rule. Suggesting the Designator value combine into: English letters + numeric or question mark.
+2026-08-10 13:37:53[Info] :  The property "Designator" of Component $2I203 doesn't match the suggestion rule. Suggesting the Designator value combine into: English letters + numeric or question mark.
+2026-08-10 13:37:53[Info] :  The property "Designator" of Component $2I204 doesn't match the suggestion rule. Suggesting the Designator value combine into: English letters + numeric or question mark.
+2026-08-10 13:37:53[Info] :  The property "Designator" of Component $2I205 doesn't match the suggestion rule. Suggesting the Designator value combine into: English letters + numeric or question mark.
+2026-08-10 13:37:53[Info] :  The property "Designator" of Component $2I206 doesn't match the suggestion rule. Suggesting the Designator value combine into: English letters + numeric or question mark.
+2026-08-10 13:37:53[Info] :  The property "Designator" of Component $2I207 doesn't match the suggestion rule. Suggesting the Designator value combine into: English letters + numeric or question mark.
+2026-08-10 13:37:53[Info] :  The property "Designator" of Component $2I208 doesn't match the suggestion rule. Suggesting the Designator value combine into: English letters + numeric or question mark.
+2026-08-10 13:37:53[Fatal Error] :  Component $2I209 lacks of property "Footprint".
+2026-08-10 13:37:53[Info] :  The property "Designator" of Component $2I177 doesn't match the suggestion rule. Suggesting the Designator value combine into: English letters + numeric or question mark.
+2026-08-10 13:37:53[Fatal Error] :  Component $2I210 lacks of property "Footprint".
+2026-08-10 13:37:53[Info] :  The property "Designator" of Component $2I181 doesn't match the suggestion rule. Suggesting the Designator value combine into: English letters + numeric or question mark.
+2026-08-10 13:37:53[Info] :  The property "Designator" of Component $2I182 doesn't match the suggestion rule. Suggesting the Designator value combine into: English letters + numeric or question mark.
+2026-08-10 13:37:53[Info] :  The property "Designator" of Component $2I183 doesn't match the suggestion rule. Suggesting the Designator value combine into: English letters + numeric or question mark.
+2026-08-10 13:37:53[Info] :  The property "Designator" of Component $2I187 doesn't match the suggestion rule. Suggesting the Designator value combine into: English letters + numeric or question mark.
+2026-08-10 13:37:53[Info] :  The property "Designator" of Component $2I193 doesn't match the suggestion rule. Suggesting the Designator value combine into: English letters + numeric or question mark.
+2026-08-10 13:37:53[Info] :  The property "Designator" of Component $2I194 doesn't match the suggestion rule. Suggesting the Designator value combine into: English letters + numeric or question mark.
+2026-08-10 13:37:53[Info] :  The property "Designator" of Component $2I195 doesn't match the suggestion rule. Suggesting the Designator value combine into: English letters + numeric or question mark.
+2026-08-10 13:37:53[Info] :  The property "Designator" of Component $2I196 doesn't match the suggestion rule. Suggesting the Designator value combine into: English letters + numeric or question mark.
+2026-08-10 13:37:53[Info] :  The property "Designator" of Component $2I197 doesn't match the suggestion rule. Suggesting the Designator value combine into: English letters + numeric or question mark.
+2026-08-10 13:37:53[Info] :  The property "Designator" of Component $2I198 doesn't match the suggestion rule. Suggesting the Designator value combine into: English letters + numeric or question mark.
+2026-08-10 13:37:53[Info] :  The property "Designator" of Component $2I199 doesn't match the suggestion rule. Suggesting the Designator value combine into: English letters + numeric or question mark.
+2026-08-10 13:37:53[Info] :  The pin of the component hacking_box_v2-rescue_HB_MECH does not correspond to the pad (Pad has no corresponding pin: ): $2I165,$2I166
