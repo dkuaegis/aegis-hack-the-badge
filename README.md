@@ -49,7 +49,11 @@ hardware/releases/rev3/easyeda-pro/   EasyEDA Pro import 패키지와 체크리�
 hardware/releases/rev3/jlcpcb/        제작 파일, 조립 파일, preview, 검증 리포트
 archive/                              이전 설계/제작 이력
 tools/                                문서 생성 보조 스크립트
+firmware/                             ESP32-S3 문제/UI/관리자 펌웨어
 ```
+
+펌웨어 빌드, 문제 교체, Serial 명령과 무선 관리자 사용법은
+[`firmware/README.md`](firmware/README.md)를 참고하세요.
 
 ## 제작 산출물
 
