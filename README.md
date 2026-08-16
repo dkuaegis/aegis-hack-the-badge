@@ -1,5 +1,20 @@
 # Hack The Badge Ver.3
 
+## 제작 지원
+
+<p align="center">
+  <a href="https://easyeda.com/">
+    <img src="assets/brand/sponsors/official-kit/easyeda/EasyEDA_Horz_Blue_Trans.png" alt="EasyEDA" height="48">
+  </a>
+  &nbsp;&nbsp;&nbsp;&nbsp;
+  <a href="https://jlcpcb.com/">
+    <img src="assets/brand/sponsors/official-kit/jlcpcb/JLCPCB-logo-Blue.svg" alt="JLCPCB" height="48">
+  </a>
+</p>
+
+해당 프로젝트는 EasyEDA로 제작되었고 EasyEDA 측의 제작 지원을
+받았습니다. PCB 제작은 JLCPCB 측의 지원을 받았습니다.
+
 ## 프로젝트 소개
 
 `Hack The Badge Ver.3`는 정보보안 동아리 Aegis가 MSG CTF 본선
@@ -24,21 +39,6 @@
 - OLED와 버튼으로 문제, 힌트, 미니게임을 이용합니다.
 - UART와 challenge pad를 분석해 숨겨진 하드웨어 문제를 해결합니다.
 - OLED, LED, 부저를 통해 문제 진행 상태와 완료 결과를 확인합니다.
-
-## 제작 지원
-
-<p align="center">
-  <a href="https://easyeda.com/">
-    <img src="assets/brand/sponsors/official-kit/easyeda/EasyEDA_Horz_Blue_Trans.png" alt="EasyEDA" height="48">
-  </a>
-  &nbsp;&nbsp;&nbsp;&nbsp;
-  <a href="https://jlcpcb.com/">
-    <img src="assets/brand/sponsors/official-kit/jlcpcb/JLCPCB-logo-Blue.svg" alt="JLCPCB" height="48">
-  </a>
-</p>
-
-해당 프로젝트는 EasyEDA로 제작되었고 EasyEDA 측의 제작 지원을
-받았습니다. PCB 제작은 JLCPCB 측의 지원을 받았습니다.
 
 ## 현재 제작 리비전
 
@@ -81,11 +81,11 @@ JLCPCB 업로드 파일:
 
 EasyEDA Pro 프로젝트 패키지:
 
-| 용도                              | 파일                                                                                            |
-| --------------------------------- | ----------------------------------------------------------------------------------------------- |
+| 용도                             | 파일                                                                                            |
+| -------------------------------- | ----------------------------------------------------------------------------------------------- |
 | EasyEDA Pro 실크 호환 프로젝트   | `hardware/releases/rev3/easyeda-pro/upload/hacking_badge_v3_easyeda_pro_silk_compat_import.zip` |
 | EasyEDA Pro 프로젝트(KiCad 호환) | `hardware/releases/rev3/easyeda-pro/upload/hacking_badge_v3_easyeda_pro_kicad_import.zip`       |
-| EasyEDA Pro 프로젝트 아카이브     | `hardware/releases/rev3/easyeda-pro/reference/ProPrj_hack_the_badge_rev.3.epro2`                |
+| EasyEDA Pro 프로젝트 아카이브    | `hardware/releases/rev3/easyeda-pro/reference/ProPrj_hack_the_badge_rev.3.epro2`                |
 
 ## 3D Preview
 
