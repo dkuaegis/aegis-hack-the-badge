@@ -1,11 +1,31 @@
 # Hack The Badge Ver.3
 
-MSG CTF 본선 동아리 부스 체험존에서 사용할 `Aegis x MSG CTF`
-하드웨어 배지 프로젝트입니다. ESP32-S3 기반 보드에 OLED, 상태 LED,
-버튼, UART, USB Serial, 부저, challenge GPIO pad를 올려 참가자가 직접
-보드를 분석하고 문제를 해결하는 형태로 설계했습니다.
+## 프로젝트 소개
 
-## Sponsored By
+`Hack The Badge Ver.3`는 정보보안 동아리 Aegis가 MSG CTF 본선
+부스에서 운영하는 체험형 하드웨어 해킹 프로젝트입니다. ESP32-S3를
+기반으로 OLED, 버튼, LED, USB Serial, UART, challenge pad, 부저를
+하나의 PCB 배지에 구성해, 행사 배지와 해킹 문제 도구로 함께 사용할
+수 있도록 제작했습니다.
+
+## 제작 목적
+
+참가자가 일반적인 소프트웨어 CTF를 넘어 실제 PCB의 입출력 장치와
+통신 인터페이스를 직접 살펴보며 하드웨어 보안을 체험하도록 하는 것이
+목표입니다. 문제 풀이 결과가 화면, LED, 소리로 즉시 반영되는 상호작용을
+통해 하드웨어 해킹을 처음 접하는 참가자도 쉽게 몰입할 수 있도록
+구성했습니다.
+
+## 체험 활동
+
+참가자는 배지를 USB로 연결한 뒤 다음 활동을 진행합니다.
+
+- Serial 터미널에서 문제를 확인하고 FLAG를 제출합니다.
+- OLED와 버튼으로 문제, 힌트, 미니게임을 이용합니다.
+- UART와 challenge pad를 분석해 숨겨진 하드웨어 문제를 해결합니다.
+- OLED, LED, 부저를 통해 문제 진행 상태와 완료 결과를 확인합니다.
+
+## 제작 지원
 
 <p align="center">
   <a href="https://easyeda.com/">
@@ -17,9 +37,8 @@ MSG CTF 본선 동아리 부스 체험존에서 사용할 `Aegis x MSG CTF`
   </a>
 </p>
 
-이 프로젝트는 EasyEDA와 JLCPCB의 지원을 받아 제작되었습니다. 공개
-GitHub 프로젝트 README 요구사항에 맞춰 위 스폰서 로고는 각 공식
-웹사이트로 연결됩니다.
+해당 프로젝트는 EasyEDA로 제작되었고 EasyEDA 측의 제작 지원을
+받았습니다. PCB 제작은 JLCPCB 측의 지원을 받았습니다.
 
 ## 현재 제작 리비전
 
@@ -32,20 +51,15 @@ GitHub 프로젝트 README 요구사항에 맞춰 위 스폰서 로고는 각 �
 - 오디오: MOSFET으로 구동하는 passive buzzer
 - PCB 스타일: 검정 solder mask, 흰색 silkscreen, Aegis 방패 외형
 
-라우팅된 제작 PCB의 기준 원본은 편집 가능한 KiCad 프로젝트입니다.
-EasyEDA Pro 패키지는 스폰서/쿠폰 워크플로우를 위해 준비한 별도
-변환본이며, EDA 포맷 변환 과정에서 copper zone이나 표시 결과가 달라질
-수 있으므로 import 이후 반드시 다시 확인해야 합니다.
-
 ## 저장소 구조
 
 ```text
 assets/brand/                         Aegis, MSG CTF, EasyEDA, JLCPCB 로고
 docs/rev3/                            설계, 제작, 스폰서 관련 문서
-hardware/design/rev3/kicad/           편집 가능한 KiCad 회로도, PCB, 라이브러리
+hardware/design/rev3/kicad/           KiCad 호환 회로도, PCB, 라이브러리
 hardware/design/rev3/reference/       BOM 메모, 데이터시트, 전기적 설계 메모
 hardware/releases/rev3/jlcpcb/upload/ JLCPCB 업로드용 Gerber, BOM, CPL
-hardware/releases/rev3/easyeda-pro/   EasyEDA Pro import 패키지와 체크리스트
+hardware/releases/rev3/easyeda-pro/   EasyEDA Pro 프로젝트 패키지와 체크리스트
 hardware/releases/rev3/jlcpcb/        제작 파일, 조립 파일, preview, 검증 리포트
 archive/                              이전 설계/제작 이력
 tools/                                문서 생성 보조 스크립트
@@ -59,35 +73,30 @@ firmware/                             ESP32-S3 문제/UI/관리자 펌웨어
 
 JLCPCB 업로드 파일:
 
-| 단계 | 파일 |
-| --- | --- |
+| 단계     | 파일                                                                       |
+| -------- | -------------------------------------------------------------------------- |
 | PCB 제작 | `hardware/releases/rev3/jlcpcb/upload/hacking_badge_v3_jlcpcb_gerbers.zip` |
-| PCBA BOM | `hardware/releases/rev3/jlcpcb/upload/hacking_badge_v3_jlcpcb_bom.csv` |
-| PCBA CPL | `hardware/releases/rev3/jlcpcb/upload/hacking_badge_v3_jlcpcb_cpl.csv` |
+| PCBA BOM | `hardware/releases/rev3/jlcpcb/upload/hacking_badge_v3_jlcpcb_bom.csv`     |
+| PCBA CPL | `hardware/releases/rev3/jlcpcb/upload/hacking_badge_v3_jlcpcb_cpl.csv`     |
 
-EasyEDA Pro import 패키지:
+EasyEDA Pro 프로젝트 패키지:
 
-| 용도 | 파일 |
-| --- | --- |
-| 실크 호환 처리가 포함된 권장 EasyEDA Pro import 파일 | `hardware/releases/rev3/easyeda-pro/upload/hacking_badge_v3_easyeda_pro_silk_compat_import.zip` |
-| 비교용 원본 KiCad import 파일 | `hardware/releases/rev3/easyeda-pro/upload/hacking_badge_v3_easyeda_pro_kicad_import.zip` |
-| 이전 EasyEDA Pro 프로젝트 archive 참고본 | `hardware/releases/rev3/easyeda-pro/reference/ProPrj_hack_the_badge_rev.3.epro2` |
-
-실제 제작은 EasyEDA Pro 변환본을 시각적/전기적으로 재검증하기 전까지
-JLCPCB release package를 기준으로 진행합니다. 권장 EasyEDA Pro ZIP은
-EasyEDA import 과정에서 채워진 로고 실크가 빈 외곽선처럼 보이지 않도록,
-filled silkscreen 로고를 촘촘한 line artwork로 변환한 버전입니다.
+| 용도                              | 파일                                                                                            |
+| --------------------------------- | ----------------------------------------------------------------------------------------------- |
+| EasyEDA Pro 실크 호환 프로젝트   | `hardware/releases/rev3/easyeda-pro/upload/hacking_badge_v3_easyeda_pro_silk_compat_import.zip` |
+| EasyEDA Pro 프로젝트(KiCad 호환) | `hardware/releases/rev3/easyeda-pro/upload/hacking_badge_v3_easyeda_pro_kicad_import.zip`       |
+| EasyEDA Pro 프로젝트 아카이브     | `hardware/releases/rev3/easyeda-pro/reference/ProPrj_hack_the_badge_rev.3.epro2`                |
 
 ## 3D Preview
 
 홍보물 제작이나 웹/Blender preview에는 검정 PCB 색상이 보정된 GLB 파일을
 사용하는 것을 권장합니다.
 
-| 용도 | 파일 |
-| --- | --- |
-| 검정 PCB 홍보용 GLB | `hardware/releases/rev3/jlcpcb/preview/3d/hacking_badge_v3_full_assembly_black.glb` |
-| 검정 PCB 3D export 묶음 | `hardware/releases/rev3/jlcpcb/preview/3d/hacking_badge_v3_3d_exports_black.zip` |
-| 전체 3D export 묶음 | `hardware/releases/rev3/jlcpcb/preview/3d/hacking_badge_v3_3d_exports.zip` |
+| 용도                    | 파일                                                                                |
+| ----------------------- | ----------------------------------------------------------------------------------- |
+| 검정 PCB 홍보용 GLB     | `hardware/releases/rev3/jlcpcb/preview/3d/hacking_badge_v3_full_assembly_black.glb` |
+| 검정 PCB 3D export 묶음 | `hardware/releases/rev3/jlcpcb/preview/3d/hacking_badge_v3_3d_exports_black.zip`    |
+| 전체 3D export 묶음     | `hardware/releases/rev3/jlcpcb/preview/3d/hacking_badge_v3_3d_exports.zip`          |
 
 ## 검증 상태
 
