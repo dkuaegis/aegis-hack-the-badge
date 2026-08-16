@@ -92,3 +92,28 @@ PlatformIO 없이도 상태 비트와 Hidden Access 판정 로직을 검사할 �
 clang++ -std=c++17 -Ifirmware/src firmware/test/test_logic.cpp -o /tmp/badge-logic-test
 /tmp/badge-logic-test
 ```
+
+## Wokwi 통합 시뮬레이션
+
+VS Code에서 `firmware` 폴더를 열고 PlatformIO로 한 번 빌드한 다음,
+Command Palette의 `Wokwi: Start Simulator`를 실행합니다.
+
+```bash
+pio run
+```
+
+`diagram.json`은 Rev.3의 펌웨어 관찰 가능 회로를 다음과 같이 재현합니다.
+
+- SSD1315와 명령어 호환되는 `board-ssd1306` OLED: GPIO4/5, I2C `0x3c`
+- Left/OK/Right active-low 버튼: GPIO9/10/12, 키보드 ←/Space/→
+- active-high 상태 LED 5개: GPIO13-17, 실회로와 같은 1k 직렬 저항
+- 부저 드라이버 등가 출력: GPIO18
+- challenge pad 직렬 저항 1k와 C0-C1/C0-C2 쇼트 스위치
+
+Hidden Access는 `H`를 1.2초 이상 눌러 C0-C2를 연결하면 됩니다. `J`는
+C0-C1을 연결하는 오답 조합입니다. 관리자 부팅은 Left와 Right 버튼을
+Cmd-click해 둘 다 고정한 뒤 ESP32-S3 보드의 RST 버튼을 누릅니다.
+
+Wokwi는 GPIO, I2C, 버튼, LED, 부저, USB CDC 편의 동작을 검사하며,
+USB-C 전기 특성, 3.3V 전원, ESD, MOSFET 부하, RF와 실제 OLED 편차는
+실물 보드에서 별도로 검사해야 합니다.
