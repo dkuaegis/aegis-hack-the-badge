@@ -1,6 +1,6 @@
 # Hack The Badge Ver.3
 
-## 제작 지원
+## Sponsored by
 
 <p align="center">
   <a href="https://easyeda.com/">
