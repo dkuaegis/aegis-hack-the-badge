@@ -1,10 +1,18 @@
 #include <Arduino.h>
+#include <BLE2902.h>
+#include <BLEDevice.h>
+#include <BLEServer.h>
+#include <BLEUtils.h>
 #include <Preferences.h>
-#include <U8x8lib.h>
-#include <WebServer.h>
-#include <WiFi.h>
+#include <U8g2lib.h>
+#include <freertos/FreeRTOS.h>
+#include <freertos/queue.h>
+#include <mbedtls/base64.h>
+#include <mbedtls/md.h>
+#include <stdarg.h>
 
 #include "logic.h"
+#include "logo.h"
 #include "pins.h"
 #include "problems.h"
 
@@ -12,41 +20,80 @@ namespace {
 constexpr uint32_t SERIAL_BAUD = 115200;
 constexpr uint32_t BUTTON_DEBOUNCE_MS = 30;
 constexpr uint32_t HIDDEN_HOLD_MS = 1200;
-constexpr uint32_t ADMIN_BOOT_HOLD_MS = 1500;
-constexpr uint16_t REACTION_REWARD_MS = 300;
+constexpr uint8_t FLAPPY_REWARD_SCORE = 5;
+constexpr uint32_t FLAPPY_FRAME_MS = 40;
+constexpr uint32_t LONG_PRESS_MS = 700;
 constexpr char START_COMMAND[] = "aegis";
-constexpr char ADMIN_USER[] = "admin";
+constexpr char BLE_SERVICE_UUID[] = "6f8d0001-6a4b-4c52-9f2a-8f0f5d9b0001";
+constexpr char BLE_RX_UUID[] = "6f8d0002-6a4b-4c52-9f2a-8f0f5d9b0001";
+constexpr char BLE_TX_UUID[] = "6f8d0003-6a4b-4c52-9f2a-8f0f5d9b0001";
+#ifndef BADGE_ADMIN_KEY
+#define BADGE_ADMIN_KEY "AEGIS_DEV_ONLY_CHANGE_ME"
+#endif
+// ponytail: 행사 전 fleet key를 교체하세요. 장비 탈취 위협이 생기면 NVS 장비별 키로 전환합니다.
+constexpr char BLE_ADMIN_KEY[] = BADGE_ADMIN_KEY;
+constexpr size_t BLE_COMMAND_MAX = 768;
+constexpr size_t BLE_NOTIFY_CHUNK = 20;
 
 Preferences preferences;
-WebServer server(80);
-U8X8_SSD1315_128X64_NONAME_HW_I2C oled(U8X8_PIN_NONE, Pins::OLED_SCL,
-                                       Pins::OLED_SDA);
+U8G2_SSD1315_128X64_NONAME_1_HW_I2C oled(U8G2_R0, U8X8_PIN_NONE,
+                                         Pins::OLED_SCL, Pins::OLED_SDA);
 
 uint8_t solvedMask = 0;
+Problem problems[SERIAL_PROBLEM_COUNT] = {};
 int8_t activeProblem = -1;
+int8_t bleActiveProblem = -1;
+int8_t displayedProblem = -1;
 uint8_t menuItem = 0;
 uint8_t browserProblem = 0;
-bool adminEnabled = false;
 uint32_t hiddenSince = 0;
-char wifiSsid[20] = {};
-char wifiPassword[13] = {};
-char webPassword[13] = {};
 char serialLine[192] = {};
 uint8_t serialLength = 0;
+char badgeId[19] = {};
+BLEServer *bleServer = nullptr;
+BLECharacteristic *bleTx = nullptr;
+QueueHandle_t bleCommands = nullptr;
+volatile bool bleConnected = false;
+volatile bool bleRestartAdvertising = false;
+volatile bool bleAuthenticated = false;
+bool bleStatusDirty = false;
+uint32_t bleChallenge = 0;
+uint32_t rebootAt = 0;
+char bleRxLine[BLE_COMMAND_MAX] = {};
+size_t bleRxLength = 0;
 
-enum class Screen : uint8_t { Home, Problems, Hint, Status, Game };
-enum class GamePhase : uint8_t { Waiting, Go, Result, TooSoon };
+struct BleCommand {
+  char text[BLE_COMMAND_MAX];
+};
+
+void bleSendLine(const char *line);
+
+enum class Screen : uint8_t {
+  Home, Problems, Hint, Status, Game, Complete
+};
+enum class GamePhase : uint8_t { Intro, Running, Over };
 Screen screen = Screen::Home;
-GamePhase gamePhase = GamePhase::Waiting;
-uint32_t gameAt = 0;
-uint16_t lastReactionMs = 0;
+GamePhase gamePhase = GamePhase::Intro;
+
+struct FlappyState {
+  float birdY = 28;
+  float velocity = 0;
+  float pipeX = 128;
+  int8_t gapY = 32;
+  uint8_t score = 0;
+  bool passed = false;
+  uint32_t lastFrame = 0;
+} game;
 
 struct Button {
   uint8_t pin;
   bool stable = false;
   bool raw = false;
   bool pressed = false;
+  bool longPressed = false;
+  bool longFired = false;
   uint32_t changedAt = 0;
+  uint32_t heldAt = 0;
 
   explicit Button(uint8_t buttonPin) : pin(buttonPin) {}
 
@@ -57,6 +104,7 @@ struct Button {
 
   void update(uint32_t now) {
     pressed = false;
+    longPressed = false;
     const bool next = digitalRead(pin) == LOW;
     if (next != raw) {
       raw = next;
@@ -65,6 +113,14 @@ struct Button {
     if (raw != stable && now - changedAt >= BUTTON_DEBOUNCE_MS) {
       stable = raw;
       pressed = stable;
+      if (stable) {
+        heldAt = now;
+        longFired = false;
+      }
+    }
+    if (stable && !longFired && now - heldAt >= LONG_PRESS_MS) {
+      longPressed = true;
+      longFired = true;
     }
   }
 };
@@ -73,14 +129,48 @@ Button left{Pins::BUTTON_LEFT};
 Button ok{Pins::BUTTON_OK};
 Button right{Pins::BUTTON_RIGHT};
 
-void line(uint8_t row, const char *text) {
-  oled.clearLine(row);
-  oled.drawString(0, row, text);
+void centered(uint8_t baseline, const char *text) {
+  const uint8_t width = oled.getStrWidth(text);
+  oled.drawStr(width < 128 ? (128 - width) / 2 : 0, baseline, text);
+}
+
+void header(const char *text) {
+  oled.setFont(u8g2_font_5x7_tf);
+  centered(7, text);
+  oled.drawHLine(38, 10, 52);
+}
+
+void footer(const char *text) {
+  oled.setFont(u8g2_font_5x7_tf);
+  centered(63, text);
+}
+
+void inverseLabel(uint8_t y, uint8_t height, const char *text) {
+  oled.setFont(u8g2_font_5x7_tf);
+  const uint8_t width = min<uint8_t>(oled.getStrWidth(text) + 12, 112);
+  const uint8_t x = (128 - width) / 2;
+  oled.drawBox(x, y, width, height);
+  oled.setDrawColor(0);
+  centered(y + height - 2, text);
+  oled.setDrawColor(1);
+}
+
+void render(void (*frame)()) {
+  oled.firstPage();
+  do frame(); while (oled.nextPage());
 }
 
 uint8_t solvedCount() {
   uint8_t count = 0;
   for (uint8_t i = 0; i < TOTAL_CHALLENGE_COUNT; ++i) {
+    count += isSolved(solvedMask, i);
+  }
+  return count;
+}
+
+uint8_t serialSolvedCount() {
+  uint8_t count = 0;
+  for (uint8_t i = 0; i < SERIAL_PROBLEM_COUNT; ++i) {
     count += isSolved(solvedMask, i);
   }
   return count;
@@ -100,6 +190,59 @@ void updateLeds() {
 void saveMask() {
   preferences.putUChar("solved", solvedMask);
   updateLeds();
+  bleStatusDirty = true;
+}
+
+void problemKey(uint8_t index, char key[4]) {
+  snprintf(key, 4, "p%u", index + 1);
+}
+
+bool asciiText(const char *text) {
+  for (; *text; ++text) {
+    if (static_cast<uint8_t>(*text) > 0x7f) return false;
+  }
+  return true;
+}
+
+bool validProblem(const Problem &problem) {
+  if (problem.version != PROBLEM_STORAGE_VERSION ||
+      (problem.type != 'F' && problem.type != 'C') ||
+      problem.optionCount > PROBLEM_OPTION_MAX || problem.title[0] == '\0' ||
+      problem.answer[0] == '\0' || problem.serialText[0] == '\0' ||
+      problem.title[PROBLEM_TITLE_SIZE - 1] != '\0' ||
+      problem.answer[PROBLEM_ANSWER_SIZE - 1] != '\0' ||
+      problem.serialText[PROBLEM_TEXT_SIZE - 1] != '\0' ||
+      !asciiText(problem.title)) return false;
+  for (uint8_t i = 0; i < PROBLEM_OPTION_MAX; ++i) {
+    if (problem.oledLines[i][PROBLEM_OPTION_SIZE - 1] != '\0' ||
+        !asciiText(problem.oledLines[i])) return false;
+  }
+  if (problem.type == 'C') {
+    if (problem.optionCount < 2 || strlen(problem.answer) != 1 ||
+        problem.answer[0] < '1' ||
+        problem.answer[0] >= '1' + problem.optionCount) return false;
+    for (uint8_t i = 0; i < problem.optionCount; ++i) {
+      if (problem.oledLines[i][0] == '\0') return false;
+    }
+  }
+  return true;
+}
+
+void loadProblems() {
+  for (uint8_t i = 0; i < SERIAL_PROBLEM_COUNT; ++i) {
+    char key[4];
+    problemKey(i, key);
+    if (preferences.getBytesLength(key) == sizeof(Problem)) {
+      preferences.getBytes(key, &problems[i], sizeof(Problem));
+    }
+    if (!validProblem(problems[i])) problems[i] = DEFAULT_PROBLEMS[i];
+  }
+}
+
+void saveProblem(uint8_t index) {
+  char key[4];
+  problemKey(index, key);
+  preferences.putBytes(key, &problems[index], sizeof(Problem));
 }
 
 void configureHiddenAccessPins() {
@@ -120,66 +263,111 @@ void beep(uint16_t frequency = 880, uint16_t duration = 70) {
   tone(Pins::BUZZER, frequency, duration);
 }
 
-void drawHome() {
-  static const char *const items[] = {"Problems", "Mini game", "Status"};
-  char progress[17];
-  snprintf(progress, sizeof(progress), "Solved %u/%u", solvedCount(),
-           static_cast<unsigned>(TOTAL_CHALLENGE_COUNT));
-  oled.clearDisplay();
-  line(0, "AEGIS HACK BADGE");
-  line(2, progress);
-  line(4, items[menuItem]);
-  line(7, "<      OK      >");
+void drawBootFrame() {
+  oled.drawXBMP(32, 0, 64, 64, AEGIS_LOGO_64);
 }
 
-void drawProblems() {
-  char number[17];
-  snprintf(number, sizeof(number), "Problem %u/%u %c",
-           static_cast<unsigned>(browserProblem + 1),
-           static_cast<unsigned>(SERIAL_PROBLEM_COUNT),
-           isSolved(solvedMask, browserProblem) ? 'O' : 'X');
-  oled.clearDisplay();
-  line(0, "SERIAL PROBLEMS");
-  line(2, number);
-  line(4, PROBLEMS[browserProblem].title);
-  line(7, "<  OK:show   >");
+void drawBoot() { render(drawBootFrame); }
+
+void drawHomeFrame() {
+  static const char *const items[] = {"MISSIONS", "FLAPPY HACKER", "STATUS"};
+  char progress[8];
+  snprintf(progress, sizeof(progress), "%02u / %02u", serialSolvedCount(),
+           static_cast<unsigned>(SERIAL_PROBLEM_COUNT));
+  header("AEGIS // MSGCTF");
+  oled.setFont(u8g2_font_9x15B_tf);
+  centered(27, progress);
+  oled.drawFrame(42, 31, 44, 6);
+  const uint8_t fill = serialSolvedCount() * 40 / SERIAL_PROBLEM_COUNT;
+  if (fill) oled.drawBox(44, 33, fill, 2);
+  inverseLabel(41, 11, items[menuItem]);
+  footer("<     SELECT     >");
+}
+
+void drawHome() { render(drawHomeFrame); }
+
+void drawProblemsFrame() {
+  char title[24];
+  snprintf(title, sizeof(title), "MISSION %02u / %02u", browserProblem + 1,
+           static_cast<unsigned>(SERIAL_PROBLEM_COUNT));
+  char number[4];
+  snprintf(number, sizeof(number), "%02u", browserProblem + 1);
+  header(title);
+  oled.setFont(u8g2_font_9x15B_tf);
+  centered(27, number);
+  oled.setFont(u8g2_font_6x10_tf);
+  centered(38, problems[browserProblem].title);
+  inverseLabel(41, 10,
+               isSolved(solvedMask, browserProblem) ? "MISSION CLEARED" : "NEW MISSION");
+  footer("<      OPEN      >");
+}
+
+void drawProblems() { render(drawProblemsFrame); }
+
+void drawHintFrame() {
+  char title[24];
+  snprintf(title, sizeof(title), "%02u // %s", displayedProblem + 1,
+           problems[displayedProblem].title);
+  header(title);
+  oled.setFont(u8g2_font_5x7_tf);
+  for (uint8_t row = 0; row < PROBLEM_OPTION_MAX; ++row) {
+    centered(19 + row * 9, problems[displayedProblem].oledLines[row]);
+  }
+  footer(problems[displayedProblem].type == 'C'
+             ? "CHOICE VIA SHELL"
+             : "FLAG VIA SHELL");
 }
 
 void drawHint(uint8_t index) {
-  oled.clearDisplay();
-  line(0, PROBLEMS[index].title);
-  for (uint8_t row = 0; row < 5; ++row) {
-    line(row + 2, PROBLEMS[index].oledLines[row]);
-  }
-  line(7, "OK: menu");
+  displayedProblem = index;
+  render(drawHintFrame);
 }
 
-void drawStatus() {
-  char row[17];
-  oled.clearDisplay();
-  line(0, allSolved() ? "ALL CLEAR" : "BADGE STATUS");
-  for (uint8_t i = 0; i < TOTAL_CHALLENGE_COUNT; ++i) {
-    snprintf(row, sizeof(row), "%u:%c %s", i + 1,
-             isSolved(solvedMask, i) ? 'O' : 'X',
-             i == HIDDEN_ACCESS_INDEX ? "Hidden" : PROBLEMS[i].title);
-    line(i + 1, row);
-  }
-  line(7, "OK: menu");
+void drawStatusFrame() {
+  char total[8];
+  snprintf(total, sizeof(total), "%u / %u", serialSolvedCount(),
+           static_cast<unsigned>(SERIAL_PROBLEM_COUNT));
+  header("BADGE STATUS");
+  oled.setFont(u8g2_font_9x15B_tf);
+  centered(29, total);
+  oled.setFont(u8g2_font_6x10_tf);
+  centered(45, "SERIAL MISSIONS");
+  footer("HOLD OK: BACK");
 }
+
+void drawStatus() { render(drawStatusFrame); }
+
+void resetProgress() {
+  solvedMask = 0;
+  saveMask();
+  configureHiddenAccessPins();
+  activeProblem = bleActiveProblem = displayedProblem = -1;
+  screen = Screen::Status;
+  drawStatus();
+}
+
+void drawCompleteFrame() {
+  oled.setFont(u8g2_font_6x10_tf);
+  centered(15, "ALL CLEAR");
+  inverseLabel(21, 17, "ACCESS ELEVATED");
+  oled.setFont(u8g2_font_6x10_tf);
+  centered(50, "AEGIS{PWNED}");
+  footer("OK: RECAP");
+}
+
+void drawComplete() { render(drawCompleteFrame); }
 
 void printBanner() {
   Serial.println();
   Serial.println(F("=== Aegis Hack The Badge / Rev.3 ==="));
   Serial.println(F("문제 본문: Serial / 보기와 예시: OLED"));
   Serial.println(F("명령: 1-4, status, help, hint, exit, clear, reset, aegis"));
-  Serial.println(F("Hidden Access는 번호 선택형 문제가 아닙니다."));
 }
 
 void printStatus() {
   Serial.println(F("\n[challenge status]"));
-  for (uint8_t i = 0; i < TOTAL_CHALLENGE_COUNT; ++i) {
-    Serial.printf("%u. %-13s [%c]\n", i + 1,
-                  i == HIDDEN_ACCESS_INDEX ? "Hidden Access" : PROBLEMS[i].title,
+  for (uint8_t i = 0; i < SERIAL_PROBLEM_COUNT; ++i) {
+    Serial.printf("%u. %-13s [%c]\n", i + 1, problems[i].title,
                   isSolved(solvedMask, i) ? 'O' : 'X');
   }
 }
@@ -189,8 +377,10 @@ void showProblem(uint8_t index) {
   screen = Screen::Hint;
   drawHint(index);
   Serial.println();
-  Serial.println(PROBLEMS[index].serialText);
-  Serial.println(F("\n보기/예시는 OLED를 확인하세요. FLAG 또는 exit를 입력하세요."));
+  Serial.println(problems[index].serialText);
+  Serial.println(problems[index].type == 'C'
+                     ? F("\nOLED 보기를 확인하고 정답 번호 또는 exit를 입력하세요.")
+                     : F("\nOLED 보기/예시를 확인하고 FLAG 또는 exit를 입력하세요."));
   beep(659);
 }
 
@@ -200,12 +390,17 @@ void solved(uint8_t index) {
     solvedMask = next;
     saveMask();
   }
-  Serial.printf("정답입니다. 진행도: %u/%u\n", solvedCount(),
-                static_cast<unsigned>(TOTAL_CHALLENGE_COUNT));
+  Serial.printf("정답입니다. 진행도: %u/%u\n", serialSolvedCount(),
+                static_cast<unsigned>(SERIAL_PROBLEM_COUNT));
   beep(1047, 130);
   activeProblem = -1;
-  screen = Screen::Status;
-  drawStatus();
+  if (allSolved()) {
+    screen = Screen::Complete;
+    drawComplete();
+  } else {
+    screen = Screen::Status;
+    drawStatus();
+  }
 }
 
 void handleSerialLine(char *input) {
@@ -224,7 +419,7 @@ void handleSerialLine(char *input) {
     } else if (strcmp(input, "hint") == 0) {
       drawHint(activeProblem);
       Serial.println(F("OLED에 보기/예시를 다시 표시했습니다."));
-    } else if (strcmp(input, PROBLEMS[activeProblem].answer) == 0) {
+    } else if (strcmp(input, problems[activeProblem].answer) == 0) {
       solved(activeProblem);
     } else {
       Serial.println(F("정답이 아닙니다. 다시 시도하거나 exit를 입력하세요."));
@@ -239,7 +434,7 @@ void handleSerialLine(char *input) {
   } else if (strcmp(input, "status") == 0) {
     printStatus();
   } else if (strcmp(input, "help") == 0) {
-    Serial.println(F("1-4 중 하나를 선택하고 Serial에 FLAG를 제출하세요."));
+    Serial.println(F("1-4 중 하나를 선택하고 정답 번호 또는 FLAG를 제출하세요."));
     Serial.println(F("문제의 보기/예시는 OLED에만 표시됩니다."));
     Serial.println(F("OLED 미니게임은 하단 3개 버튼으로 플레이합니다."));
   } else if (strcmp(input, "hint") == 0) {
@@ -247,10 +442,7 @@ void handleSerialLine(char *input) {
   } else if (strcmp(input, "clear") == 0) {
     for (uint8_t i = 0; i < 30; ++i) Serial.println();
   } else if (strcmp(input, "reset") == 0) {
-    solvedMask = 0;
-    saveMask();
-    configureHiddenAccessPins();
-    activeProblem = -1;
+    resetProgress();
     screen = Screen::Home;
     drawHome();
     Serial.println(F("진행 상태를 초기화했습니다."));
@@ -278,58 +470,127 @@ void pollSerial() {
   }
 }
 
-void startReactionGame() {
-  screen = Screen::Game;
-  gamePhase = GamePhase::Waiting;
-  gameAt = millis() + random(1200, 3501);
-  oled.clearDisplay();
-  line(0, "REACTION TEST");
-  line(3, "WAIT...");
-  line(7, "do not press");
+void drawBird(float x, float y) {
+  oled.drawBox(static_cast<uint8_t>(x), static_cast<uint8_t>(y + 1), 7, 5);
+  oled.drawBox(static_cast<uint8_t>(x + 2), static_cast<uint8_t>(y), 4, 1);
+  if (x >= 2) oled.drawBox(static_cast<uint8_t>(x - 2), static_cast<uint8_t>(y + 3), 3, 2);
+  oled.setDrawColor(0);
+  oled.drawPixel(static_cast<uint8_t>(x + 5), static_cast<uint8_t>(y + 2));
+  oled.setDrawColor(1);
 }
 
-void showGameResult() {
-  char score[17];
-  snprintf(score, sizeof(score), "%u ms", lastReactionMs);
-  oled.clearDisplay();
-  line(0, "REACTION RESULT");
-  line(2, score);
-  if (lastReactionMs <= REACTION_REWARD_MS) {
-    line(4, MINIGAME_REWARD_LINE_1);
-    line(5, MINIGAME_REWARD_LINE_2);
+void drawGameIntroFrame() {
+  header("FLAPPY HACKER");
+  drawBird(61, 21);
+  oled.setFont(u8g2_font_6x10_tf);
+  centered(43, "PRESS OK");
+  oled.setFont(u8g2_font_5x7_tf);
+  centered(52, "SCORE 5 = HINT");
+  footer("LEFT: EXIT");
+}
+
+void drawGameIntro() { render(drawGameIntroFrame); }
+
+void drawGameRunningFrame() {
+  char score[4];
+  snprintf(score, sizeof(score), "%u", game.score);
+  oled.setFont(u8g2_font_5x7_tf);
+  centered(7, score);
+  drawBird(28, game.birdY);
+
+  const int16_t x = static_cast<int16_t>(game.pipeX);
+  const int16_t gapTop = game.gapY - 13;
+  const int16_t gapBottom = game.gapY + 13;
+  if (x < 128 && x + 11 > 0) {
+    oled.drawBox(max<int16_t>(x, 0), 0, min<int16_t>(11, 128 - max<int16_t>(x, 0)), gapTop);
+    oled.drawBox(max<int16_t>(x, 0), gapBottom,
+                 min<int16_t>(11, 128 - max<int16_t>(x, 0)), 64 - gapBottom);
+    oled.drawBox(max<int16_t>(x - 2, 0), gapTop - 3,
+                 min<int16_t>(15, 128 - max<int16_t>(x - 2, 0)), 3);
+    oled.drawBox(max<int16_t>(x - 2, 0), gapBottom,
+                 min<int16_t>(15, 128 - max<int16_t>(x - 2, 0)), 3);
   }
-  line(7, "OK:again <>:exit");
+}
+
+void drawGameRunning() { render(drawGameRunningFrame); }
+
+void drawGameOverFrame() {
+  char score[16];
+  snprintf(score, sizeof(score), "SCORE %u", game.score);
+  oled.setFont(u8g2_font_6x10_tf);
+  centered(14, "SYSTEM CRASHED");
+  oled.setFont(u8g2_font_9x15B_tf);
+  centered(33, score);
+  oled.setFont(u8g2_font_6x10_tf);
+  centered(46, game.score >= FLAPPY_REWARD_SCORE ? "HINT UNLOCKED" : "TARGET SCORE 5");
+  if (game.score >= FLAPPY_REWARD_SCORE) {
+    oled.setFont(u8g2_font_4x6_tf);
+    centered(54, MINIGAME_REWARD_LINE_1);
+  }
+  footer("OK: RETRY  LEFT: EXIT");
+}
+
+void drawGameOver() { render(drawGameOverFrame); }
+
+void enterGame() {
+  screen = Screen::Game;
+  gamePhase = GamePhase::Intro;
+  drawGameIntro();
+}
+
+void startGame(uint32_t now) {
+  gamePhase = GamePhase::Running;
+  game.birdY = 28;
+  game.velocity = -48;
+  game.pipeX = 112;
+  game.gapY = random(23, 42);
+  game.score = 0;
+  game.passed = false;
+  game.lastFrame = now;
+  drawGameRunning();
 }
 
 void updateGame(uint32_t now) {
-  if (gamePhase == GamePhase::Waiting) {
-    if (left.pressed || ok.pressed || right.pressed) {
-      gamePhase = GamePhase::TooSoon;
-      gameAt = now;
-      oled.clearDisplay();
-      line(2, "TOO SOON!");
-      line(5, "OK: retry");
-      beep(180, 180);
-    } else if (static_cast<int32_t>(now - gameAt) >= 0) {
-      gamePhase = GamePhase::Go;
-      gameAt = now;
-      oled.clearDisplay();
-      line(2, "PRESS OK NOW!");
-      beep(1200, 35);
-    }
-  } else if (gamePhase == GamePhase::Go && ok.pressed) {
-    const uint32_t elapsed = now - gameAt;
-    lastReactionMs = static_cast<uint16_t>(elapsed > 9999 ? 9999 : elapsed);
-    gamePhase = GamePhase::Result;
-    showGameResult();
-  } else if ((gamePhase == GamePhase::Result || gamePhase == GamePhase::TooSoon) &&
-             ok.pressed) {
-    startReactionGame();
-  } else if ((gamePhase == GamePhase::Result || gamePhase == GamePhase::TooSoon) &&
-             (left.pressed || right.pressed)) {
+  if (left.pressed) {
     screen = Screen::Home;
     drawHome();
+    return;
   }
+  if (gamePhase == GamePhase::Intro) {
+    if (ok.pressed) startGame(now);
+    return;
+  }
+  if (gamePhase == GamePhase::Over) {
+    if (ok.pressed) startGame(now);
+    return;
+  }
+  if (ok.pressed) game.velocity = -48;
+  if (now - game.lastFrame < FLAPPY_FRAME_MS) return;
+
+  const float dt = min<float>((now - game.lastFrame) / 1000.0f, 0.08f);
+  game.lastFrame = now;
+  game.velocity += 122 * dt;
+  game.birdY += game.velocity * dt;
+  game.pipeX -= 31 * dt;
+
+  if (!game.passed && game.pipeX + 11 < 28) {
+    game.passed = true;
+    ++game.score;
+    beep(1200, 25);
+  }
+  if (game.pipeX < -15) {
+    game.pipeX = 128;
+    game.gapY = random(20, 45);
+    game.passed = false;
+  }
+
+  if (flappyCollision(game.birdY, game.pipeX, game.gapY)) {
+    gamePhase = GamePhase::Over;
+    beep(180, 180);
+    drawGameOver();
+    return;
+  }
+  drawGameRunning();
 }
 
 void updateUi(uint32_t now) {
@@ -354,7 +615,7 @@ void updateUi(uint32_t now) {
         screen = Screen::Problems;
         drawProblems();
       } else if (menuItem == 1) {
-        startReactionGame();
+        enterGame();
       } else {
         screen = Screen::Status;
         drawStatus();
@@ -370,17 +631,22 @@ void updateUi(uint32_t now) {
     } else if (ok.pressed) {
       showProblem(browserProblem);
     }
-  } else if (ok.pressed) {
+  } else if ((screen == Screen::Hint || screen == Screen::Status) &&
+             ok.longPressed) {
     screen = Screen::Home;
     drawHome();
+  } else if (screen == Screen::Complete && ok.pressed) {
+    screen = Screen::Status;
+    drawStatus();
   }
 }
 
-void updateHiddenAccess(uint32_t now) {
-  if (isSolved(solvedMask, HIDDEN_ACCESS_INDEX)) return;
+bool updateHiddenAccess(uint32_t now) {
+  if (isSolved(solvedMask, HIDDEN_ACCESS_INDEX)) return false;
 
-  const bool matched = hiddenAccessMatched(digitalRead(Pins::CHALLENGE_1) == LOW,
-                                           digitalRead(Pins::CHALLENGE_2) == LOW);
+  const bool matched = hiddenAccessMatched(
+      digitalRead(Pins::CHALLENGE_1) == LOW,
+      digitalRead(Pins::CHALLENGE_2) == LOW);
   if (!matched) {
     hiddenSince = 0;
   } else if (hiddenSince == 0) {
@@ -389,130 +655,406 @@ void updateHiddenAccess(uint32_t now) {
     solvedMask = markSolved(solvedMask, HIDDEN_ACCESS_INDEX);
     saveMask();
     configureHiddenAccessPins();
-    Serial.println(F("\n[Hidden Access] unlocked."));
-    screen = Screen::Status;
-    drawStatus();
-    beep(1568, 180);
+    return true;
   }
-}
-
-bool adminAuth() {
-  if (server.authenticate(ADMIN_USER, webPassword)) return true;
-  server.requestAuthentication();
   return false;
 }
 
-const char ADMIN_HTML[] PROGMEM = R"HTML(
-<!doctype html><meta name=viewport content="width=device-width">
-<title>Aegis Badge Admin</title>
-<style>body{font:16px system-ui;max-width:36rem;margin:2rem auto;padding:0 1rem}button{padding:.7rem;margin:.25rem}pre{background:#eee;padding:1rem}</style>
-<h1>Aegis Badge Admin</h1><pre id=s>loading...</pre>
-<div id=b></div><button onclick="post('/api/reset')">Reset all</button>
-<button onclick="post('/api/reboot')">Reboot</button>
-<script>
-async function load(){let r=await fetch('/api/status');let j=await r.json();s.textContent=JSON.stringify(j,null,2);b.innerHTML='';for(let i=1;i<=j.total;i++)b.innerHTML+=`<button onclick="post('/api/solve?id=${i}')">Solve ${i}</button>`}
-async function post(u){await fetch(u,{method:'POST'});setTimeout(load,200)}load()
-</script>)HTML";
-
-void sendAdminStatus() {
-  if (!adminAuth()) return;
-  char json[192];
-  snprintf(json, sizeof(json),
-           "{\"solvedMask\":%u,\"solved\":%u,\"total\":%u,"
-           "\"serialProblems\":%u,\"hiddenSolved\":%s}",
-           solvedMask, solvedCount(), static_cast<unsigned>(TOTAL_CHALLENGE_COUNT),
-           static_cast<unsigned>(SERIAL_PROBLEM_COUNT),
-           isSolved(solvedMask, HIDDEN_ACCESS_INDEX) ? "true" : "false");
-  server.send(200, "application/json", json);
+const char *screenName() {
+  switch (screen) {
+    case Screen::Home: return "home";
+    case Screen::Problems: return "missions";
+    case Screen::Hint: return "hint";
+    case Screen::Status: return "status";
+    case Screen::Game: return "game";
+    case Screen::Complete: return "complete";
+  }
+  return "unknown";
 }
 
-void setupAdminRoutes() {
-  server.on("/", HTTP_GET, [] {
-    if (adminAuth()) server.send_P(200, "text/html", ADMIN_HTML);
-  });
-  server.on("/api/status", HTTP_GET, sendAdminStatus);
-  server.on("/api/solve", HTTP_POST, [] {
-    if (!adminAuth()) return;
-    const int id = server.arg("id").toInt();
-    if (id < 1 || id > static_cast<int>(TOTAL_CHALLENGE_COUNT)) {
-      server.send(400, "application/json", "{\"error\":\"bad id\"}");
-      return;
+void bleSendLine(const char *line) {
+  if (!bleConnected || bleTx == nullptr) return;
+  const size_t length = strlen(line);
+  char chunk[BLE_NOTIFY_CHUNK];
+  for (size_t offset = 0; offset <= length; offset += BLE_NOTIFY_CHUNK) {
+    const size_t remaining = length + 1 - offset;
+    const size_t size = min<size_t>(remaining, BLE_NOTIFY_CHUNK);
+    for (size_t i = 0; i < size; ++i) {
+      const size_t position = offset + i;
+      chunk[i] = position == length ? '\n' : line[position];
     }
-    solvedMask = markSolved(solvedMask, id - 1);
-    saveMask();
-    configureHiddenAccessPins();
-    screen = Screen::Status;
-    drawStatus();
-    server.send(200, "application/json", "{\"ok\":true}");
-  });
-  server.on("/api/reset", HTTP_POST, [] {
-    if (!adminAuth()) return;
-    solvedMask = 0;
-    saveMask();
-    configureHiddenAccessPins();
-    activeProblem = -1;
-    screen = Screen::Status;
-    drawStatus();
-    server.send(200, "application/json", "{\"ok\":true}");
-  });
-  server.on("/api/reboot", HTTP_POST, [] {
-    if (!adminAuth()) return;
-    server.send(200, "application/json", "{\"ok\":true}");
-    delay(100);
-    ESP.restart();
-  });
-  server.onNotFound([] {
-    if (adminAuth()) server.send(404, "text/plain", "not found");
-  });
+    bleTx->setValue(reinterpret_cast<uint8_t *>(chunk), size);
+    bleTx->notify();
+    delay(8);
+  }
 }
 
-void randomCredential(char *output, size_t length) {
-  constexpr char alphabet[] = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
-  for (size_t i = 0; i + 1 < length; ++i) {
-    output[i] = alphabet[esp_random() % (sizeof(alphabet) - 1)];
-  }
-  output[length - 1] = '\0';
+void sendBleStatus() {
+  char line[224];
+  snprintf(line, sizeof(line),
+           "STATUS {\"id\":\"%s\",\"solvedMask\":%u,\"solved\":%u,"
+           "\"total\":%u,\"serialSolved\":%u,\"serialProblems\":%u,"
+           "\"hiddenSolved\":%s,\"screen\":\"%s\",\"uptimeMs\":%lu}",
+           badgeId, solvedMask, solvedCount(),
+           static_cast<unsigned>(TOTAL_CHALLENGE_COUNT), serialSolvedCount(),
+           static_cast<unsigned>(SERIAL_PROBLEM_COUNT),
+           isSolved(solvedMask, HIDDEN_ACCESS_INDEX) ? "true" : "false",
+           screenName(), static_cast<unsigned long>(millis()));
+  bleSendLine(line);
+  bleStatusDirty = false;
 }
 
-bool adminChordHeld() {
-  const uint32_t start = millis();
-  while (millis() - start < ADMIN_BOOT_HOLD_MS) {
-    if (digitalRead(Pins::BUTTON_LEFT) != LOW ||
-        digitalRead(Pins::BUTTON_RIGHT) != LOW) return false;
-    delay(10);
+bool validAdminTag(const char *provided) {
+  if (bleChallenge == 0 || strlen(provided) != 14) return false;
+  char material[40];
+  snprintf(material, sizeof(material), "%s:%08lX", badgeId,
+           static_cast<unsigned long>(bleChallenge));
+  uint8_t digest[32];
+  const mbedtls_md_info_t *sha = mbedtls_md_info_from_type(MBEDTLS_MD_SHA256);
+  if (sha == nullptr || mbedtls_md_hmac(
+          sha, reinterpret_cast<const uint8_t *>(BLE_ADMIN_KEY),
+          strlen(BLE_ADMIN_KEY), reinterpret_cast<const uint8_t *>(material),
+          strlen(material), digest) != 0) return false;
+
+  constexpr char hex[] = "0123456789ABCDEF";
+  uint8_t different = 0;
+  for (uint8_t i = 0; i < 7; ++i) {
+    const char high = hex[digest[i] >> 4];
+    const char low = hex[digest[i] & 0x0f];
+    different |= static_cast<uint8_t>(toupper(provided[i * 2]) ^ high);
+    different |= static_cast<uint8_t>(toupper(provided[i * 2 + 1]) ^ low);
   }
+  return different == 0;
+}
+
+void sendBleHello() {
+  bleAuthenticated = false;
+  do bleChallenge = esp_random(); while (bleChallenge == 0);
+  char line[40];
+  snprintf(line, sizeof(line), "HELLO %s %08lX", badgeId,
+           static_cast<unsigned long>(bleChallenge));
+  bleSendLine(line);
+}
+
+class BadgeServerCallbacks final : public BLEServerCallbacks {
+  void onConnect(BLEServer *) override {
+    bleConnected = true;
+    bleAuthenticated = false;
+    bleChallenge = 0;
+    bleRxLength = 0;
+  }
+
+  void onDisconnect(BLEServer *) override {
+    bleConnected = false;
+    bleAuthenticated = false;
+    bleChallenge = 0;
+    bleRxLength = 0;
+    bleRestartAdvertising = true;
+  }
+};
+
+class BadgeCommandCallbacks final : public BLECharacteristicCallbacks {
+  void onWrite(BLECharacteristic *characteristic) override {
+    const std::string value = characteristic->getValue();
+    if (value.empty() || bleCommands == nullptr) return;
+    for (const char byte : value) {
+      if (byte == '\r') continue;
+      if (byte == '\n') {
+        if (bleRxLength > 0) {
+          bleRxLine[bleRxLength] = '\0';
+          xQueueSend(bleCommands, bleRxLine, 0);
+        }
+        bleRxLength = 0;
+      } else if (bleRxLength + 1 < sizeof(bleRxLine)) {
+        bleRxLine[bleRxLength++] = byte;
+      } else {
+        bleRxLength = 0;
+      }
+    }
+  }
+};
+
+BadgeServerCallbacks badgeServerCallbacks;
+BadgeCommandCallbacks badgeCommandCallbacks;
+
+bool decodeField(const char *encoded, char *output, size_t outputSize) {
+  if (strcmp(encoded, "-") == 0) {
+    output[0] = '\0';
+    return true;
+  }
+  size_t written = 0;
+  if (mbedtls_base64_decode(reinterpret_cast<unsigned char *>(output),
+                            outputSize - 1, &written,
+                            reinterpret_cast<const unsigned char *>(encoded),
+                            strlen(encoded)) != 0 ||
+      memchr(output, '\0', written) != nullptr) return false;
+  output[written] = '\0';
   return true;
 }
 
-void startAdmin() {
-  const uint64_t mac = ESP.getEfuseMac();
-  snprintf(wifiSsid, sizeof(wifiSsid), "AegisBadge-%04X",
-           static_cast<unsigned>(mac & 0xffff));
-  randomCredential(wifiPassword, sizeof(wifiPassword));
-  randomCredential(webPassword, sizeof(webPassword));
+bool appendField(char *line, size_t &used, const char *value) {
+  if (used + 2 >= BLE_COMMAND_MAX) return false;
+  line[used++] = '\t';
+  if (*value == '\0') {
+    line[used++] = '-';
+    line[used] = '\0';
+    return true;
+  }
+  size_t written = 0;
+  const int result = mbedtls_base64_encode(
+      reinterpret_cast<unsigned char *>(line + used), BLE_COMMAND_MAX - used - 1,
+      &written, reinterpret_cast<const unsigned char *>(value), strlen(value));
+  if (result != 0) return false;
+  used += written;
+  line[used] = '\0';
+  return true;
+}
 
-  WiFi.mode(WIFI_AP);
-  if (!WiFi.softAP(wifiSsid, wifiPassword)) {
-    Serial.println(F("Admin AP start failed."));
+void sendProblem(uint8_t index) {
+  const Problem &problem = problems[index];
+  char line[BLE_COMMAND_MAX];
+  int count = snprintf(line, sizeof(line), "PROBLEM\t%u\t%c\t%u", index + 1,
+                       problem.type, problem.optionCount);
+  if (count < 0 || static_cast<size_t>(count) >= sizeof(line)) return;
+  size_t used = count;
+  if (!appendField(line, used, problem.title) ||
+      !appendField(line, used, problem.serialText) ||
+      !appendField(line, used, problem.answer)) return;
+  for (uint8_t i = 0; i < PROBLEM_OPTION_MAX; ++i) {
+    if (!appendField(line, used, problem.oledLines[i])) return;
+  }
+  bleSendLine(line);
+}
+
+void setProblem(char *payload) {
+  char *save = nullptr;
+  char *indexText = strtok_r(payload, "\t", &save);
+  char *typeText = strtok_r(nullptr, "\t", &save);
+  char *countText = strtok_r(nullptr, "\t", &save);
+  if (!indexText || !typeText || !countText) {
+    bleSendLine("ERR problem invalid fields");
     return;
   }
-  setupAdminRoutes();
-  server.begin();
-  adminEnabled = true;
+  const int number = atoi(indexText);
+  if (number < 1 || number > static_cast<int>(SERIAL_PROBLEM_COUNT)) {
+    bleSendLine("ERR problem index 1-4 only");
+    return;
+  }
 
-  oled.clearDisplay();
-  line(0, "ADMIN WIFI ON");
-  line(1, wifiSsid);
-  line(2, "WiFi password:");
-  line(3, wifiPassword);
-  line(4, "user: admin");
-  line(5, "web password:");
-  line(6, webPassword);
-  line(7, "192.168.4.1");
+  Problem candidate{};
+  candidate.version = PROBLEM_STORAGE_VERSION;
+  candidate.type = typeText[0];
+  candidate.optionCount = atoi(countText);
+  char *fields[3 + PROBLEM_OPTION_MAX];
+  for (char *&field : fields) field = strtok_r(nullptr, "\t", &save);
+  if (strtok_r(nullptr, "\t", &save) != nullptr ||
+      !fields[0] || !fields[1] || !fields[2] ||
+      !decodeField(fields[0], candidate.title, sizeof(candidate.title)) ||
+      !decodeField(fields[1], candidate.serialText, sizeof(candidate.serialText)) ||
+      !decodeField(fields[2], candidate.answer, sizeof(candidate.answer))) {
+    bleSendLine("ERR problem invalid encoding");
+    return;
+  }
+  for (uint8_t i = 0; i < PROBLEM_OPTION_MAX; ++i) {
+    if (!fields[3 + i] ||
+        !decodeField(fields[3 + i], candidate.oledLines[i],
+                     sizeof(candidate.oledLines[i]))) {
+      bleSendLine("ERR problem invalid option");
+      return;
+    }
+  }
+  if (!validProblem(candidate)) {
+    bleSendLine("ERR problem invalid values");
+    return;
+  }
 
-  Serial.printf("\nAdmin AP: %s\nWiFi password: %s\n", wifiSsid, wifiPassword);
-  Serial.printf("URL: http://192.168.4.1 / user: %s / password: %s\n",
-                ADMIN_USER, webPassword);
+  const uint8_t index = number - 1;
+  problems[index] = candidate;
+  saveProblem(index);
+  solvedMask &= static_cast<uint8_t>(~solvedBit(index));
+  saveMask();
+  if (activeProblem == index) activeProblem = -1;
+  if (bleActiveProblem == index) bleActiveProblem = -1;
+  if (displayedProblem == index) {
+    screen = Screen::Problems;
+    browserProblem = index;
+    drawProblems();
+  }
+  char response[24];
+  snprintf(response, sizeof(response), "OK problem %d", number);
+  bleSendLine(response);
+  sendProblem(index);
+}
+
+void printBleStatus() {
+  bleSendLine("[challenge status]");
+  char line[64];
+  for (uint8_t i = 0; i < SERIAL_PROBLEM_COUNT; ++i) {
+    snprintf(line, sizeof(line), "%u. %-13s [%c]", i + 1, problems[i].title,
+             isSolved(solvedMask, i) ? 'O' : 'X');
+    bleSendLine(line);
+  }
+}
+
+void solveBleProblem(uint8_t index) {
+  const uint8_t next = markSolved(solvedMask, index);
+  if (next != solvedMask) {
+    solvedMask = next;
+    saveMask();
+  }
+  char line[64];
+  snprintf(line, sizeof(line), "CORRECT. progress: %u/%u", serialSolvedCount(),
+           static_cast<unsigned>(SERIAL_PROBLEM_COUNT));
+  bleSendLine(line);
+  bleActiveProblem = -1;
+  beep(1047, 130);
+  if (allSolved()) {
+    screen = Screen::Complete;
+    drawComplete();
+  } else {
+    screen = Screen::Status;
+    drawStatus();
+  }
+}
+
+void handleBleShell(char *command) {
+  while (*command == ' ' || *command == '\t') ++command;
+  char *end = command + strlen(command);
+  while (end > command && (end[-1] == ' ' || end[-1] == '\t')) --end;
+  *end = '\0';
+  if (*command == '\0') return;
+
+  if (bleActiveProblem >= 0) {
+    if (strcmp(command, "exit") == 0) {
+      bleActiveProblem = -1;
+      screen = Screen::Home;
+      drawHome();
+      bleSendLine("Exited problem.");
+    } else if (strcmp(command, "hint") == 0) {
+      drawHint(bleActiveProblem);
+      bleSendLine("OLED hint refreshed.");
+    } else if (strcmp(command, problems[bleActiveProblem].answer) == 0) {
+      solveBleProblem(bleActiveProblem);
+    } else {
+      bleSendLine("Incorrect. Retry or enter exit.");
+      beep(196, 150);
+    }
+    return;
+  }
+
+  if (strlen(command) == 1 && command[0] >= '1' &&
+      command[0] < '1' + static_cast<int>(SERIAL_PROBLEM_COUNT)) {
+    bleActiveProblem = command[0] - '1';
+    screen = Screen::Hint;
+    drawHint(bleActiveProblem);
+    bleSendLine(problems[bleActiveProblem].serialText);
+    bleSendLine(problems[bleActiveProblem].type == 'C'
+                    ? "Check OLED and submit the answer number or exit."
+                    : "Check OLED and submit FLAG or exit.");
+    beep(659);
+  } else if (strcmp(command, "help") == 0) {
+    bleSendLine("USER: 1-4 hint exit status clear reset aegis");
+    bleSendLine("ADMIN: reboot / problem get 1-4 / dashboard editor");
+  } else if (strcmp(command, "hint") == 0) {
+    bleSendLine("Select problem 1-4 first.");
+  } else if (strcmp(command, "clear") == 0) {
+    bleSendLine("CLEAR");
+  } else if (strcmp(command, "reset") == 0) {
+    resetProgress();
+    bleSendLine("OK reset");
+  } else if (strcmp(command, START_COMMAND) == 0) {
+    bleSendLine("=== Aegis Hack The Badge / Rev.3 ===");
+    bleSendLine("Problems: Serial / choices and examples: OLED");
+    bleSendLine("Commands: 1-4 status help hint exit clear reset aegis");
+  } else {
+    bleSendLine("ERR unknown command; enter help");
+  }
+}
+
+void handleBleCommand(char *command) {
+  if (strcmp(command, "hello") == 0) {
+    sendBleHello();
+    return;
+  }
+  if (strncmp(command, "a ", 2) == 0) {
+    if (validAdminTag(command + 2)) {
+      bleChallenge = 0;
+      bleAuthenticated = true;
+      bleSendLine("AUTH OK");
+      sendBleStatus();
+    } else {
+      bleAuthenticated = false;
+      bleSendLine("ERR auth");
+    }
+    return;
+  }
+  if (!bleAuthenticated) {
+    bleSendLine("ERR auth required");
+    return;
+  }
+  if (strcmp(command, "status") == 0) {
+    printBleStatus();
+    sendBleStatus();
+  } else if (strncmp(command, "problem get ", 12) == 0) {
+    const int number = atoi(command + 12);
+    if (number < 1 || number > static_cast<int>(SERIAL_PROBLEM_COUNT)) {
+      bleSendLine("ERR problem index 1-4 only");
+    } else {
+      sendProblem(number - 1);
+    }
+  } else if (strncmp(command, "problem set\t", 12) == 0) {
+    setProblem(command + 12);
+  } else if (strcmp(command, "reset") == 0) {
+    resetProgress();
+    bleSendLine("OK reset");
+    sendBleStatus();
+  } else if (strcmp(command, "reboot") == 0) {
+    bleSendLine("OK reboot");
+    rebootAt = millis() + 250;
+  } else {
+    handleBleShell(command);
+  }
+}
+
+void startBleAdmin() {
+  const uint64_t mac = ESP.getEfuseMac() & 0xffffffffffffULL;
+  snprintf(badgeId, sizeof(badgeId), "AEGIS-%012llX", mac);
+  char deviceName[13];
+  snprintf(deviceName, sizeof(deviceName), "AEGIS-%06lX",
+           static_cast<unsigned long>(mac & 0xffffff));
+  bleCommands = xQueueCreate(2, sizeof(BleCommand));
+  BLEDevice::init(deviceName);
+  bleServer = BLEDevice::createServer();
+  bleServer->setCallbacks(&badgeServerCallbacks);
+  BLEService *service = bleServer->createService(BLE_SERVICE_UUID);
+  bleTx = service->createCharacteristic(
+      BLE_TX_UUID, BLECharacteristic::PROPERTY_NOTIFY);
+  bleTx->addDescriptor(new BLE2902());
+  BLECharacteristic *rx = service->createCharacteristic(
+      BLE_RX_UUID, BLECharacteristic::PROPERTY_WRITE);
+  rx->setCallbacks(&badgeCommandCallbacks);
+  service->start();
+  BLEAdvertising *advertising = BLEDevice::getAdvertising();
+  advertising->addServiceUUID(BLE_SERVICE_UUID);
+  advertising->setScanResponse(true);
+  BLEDevice::startAdvertising();
+  Serial.printf("BLE admin ready: %s\n", badgeId);
+}
+
+void updateBleAdmin(uint32_t now) {
+  if (bleRestartAdvertising) {
+    bleRestartAdvertising = false;
+    if (bleCommands != nullptr) xQueueReset(bleCommands);
+    bleRxLength = 0;
+    BLEDevice::startAdvertising();
+  }
+  BleCommand command{};
+  while (bleCommands != nullptr &&
+         xQueueReceive(bleCommands, &command, 0) == pdTRUE) {
+    handleBleCommand(command.text);
+  }
+  if (bleConnected && bleAuthenticated && bleStatusDirty) sendBleStatus();
+  if (rebootAt != 0 && static_cast<int32_t>(now - rebootAt) >= 0) ESP.restart();
 }
 } // namespace
 
@@ -532,9 +1074,10 @@ void setup() {
   oled.setI2CAddress(0x3c << 1);
   oled.setBusClock(400000);
   oled.begin();
-  oled.setFont(u8x8_font_chroma48medium8_r);
+  drawBoot();
 
   preferences.begin("badge", false);
+  loadProblems();
   solvedMask = preferences.getUChar("solved", 0) &
                solvedMaskFor(TOTAL_CHALLENGE_COUNT);
   updateLeds();
@@ -542,20 +1085,23 @@ void setup() {
   configureHiddenAccessPins();
 
   randomSeed(esp_random());
+  startBleAdmin();
   printBanner();
-  if (adminChordHeld()) {
-    startAdmin();
-  } else {
-    drawHome();
-  }
+  const uint32_t bootAt = millis();
+  while (millis() - bootAt < 700) delay(5);
+  drawHome();
   beep(880, 60);
 }
 
 void loop() {
   const uint32_t now = millis();
   pollSerial();
+  updateBleAdmin(now);
   updateUi(now);
-  updateHiddenAccess(now);
-  if (adminEnabled) server.handleClient();
+  // Active OLED page와 무관한 전역 하드웨어 이벤트로 감지한다.
+  if (updateHiddenAccess(now)) {
+    delay(1);
+    return;
+  }
   delay(1);
 }

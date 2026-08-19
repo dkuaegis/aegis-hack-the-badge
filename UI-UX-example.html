@@ -1,0 +1,229 @@
+<div id="htb-oled-flappy">
+  <style>
+    #htb-oled-flappy { color: var(--foreground); text-align: center; }
+    #htb-oled-flappy .screen-picker { justify-content: center; margin-bottom: 1rem; }
+    #htb-oled-flappy .device { display: grid; gap: .8rem; justify-items: center; }
+    #htb-oled-flappy .oled {
+      width: min(100%, 34rem);
+      aspect-ratio: 2 / 1;
+      display: block;
+      background: var(--foreground);
+      color: var(--background);
+      border: 1px solid var(--border);
+      border-radius: .4rem;
+    }
+    #htb-oled-flappy .oled text {
+      fill: currentColor;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      font-weight: 500;
+      text-anchor: middle;
+    }
+    #htb-oled-flappy .oled .t5 { font-size: 5px; }
+    #htb-oled-flappy .oled .t6 { font-size: 6px; }
+    #htb-oled-flappy .oled .t8 { font-size: 8px; }
+    #htb-oled-flappy .oled .t12 { font-size: 12px; }
+    #htb-oled-flappy .oled .stroke { stroke: currentColor; fill: none; }
+    #htb-oled-flappy .oled .pixel-fill { fill: currentColor; }
+    #htb-oled-flappy .oled .pixel-cut { fill: var(--foreground); }
+    #htb-oled-flappy .oled .inverse { fill: var(--background); }
+    #htb-oled-flappy .oled .inverse-text { fill: var(--foreground); }
+    #htb-oled-flappy .physical-buttons { display: grid; grid-template-columns: repeat(3, 1fr); gap: .5rem; width: min(100%, 24rem); }
+    #htb-oled-flappy .physical-buttons .btn { width: 100%; }
+    #htb-oled-flappy .screen-note { min-height: 1.5rem; max-width: 40rem; }
+  </style>
+
+  <div class="viz-controls screen-picker" aria-label="화면 선택">
+    <button class="btn" type="button" data-screen="boot" aria-pressed="true">Boot</button>
+    <button class="btn" type="button" data-screen="home">Home</button>
+    <button class="btn" type="button" data-screen="missions">Missions</button>
+    <button class="btn" type="button" data-screen="intel">Intel</button>
+    <button class="btn" type="button" data-screen="status">Status</button>
+    <button class="btn" type="button" data-screen="game">Game</button>
+    <button class="btn" type="button" data-screen="complete">Complete</button>
+    <button class="btn" type="button" data-screen="admin">Admin</button>
+    <button class="btn" type="button" data-screen="hiddenGranted">Hidden success</button>
+  </div>
+
+  <div class="device">
+    <svg class="oled" viewBox="0 0 128 64" role="img" aria-live="polite" aria-label="Flappy Hacker 미니게임이 포함된 OLED 화면 미리보기"></svg>
+    <div class="physical-buttons" aria-label="배지 버튼">
+      <button class="btn" type="button" data-action="left">← LEFT</button>
+      <button class="btn btn-primary" type="button" data-action="ok">OK / FLAP</button>
+      <button class="btn" type="button" data-action="right">RIGHT →</button>
+    </div>
+    <div class="screen-note text-muted" aria-live="polite"></div>
+  </div>
+
+  <script>
+    (() => {
+      const root = document.getElementById("htb-oled-flappy");
+      const oled = root.querySelector(".oled");
+      const note = root.querySelector(".screen-note");
+      const logo64 = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABAAQAAAACCEkxzAAAAAmJLR0QAAd2KE6QAAAAHdElNRQfqCBAOCydXAs+wAAABVklEQVQoz23Sv0oDQRAG8O9cca+QXCyF4AZSCRaxi3DcpbLyzyuInYWYVgjcPoCNtYE8gpap9J5AX2FB0fbKAy83ztzGYILb3O92d6aYb4H/Vkb+q4hcA/M9rfzJ17U/q95Pp1auzG+uHuWSrnoP04IRzYlMKUUMkrKU8oBqqa4XvWXbkEVAXKEpZzhYxVBkVS5/mtq62OZzTSm3yQpEtWGkJaJKYBoUWmBK41QVVTDFCnSF1KNG6gRKsAeMGyRA/IukQWqD2sOpNWSFXoLW4NTKTuIyi1o9IxnF3FknMP0B0NIxzKAPbLXGMDOZYytGdNAGNjszRCchEO4OEJ1tAN2jEfQbhgFun6DPbRhi3oXaz9ENXi8QTFwwVHc8uo8RrL7Pgc8xT3WHU7nMeM497n6Y8SyPGZ0Xonoi6XAmJOloQeFDXsQssD7/Ji7JqLn75yUs34ZfP2n/zP5UBzPaAAAAAElFTkSuQmCC";
+      const escapeText = (value) => value.replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;");
+      const centerText = (y, value, cls = "t6") => '<text class="' + cls + '" x="64" y="' + y + '">' + escapeText(value) + "</text>";
+      const footer = (value) => centerText(61, value, "t5");
+      const header = (value) => centerText(7, value, "t6") + '<line class="stroke" x1="38" y1="10" x2="90" y2="10"/>';
+      const bootMarkup = '<defs><mask id="htb-flappy-logo-mask" maskUnits="userSpaceOnUse" x="32" y="0" width="64" height="64"><image href="' + logo64 + '" x="32" y="0" width="64" height="64" image-rendering="pixelated"/></mask></defs><rect class="pixel-fill" x="32" y="0" width="64" height="64" mask="url(#htb-flappy-logo-mask)"/>';
+      const birdMarkup = (x, y) => '<g transform="translate(' + x.toFixed(1) + ' ' + y.toFixed(1) + ')"><rect class="pixel-fill" x="0" y="1" width="7" height="5"/><rect class="pixel-fill" x="2" y="0" width="4" height="1"/><rect class="pixel-fill" x="-2" y="3" width="3" height="2"/><rect class="pixel-cut" x="5" y="2" width="1" height="1"/></g>';
+
+      const screens = {
+        boot: { markup: bootMarkup, note: "64×64 부팅 로고를 유지했습니다." },
+        home: {
+          markup: header("AEGIS // HTB") + centerText(25, "03 / 05", "t12") + '<rect class="stroke" x="42" y="30" width="44" height="5"/><rect class="pixel-fill" x="44" y="32" width="24" height="1"/>' + '<rect class="inverse" x="39" y="40" width="50" height="11" rx="1"/>' + centerText(48, "MISSIONS", "t6 inverse-text") + footer("<   SELECT   >"),
+          note: "Home 페이지"
+        },
+        missions: {
+          markup: header("MISSION 03 / 05") + centerText(24, "03", "t12") + centerText(34, "DECODE", "t8") + '<rect class="inverse" x="42" y="39" width="44" height="9" rx="1"/>' + centerText(46, "NEW MISSION", "t5 inverse-text") + footer("<   OPEN    >"),
+          note: "Missions 페이지"
+        },
+        intel: {
+          markup: header("03 // DECODE") + centerText(20, "QWVnaXN7RDBfWTB", "t5") + centerText(28, "1X0tuMFdfV2hAVF", "t5") + centerText(36, "8zbkMwZEluR18xcz", "t5") + centerText(44, "99", "t5") + '<rect class="inverse" x="43" y="48" width="42" height="8" rx="1"/>' + centerText(54, "HINT: BASE64", "t5 inverse-text") + footer("HOLD OK: BACK"),
+          note: "Intel 페이지"
+        },
+        status: {
+          markup: header("BADGE STATUS") + centerText(27, "3 / 5", "t12") + centerText(39, "SERIAL  3 / 4", "t6") + centerText(48, "HIDDEN  LOCKED", "t6") + footer("HOLD OK: BACK"),
+          note: "Status 페이지"
+        },
+        game: {
+          markup: header("FLAPPY HACKER") + birdMarkup(61, 22) + centerText(42, "PRESS OK", "t8") + centerText(51, "SCORE 5 = HINT", "t5") + footer("LEFT: EXIT"),
+          note: "OK 버튼으로 시작하고 점프합니다. 목표 점수 5를 넘으면 Hidden Access 힌트가 해금됩니다."
+        },
+        complete: {
+          markup: centerText(16, "ALL CLEAR", "t8") + '<rect class="inverse" x="26" y="22" width="76" height="15" rx="1"/>' + centerText(33, "ACCESS ELEVATED", "t8 inverse-text") + centerText(48, "AEGIS{PWNED}", "t6") + footer("OK: RECAP"),
+          note: "Complete 페이지"
+        },
+        admin: {
+          markup: header("ADMIN MODE") + centerText(20, "AP  Aegis-7F2A", "t5") + centerText(28, "WIFI  K7P4-X9M2", "t5") + centerText(36, "USER  admin", "t5") + centerText(44, "WEB  Q2VN-8TR5", "t5") + centerText(52, "192.168.4.1", "t5") + footer("HOLD OK: EXIT"),
+          note: "Admin 페이지"
+        },
+        hiddenGranted: {
+          markup: centerText(14, "HIDDEN ACCESS", "t8") + '<rect class="inverse" x="27" y="20" width="74" height="19" rx="1"/>' + centerText(34, "GRANTED", "t12 inverse-text") + centerText(49, "CHALLENGE 05 CLEAR", "t6") + footer("STATUS UPDATED"),
+          note: "Hidden Access 조건 충족 순간에 표시되는 성공 화면"
+        }
+      };
+      const pageOrder = ["boot", "home", "missions", "intel", "status", "game", "complete", "admin"];
+      let current = "boot";
+      let game = null;
+      let animationId = 0;
+
+      function stopGame() {
+        if (animationId) cancelAnimationFrame(animationId);
+        animationId = 0;
+        if (game) game.running = false;
+      }
+
+      function render(name) {
+        if (current === "game") stopGame();
+        current = name;
+        oled.innerHTML = screens[name].markup;
+        note.textContent = screens[name].note;
+        root.querySelectorAll("[data-screen]").forEach((button) => {
+          button.setAttribute("aria-pressed", String(button.dataset.screen === name));
+        });
+      }
+
+      function startGame() {
+        stopGame();
+        current = "game";
+        game = {
+          birdY: 28,
+          velocity: -45,
+          score: 0,
+          running: true,
+          lastTime: performance.now(),
+          pipes: [{ x: 112, gapY: 30, passed: false }]
+        };
+        note.textContent = "OK / Space로 점프 · LEFT로 종료";
+        animationId = requestAnimationFrame(updateGame);
+      }
+
+      function flap() {
+        if (!game || !game.running) {
+          startGame();
+          return;
+        }
+        game.velocity = -48;
+      }
+
+      function gameOver() {
+        game.running = false;
+        animationId = 0;
+        const reward = game.score >= 5;
+        oled.innerHTML = centerText(14, "SYSTEM CRASHED", "t8") + centerText(32, "SCORE " + game.score, "t12") + centerText(45, reward ? "HINT UNLOCKED" : "TARGET SCORE 5", "t6") + (reward ? centerText(53, "FRONT PADS SPEAK", "t5") : "") + footer("OK: RETRY  LEFT:EXIT");
+        note.textContent = reward ? "목표 달성: Hidden Access 힌트가 표시됩니다." : "OK를 눌러 다시 시작할 수 있습니다.";
+      }
+
+      function updateGame(now) {
+        if (!game || !game.running || current !== "game") return;
+        const dt = Math.min((now - game.lastTime) / 1000, 0.035);
+        game.lastTime = now;
+        game.velocity += 122 * dt;
+        game.birdY += game.velocity * dt;
+        game.pipes.forEach((pipe) => { pipe.x -= 31 * dt; });
+        const lastPipe = game.pipes[game.pipes.length - 1];
+        if (lastPipe.x < 70) game.pipes.push({ x: 130, gapY: 22 + Math.random() * 20, passed: false });
+        game.pipes = game.pipes.filter((pipe) => pipe.x > -14);
+
+        const birdX = 28;
+        const birdTop = game.birdY;
+        const birdBottom = game.birdY + 6;
+        let collided = birdTop <= 0 || birdBottom >= 64;
+        game.pipes.forEach((pipe) => {
+          const gapTop = pipe.gapY - 13;
+          const gapBottom = pipe.gapY + 13;
+          if (pipe.x < birdX + 7 && pipe.x + 11 > birdX && (birdTop < gapTop || birdBottom > gapBottom)) collided = true;
+          if (!pipe.passed && pipe.x + 11 < birdX) {
+            pipe.passed = true;
+            game.score += 1;
+          }
+        });
+        if (collided) {
+          gameOver();
+          return;
+        }
+
+        let markup = centerText(7, String(game.score), "t6") + birdMarkup(birdX, game.birdY);
+        game.pipes.forEach((pipe) => {
+          const gapTop = pipe.gapY - 13;
+          const gapBottom = pipe.gapY + 13;
+          markup += '<rect class="pixel-fill" x="' + pipe.x.toFixed(1) + '" y="0" width="11" height="' + gapTop.toFixed(1) + '"/>';
+          markup += '<rect class="pixel-fill" x="' + pipe.x.toFixed(1) + '" y="' + gapBottom.toFixed(1) + '" width="11" height="' + (64 - gapBottom).toFixed(1) + '"/>';
+          markup += '<rect class="pixel-fill" x="' + (pipe.x - 2).toFixed(1) + '" y="' + (gapTop - 3).toFixed(1) + '" width="15" height="3"/>';
+          markup += '<rect class="pixel-fill" x="' + (pipe.x - 2).toFixed(1) + '" y="' + gapBottom.toFixed(1) + '" width="15" height="3"/>';
+        });
+        oled.innerHTML = markup;
+        animationId = requestAnimationFrame(updateGame);
+      }
+
+      root.querySelectorAll("[data-screen]").forEach((button) => {
+        button.addEventListener("click", () => render(button.dataset.screen));
+      });
+      root.querySelectorAll("[data-action]").forEach((button) => {
+        button.addEventListener("click", () => {
+          const action = button.dataset.action;
+          if (current === "game") {
+            if (action === "ok") flap();
+            if (action === "left") render("home");
+            return;
+          }
+          if (current === "hiddenGranted") {
+            render("status");
+            return;
+          }
+          const index = pageOrder.indexOf(current);
+          if (action === "left") render(pageOrder[(index + pageOrder.length - 1) % pageOrder.length]);
+          if (action === "right") render(pageOrder[(index + 1) % pageOrder.length]);
+          if (action === "ok") render(current === "boot" ? "home" : current === "home" ? "missions" : "home");
+        });
+      });
+      root.addEventListener("keydown", (event) => {
+        if (event.code === "Space" && current === "game") {
+          event.preventDefault();
+          flap();
+        }
+      });
+      render(current);
+    })();
+  </script>
+</div>

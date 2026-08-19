@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="ko">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>AEGIS // BLE Badge Control</title>
+<style>
+:root{color-scheme:dark;--bg:#050806;--panel:#09110c;--line:#234b30;--green:#7dff9e;--dim:#7aa485;--red:#ff6b7a}*{box-sizing:border-box}html,body{max-width:100%;overflow-x:hidden}body{margin:0;min-height:100vh;background:radial-gradient(circle at 50% 0,#12271a,var(--bg) 48%);color:var(--green);font:14px ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;padding:clamp(14px,3vw,32px)}main{width:100%;max-width:1180px;margin:auto;border:1px solid var(--line);background:rgba(5,10,7,.96);box-shadow:0 0 48px #063b1c}header{display:flex;flex-wrap:wrap;justify-content:space-between;gap:12px;padding:14px 18px;border-bottom:1px solid var(--line);color:var(--dim)}header b{color:var(--green)}.layout{display:grid;grid-template-columns:minmax(240px,340px) minmax(0,1fr);min-height:620px}.sidebar,.content,.terminal,.stat{min-width:0}.sidebar{padding:16px;border-right:1px solid var(--line)}h1{font-size:18px;margin:0 0 14px}.badge{display:block;width:100%;margin:8px 0;padding:12px;background:var(--panel);border:1px solid var(--line);color:inherit;text-align:left;font:inherit;cursor:pointer}.badge:hover,.badge.active{border-color:var(--green);box-shadow:inset 0 0 16px #12351d}.badge-top{display:flex;justify-content:space-between;gap:8px}.online{color:var(--green)}.offline{color:var(--red)}.meta{margin-top:8px;color:var(--dim);font-size:12px}.empty{color:var(--dim);padding:20px 0}.content{padding:clamp(16px,3vw,28px)}.identity{display:flex;flex-wrap:wrap;justify-content:space-between;gap:12px;align-items:flex-start}.identity h2{font-size:clamp(18px,3vw,28px);margin:0;overflow-wrap:anywhere}.identity p{color:var(--dim);margin:7px 0 0}.actions{display:flex;flex-wrap:wrap;gap:8px}button{background:#0a160e;border:1px solid var(--line);color:var(--green);font:inherit;padding:10px 12px;cursor:pointer}button:hover:not(:disabled){border-color:var(--green)}button.danger{color:var(--red);border-color:#5f2932}button:disabled{opacity:.35;cursor:not-allowed}.stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin:22px 0}.stat{border:1px solid var(--line);padding:13px}.stat small{display:block;color:var(--dim);margin-bottom:8px}.stat strong{font-size:22px}.missions{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:7px;margin-bottom:24px}.mission{border:1px solid var(--line);padding:10px 5px;text-align:center;color:var(--dim)}.mission.done{background:var(--green);color:#041006}.terminal{border:1px solid var(--line);background:#020403}.terminal-head{padding:8px 10px;border-bottom:1px solid var(--line);color:var(--dim);overflow-wrap:anywhere}pre{height:285px;margin:0;padding:12px;overflow:auto;white-space:pre-wrap;overflow-wrap:anywhere;word-break:break-word;color:#b7ffc8;font:13px/1.55 inherit}.terminal form{display:flex;border-top:1px solid var(--line)}.terminal form span{padding:11px 0 11px 10px}.terminal input{flex:1;min-width:0;border:0;background:transparent;color:var(--green);font:inherit;padding:11px 8px;outline:0}.terminal form button{border-width:0 0 0 1px}.placeholder{display:grid;place-items:center;min-height:520px;color:var(--dim)}footer{padding:10px 18px;border-top:1px solid var(--line);color:var(--dim)}dialog{width:min(680px,calc(100% - 28px));max-height:90vh;overflow:auto;border:1px solid var(--green);background:#050a07;color:var(--green);box-shadow:0 0 48px #063b1c}dialog::backdrop{background:#000b}dialog h2{margin-top:0}.editor-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.editor-grid label{display:grid;gap:6px;color:var(--dim)}.editor-grid .wide{grid-column:1/-1}.editor-grid input,.editor-grid select,.editor-grid textarea{width:100%;border:1px solid var(--line);background:#020403;color:var(--green);font:inherit;padding:9px}.editor-grid textarea{min-height:110px;resize:vertical}.editor-actions{display:flex;justify-content:flex-end;gap:8px;margin-top:16px}.editor-note{color:var(--dim);font-size:12px}@media(max-width:760px){.layout{grid-template-columns:minmax(0,1fr)}.sidebar{border-right:0;border-bottom:1px solid var(--line)}.identity{display:block}.actions{margin-top:14px}.stats{grid-template-columns:1fr}.missions{grid-template-columns:repeat(5,minmax(0,1fr))}.editor-grid{grid-template-columns:1fr}.editor-grid .wide{grid-column:auto}}
+</style>
+<main>
+  <header><b>AEGIS // BADGE CONTROL</b><span id="bridge">BLE BRIDGE: CHECKING</span></header>
+  <div class="layout">
+    <aside class="sidebar"><h1>// DISCOVERED BADGES</h1><div id="badges"><p class="empty">SCANNING...</p></div></aside>
+    <section class="content" id="detail"><div class="placeholder">SELECT A BADGE</div></section>
+  </div>
+  <footer>LOCALHOST ONLY // BLUETOOTH LE P2P // ADMIN CHANNEL</footer>
+</main>
+<dialog id="editor">
+  <form id="editor-form">
+    <h2>// PROBLEM EDITOR</h2>
+    <div class="editor-grid">
+      <label>MISSION<select id="problem-index"><option>1</option><option>2</option><option>3</option><option>4</option></select></label>
+      <label>TYPE<select id="problem-type"><option value="flag">FLAG</option><option value="choice">MULTIPLE CHOICE</option></select></label>
+      <label class="wide">TITLE<input id="problem-title" maxlength="23" required></label>
+      <label class="wide">SERIAL PROMPT<textarea id="problem-prompt" maxlength="255" required></textarea></label>
+      <label class="wide">ANSWER <span class="editor-note" id="answer-note">FLAG text</span><input id="problem-answer" maxlength="79" required></label>
+      <label>OLED LINE / OPTION 1<input class="problem-option" maxlength="23"></label>
+      <label>OLED LINE / OPTION 2<input class="problem-option" maxlength="23"></label>
+      <label>OLED LINE / OPTION 3<input class="problem-option" maxlength="23"></label>
+      <label>OLED LINE / OPTION 4<input class="problem-option" maxlength="23"></label>
+    </div>
+    <p class="editor-note">선택형은 보기 2~4개와 정답 번호를 입력합니다. FLAG형의 OLED 문구는 선택 사항입니다. OLED 제목·문구는 ASCII만 사용할 수 있습니다.</p>
+    <div class="editor-actions"><button type="button" id="editor-close">CANCEL</button><button type="submit">SAVE</button></div>
+  </form>
+</dialog>
+<script>
+const API='/api';
+let badges=[],selected='',consoleAfter=0,consoleText='',detailFingerprint='';
+const $=id=>document.getElementById(id);
+
+function renderList(){
+  const root=$('badges'); root.replaceChildren();
+  if(!badges.length){root.innerHTML='<p class="empty">NO BADGES FOUND</p>';return}
+  for(const badge of badges){
+    const button=document.createElement('button');
+    const status=badge.status||{}, solved=status.solved??0, total=status.total??5;
+    button.className='badge'+(badge.id===selected?' active':'');
+    button.innerHTML=`<div class="badge-top"><b>${escapeHtml(badge.id)}</b><span class="${badge.online?'online':'offline'}">${badge.online?'ONLINE':'OFFLINE'}</span></div><div class="meta">SOLVED ${solved}/${total} // ${badge.authenticated?'AUTH OK':'AUTH WAIT'}</div>`;
+    button.onclick=()=>selectBadge(badge.id); root.append(button);
+  }
+}
+
+function selectBadge(id){selected=id;consoleAfter=0;consoleText='';detailFingerprint='';renderList();renderDetail();loadConsole()}
+
+function renderDetail(){
+  const badge=badges.find(item=>item.id===selected);
+  if(!badge){detailFingerprint='';$('detail').innerHTML='<div class="placeholder">SELECT A BADGE</div>';return}
+  const status=badge.status||{}, mask=status.solvedMask||0, total=status.total||5;
+  const fingerprint=JSON.stringify([badge.id,badge.online,badge.authenticated,mask,status.solved,status.serialSolved,status.serialProblems,status.hiddenSolved,status.screen]);
+  if(fingerprint===detailFingerprint)return;detailFingerprint=fingerprint;
+  $('detail').innerHTML=`
+    <div class="identity"><div><h2>${escapeHtml(badge.id)}</h2><p>${escapeHtml(status.screen||'waiting')} // ${badge.authenticated?'AUTHENTICATED':'AUTHENTICATING'}</p></div>
+    <div class="actions"><button id="edit">EDIT PROBLEMS</button><button class="danger" id="reset">RESET SOLVED</button><button id="reboot">REBOOT</button></div></div>
+    <div class="stats"><div class="stat"><small>SOLVED</small><strong>${status.solved??'-'} / ${total}</strong></div><div class="stat"><small>SERIAL</small><strong>${status.serialSolved??'-'} / ${status.serialProblems??4}</strong></div><div class="stat"><small>HIDDEN</small><strong>${status.hiddenSolved?'CLEAR':'LOCKED'}</strong></div></div>
+    <div class="missions" id="missions"></div>
+    <div class="terminal"><div class="terminal-head">root@${escapeHtml(badge.id)}:~#</div><pre id="console"></pre><form id="shell"><span>&gt;</span><input id="command" autocomplete="off" maxlength="767" placeholder="1-4 | help | status | reset | reboot"><button>SEND</button></form></div>`;
+  const ready=badge.online&&badge.authenticated;
+  $('edit').disabled=$('reset').disabled=$('reboot').disabled=!ready;
+  $('edit').onclick=openEditor;
+  $('reset').onclick=()=>confirm('풀이 상태를 초기화할까요?')&&send('reset');
+  $('reboot').onclick=()=>confirm('배지를 재부팅할까요?')&&send('reboot');
+  $('shell').onsubmit=event=>{event.preventDefault();const input=$('command');if(input.value.trim())send(input.value.trim());input.value=''};
+  $('console').textContent=consoleText;
+  const missions=$('missions');
+  for(let i=0;i<total;i++){const node=document.createElement('div');node.className='mission'+((mask&(1<<i))?' done':'');node.textContent=`M${String(i+1).padStart(2,'0')}`;missions.append(node)}
+}
+
+async function send(command){
+  try{const response=await fetch(`${API}/badges/${encodeURIComponent(selected)}/command`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({command})});if(!response.ok)throw new Error(await response.text());if(command==='clear'){consoleText='';const output=$('console');if(output)output.textContent=''}}
+  catch(error){alert(`COMMAND FAILED: ${error.message}`)}
+}
+
+async function loadProblem(){
+  const index=$('problem-index').value;
+  try{
+    const response=await fetch(`${API}/badges/${encodeURIComponent(selected)}/problems/${index}`);
+    if(!response.ok)throw new Error(await response.text());
+    const problem=await response.json();
+    $('problem-type').value=problem.type;$('problem-title').value=problem.title;$('problem-prompt').value=problem.prompt;$('problem-answer').value=problem.answer;
+    document.querySelectorAll('.problem-option').forEach((input,i)=>input.value=problem.options[i]||'');updateEditorType();
+  }catch(error){alert(`LOAD FAILED: ${error.message}`)}
+}
+
+function updateEditorType(){$('answer-note').textContent=$('problem-type').value==='choice'?'correct option number (1-4)':'FLAG text'}
+function openEditor(){$('editor').showModal();loadProblem()}
+$('problem-index').onchange=loadProblem;
+$('problem-type').onchange=updateEditorType;
+$('editor-close').onclick=()=>$('editor').close();
+$('editor-form').onsubmit=async event=>{
+  event.preventDefault();
+  const index=$('problem-index').value,problem={type:$('problem-type').value,title:$('problem-title').value,prompt:$('problem-prompt').value,answer:$('problem-answer').value,options:[...document.querySelectorAll('.problem-option')].map(input=>input.value)};
+  try{const response=await fetch(`${API}/badges/${encodeURIComponent(selected)}/problems/${index}`,{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify(problem)});if(!response.ok)throw new Error(await response.text());$('editor').close();await loadBadges()}
+  catch(error){alert(`SAVE FAILED: ${error.message}`)}
+};
+
+async function loadBadges(){
+  try{const response=await fetch(`${API}/badges`);if(!response.ok)throw new Error();badges=await response.json();$('bridge').textContent='BLE BRIDGE: ONLINE';if(selected&&!badges.some(item=>item.id===selected))selected='';renderList();renderDetail()}
+  catch{$('bridge').textContent='BLE BRIDGE: OFFLINE'}
+}
+
+async function loadConsole(){
+  if(!selected)return;
+  try{const response=await fetch(`${API}/badges/${encodeURIComponent(selected)}/console?after=${consoleAfter}`),data=await response.json();for(const line of data.lines){consoleText+=`[${line.at}] ${line.text}\n`}consoleAfter=data.last;const output=$('console');if(!output)return;output.textContent=consoleText;output.scrollTop=output.scrollHeight}catch{}
+}
+
+function escapeHtml(value){return String(value).replace(/[&<>"']/g,char=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]))}
+setInterval(loadBadges,1500);setInterval(loadConsole,700);loadBadges();
+</script>
+</html>
