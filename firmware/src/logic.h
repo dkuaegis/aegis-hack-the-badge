@@ -23,3 +23,8 @@ constexpr bool hiddenAccessMatched(bool challenge1Low, bool challenge2Low) {
   return !challenge1Low && challenge2Low;
 }
 
+constexpr bool flappyCollision(float birdY, float pipeX, int gapY) {
+  return birdY <= 0 || birdY + 6 >= 64 ||
+         (pipeX < 35 && pipeX + 11 > 28 &&
+          (birdY < gapY - 13 || birdY + 6 > gapY + 13));
+}

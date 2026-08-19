@@ -1,6 +1,7 @@
 .DS_Store
 __pycache__/
 *.py[cod]
+.venv/
 
 # KiCad local state and transient backups
 *.kicad_prl

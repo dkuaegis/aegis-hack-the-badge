@@ -104,9 +104,6 @@
       "left": -345.6,
       "attrs": { "color": "red", "label": "SHORT C0-C1 (wrong)", "key": "J", "bounce": "0" }
     },
-    { "type": "wokwi-resistor", "id": "rChal0", "top": 86.4, "left": -211.2, "attrs": { "value": "1000" } },
-    { "type": "wokwi-resistor", "id": "rChal1", "top": 240, "left": -211.2, "attrs": { "value": "1000" } },
-    { "type": "wokwi-resistor", "id": "rChal2", "top": 163.2, "left": -211.2, "attrs": { "value": "1000" } },
     { "type": "wokwi-resistor", "id": "rSda", "top": -134.4, "left": -105.6, "rotate": 90, "attrs": { "value": "10000" } },
     { "type": "wokwi-resistor", "id": "rScl", "top": -134.4, "left": -48, "rotate": 90, "attrs": { "value": "10000" } }
   ],
@@ -146,13 +143,10 @@
     [ "esp:18", "buzzer:2", "orange", [] ],
     [ "buzzer:1", "esp:GND.1", "black", [] ],
 
-    [ "esp:6", "rChal0:1", "purple", [] ],
-    [ "rChal0:2", "shortC02:1.l", "purple", [] ],
-    [ "rChal0:2", "shortC01:1.l", "purple", [] ],
-    [ "shortC01:2.l", "rChal1:2", "red", [] ],
-    [ "rChal1:1", "esp:7", "red", [] ],
-    [ "shortC02:2.l", "rChal2:2", "green", [] ],
-    [ "rChal2:1", "esp:8", "green", [] ]
+    [ "esp:GND.1", "shortC02:1.l", "black", [] ],
+    [ "esp:GND.1", "shortC01:1.l", "black", [] ],
+    [ "shortC01:2.l", "esp:7", "red", [] ],
+    [ "shortC02:2.l", "esp:8", "green", [] ]
   ],
   "serialMonitor": {
     "display": "always",
