@@ -64,10 +64,83 @@ hardware/releases/rev3/jlcpcb/        제작 파일, 조립 파일, preview, 검
 archive/                              이전 설계/제작 이력
 tools/                                문서 생성 보조 스크립트
 firmware/                             ESP32-S3 문제/UI/관리자 펌웨어
+admin/                                Python BLE 브리지와 로컬 웹 대시보드
 ```
 
 펌웨어 빌드, 문제 교체, Serial 명령과 무선 관리자 사용법은
 [`firmware/README.md`](firmware/README.md)를 참고하세요.
+브리지 설치, OS별 실행법과 운영 안내는
+[`admin/README.md`](admin/README.md)를 참고하세요.
+
+## 소프트웨어 구조
+
+참가자 USB Serial과 관리자 BLE 셸은 각자의 입력 상태를 따로 유지합니다.
+관리자 PC에서는 하나의 Python 프로세스가 BLE Central, HTTP API,
+정적 대시보드를 모두 제공합니다. 인터넷과 공유기는 필요하지 않고,
+브라우저는 관리자 PC의 `127.0.0.1` 주소로만 접속합니다.
+
+| 코드 | 역할 |
+| --- | --- |
+| `firmware/src/main.cpp` | 메인 루프, OLED UI, 버튼·LED, USB/BLE 셸, 미니게임, challenge pad 처리 |
+| `firmware/src/problems.h` | 1~4번 기본 문제, 문제 크기 제한, 미니게임 보상 문구 |
+| `firmware/src/pins.h` | Rev.3 PCB의 GPIO 매핑 |
+| `firmware/src/logic.h` | 상태 비트와 challenge pad 판정 로직 |
+| `admin/bridge.py` | 배지 탐색·인증·연결, HTTP API, 대시보드 서빙 |
+| `admin/dashboard/index.html` | 배지별 상태, 관리자 셸, 리셋·재부팅·문제 편집 UI |
+| `admin/start.py` | 가상환경 생성, pip 의존성 확인·설치, 자가 검사, 서버 실행 |
+
+## 참가자 사용 설명서
+
+1. 배지를 USB로 PC에 연결하고 Serial 터미널을 `115200 baud`로 엽니다.
+2. `aegis`를 입력한 뒤 `1`~`4`로 문제를 선택합니다.
+3. 문제 본문은 Serial에서, 보기와 예시는 OLED에서 확인합니다.
+4. 선택형은 정답 번호를, FLAG형은 FLAG 문자열을 Serial에 입력합니다.
+5. 해결한 문제는 상태 LED와 OLED `STATUS`에 반영됩니다.
+
+Serial 명령:
+
+| 명령 | 기능 |
+| --- | --- |
+| `1`~`4` | 문제 선택 |
+| `hint` | 선택한 문제의 OLED 보기/예시 재표시 |
+| `exit` | 현재 문제 나가기 |
+| `status` | 문제 풀이 상태 표시 |
+| `help` | 사용 가능한 명령 표시 |
+| `clear` | Serial 터미널 화면 정리 |
+| `reset` | 풀이 상태 초기화 |
+| `aegis` | 시작 배너 재표시 |
+
+OLED 하단의 `LEFT`, `OK`, `RIGHT` 버튼으로 메뉴 이동과 Flappy Hacker를
+조작합니다. 미니게임에서 목표 점수를 넘기면 OLED에 추가 힌트가
+표시됩니다.
+
+## 관리자 사용 설명서
+
+Python 3.10 이상과 Bluetooth LE가 가능한 PC에서 해당 OS의 스크립트를
+실행합니다. 첫 실행 시 `admin/.venv`를 만들고 필요한 pip 패키지를
+자동 설치한 뒤 브리지를 시작합니다.
+
+```bash
+# macOS
+./admin/start-macos.sh
+
+# Linux
+./admin/start-linux.sh
+```
+
+Windows에서는 터미널에서 `admin\start-windows.bat`을 실행하거나 파일을
+더블 클릭합니다. 시작 후 브라우저에서 `http://127.0.0.1:8080`을 엽니다.
+
+대시보드에서 배지를 선택하면 다음 작업을 수행할 수 있습니다.
+
+- 1~4번과 Hidden Access의 풀이 상태 확인
+- 전체 풀이 상태 초기화와 배지 재부팅
+- USB 사용자 셸 기능을 포함한 BLE 관리자 셸 사용
+- 1~4번 문제의 FLAG/최대 4지선다 유형 조회·수정
+
+행사 전에는 펌웨어와 브리지의 `BADGE_ADMIN_KEY`를 동일한 운영용
+키로 교체하세요. 자세한 OS별 준비, 설정, 문제 편집 제한과 문제 해결은
+[`admin/README.md`](admin/README.md)에 정리했습니다.
 
 ## 제작 산출물
 

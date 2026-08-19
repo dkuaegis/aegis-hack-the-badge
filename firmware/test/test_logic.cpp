@@ -12,5 +12,9 @@ int main() {
   assert(!hiddenAccessMatched(true, true));
   assert(!hiddenAccessMatched(true, false));
   assert(hiddenAccessMatched(false, true));
+  assert(!flappyCollision(28, 100, 32));
+  assert(!flappyCollision(28, 30, 32));
+  assert(flappyCollision(0, 100, 32));
+  assert(flappyCollision(58, 100, 32));
+  assert(flappyCollision(4, 30, 32));
 }
-
