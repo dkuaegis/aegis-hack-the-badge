@@ -75,6 +75,48 @@ player-console/                       플레이어용 Web Serial 콘솔과 Docke
 플레이어용 브라우저 USB 콘솔의 Docker 실행과 HTTPS 배포 안내는
 [`player-console/README.md`](player-console/README.md)를 참고하세요.
 
+## 펌웨어 빠른 시작
+
+펌웨어 대상은 `ESP32-S3-WROOM-1-N8R8`이며 PlatformIO 환경 이름은
+`esp32-s3-rev3`입니다. 데이터 통신이 가능한 USB-C 케이블로 배지를 연결한
+뒤 저장소 루트에서 다음 명령을 실행합니다.
+
+```bash
+cd firmware
+pio run
+pio device list
+pio run -t upload
+pio device monitor
+```
+
+`pio run`은 첫 실행 시 ESP32 플랫폼, Arduino framework와 U8g2 의존성을
+자동으로 내려받아 빌드합니다. Serial monitor 속도는 `platformio.ini`에
+`115200`으로 설정되어 있습니다. 포트 자동 선택이 실패하면 OS에서 확인한
+포트를 직접 지정합니다.
+
+```bash
+# Windows 예시
+pio run -t upload --upload-port COM5
+pio device monitor --port COM5
+
+# macOS 예시
+pio run -t upload --upload-port /dev/cu.usbmodemXXXX
+pio device monitor --port /dev/cu.usbmodemXXXX
+
+# Linux 예시
+pio run -t upload --upload-port /dev/ttyACM0
+pio device monitor --port /dev/ttyACM0
+```
+
+업로드 포트가 나타나지 않으면 USB 케이블이 충전 전용인지 먼저 확인하고,
+`BOOT` 버튼을 누른 상태에서 `EN`을 눌렀다 놓은 뒤 `BOOT`를 놓아 ROM 다운로드
+모드로 진입한 다음 다시 업로드합니다. 일반 업로드는 NVS를 지우지 않으므로
+기존 풀이 상태와 관리자 페이지에서 편집한 문제는 유지됩니다.
+
+PlatformIO 설치, 완전 초기화, BOOT 복구, 업로드 후 점검, 핀 매핑과 보안
+주의사항은 [`firmware/README.md`](firmware/README.md)의 상세 절차를
+참고하세요.
+
 ## 소프트웨어 구조
 
 참가자 USB Serial과 관리자 BLE 셸은 각자의 입력 상태를 따로 유지합니다.
