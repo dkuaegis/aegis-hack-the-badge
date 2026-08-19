@@ -69,7 +69,7 @@ struct BleCommand {
 void bleSendLine(const char *line);
 
 enum class Screen : uint8_t {
-  Home, Problems, Hint, Status, Game, Complete
+  Home, Problems, Hint, Status, Game, HiddenGranted, Complete
 };
 enum class GamePhase : uint8_t { Intro, Running, Over };
 Screen screen = Screen::Home;
@@ -325,17 +325,44 @@ void drawHint(uint8_t index) {
 
 void drawStatusFrame() {
   char total[8];
-  snprintf(total, sizeof(total), "%u / %u", serialSolvedCount(),
-           static_cast<unsigned>(SERIAL_PROBLEM_COUNT));
+  const bool hiddenSolved = isSolved(solvedMask, HIDDEN_ACCESS_INDEX);
+  snprintf(total, sizeof(total), "%u / %u",
+           hiddenSolved ? solvedCount() : serialSolvedCount(),
+           static_cast<unsigned>(hiddenSolved ? TOTAL_CHALLENGE_COUNT
+                                              : SERIAL_PROBLEM_COUNT));
   header("BADGE STATUS");
   oled.setFont(u8g2_font_9x15B_tf);
-  centered(29, total);
+  centered(hiddenSolved ? 25 : 29, total);
   oled.setFont(u8g2_font_6x10_tf);
-  centered(45, "SERIAL MISSIONS");
+  if (hiddenSolved) {
+    char serial[16];
+    snprintf(serial, sizeof(serial), "SERIAL %u / %u", serialSolvedCount(),
+             static_cast<unsigned>(SERIAL_PROBLEM_COUNT));
+    centered(38, serial);
+    oled.setFont(u8g2_font_5x7_tf);
+    inverseLabel(43, 10, "HIDDEN ACCESS CLEAR");
+  } else {
+    centered(45, "SERIAL MISSIONS");
+  }
   footer("HOLD OK: BACK");
 }
 
 void drawStatus() { render(drawStatusFrame); }
+
+void drawHiddenGrantedFrame() {
+  oled.setFont(u8g2_font_6x10_tf);
+  centered(14, "HIDDEN ACCESS");
+  oled.setFont(u8g2_font_9x18B_tf);
+  oled.drawBox(24, 18, 80, 22);
+  oled.setDrawColor(0);
+  centered(36, "GRANTED");
+  oled.setDrawColor(1);
+  oled.setFont(u8g2_font_6x10_tf);
+  centered(50, "CHALLENGE 05 CLEAR");
+  footer("OK: STATUS");
+}
+
+void drawHiddenGranted() { render(drawHiddenGrantedFrame); }
 
 void resetProgress() {
   solvedMask = 0;
@@ -361,7 +388,7 @@ void printBanner() {
   Serial.println();
   Serial.println(F("=== Aegis Hack The Badge / Rev.3 ==="));
   Serial.println(F("문제 본문: Serial / 보기와 예시: OLED"));
-  Serial.println(F("명령: 1-4, status, help, hint, exit, clear, reset, aegis"));
+  Serial.println(F("명령: 1-4, status, help, hint, exit, clear, aegis"));
 }
 
 void printStatus() {
@@ -441,11 +468,6 @@ void handleSerialLine(char *input) {
     Serial.println(F("먼저 1-4 중 문제를 선택하세요."));
   } else if (strcmp(input, "clear") == 0) {
     for (uint8_t i = 0; i < 30; ++i) Serial.println();
-  } else if (strcmp(input, "reset") == 0) {
-    resetProgress();
-    screen = Screen::Home;
-    drawHome();
-    Serial.println(F("진행 상태를 초기화했습니다."));
   } else if (strcmp(input, START_COMMAND) == 0) {
     printBanner();
   } else {
@@ -635,6 +657,9 @@ void updateUi(uint32_t now) {
              ok.longPressed) {
     screen = Screen::Home;
     drawHome();
+  } else if (screen == Screen::HiddenGranted && ok.pressed) {
+    screen = Screen::Status;
+    drawStatus();
   } else if (screen == Screen::Complete && ok.pressed) {
     screen = Screen::Status;
     drawStatus();
@@ -667,6 +692,7 @@ const char *screenName() {
     case Screen::Hint: return "hint";
     case Screen::Status: return "status";
     case Screen::Game: return "game";
+    case Screen::HiddenGranted: return "hidden-granted";
     case Screen::Complete: return "complete";
   }
   return "unknown";
@@ -953,19 +979,16 @@ void handleBleShell(char *command) {
                     : "Check OLED and submit FLAG or exit.");
     beep(659);
   } else if (strcmp(command, "help") == 0) {
-    bleSendLine("USER: 1-4 hint exit status clear reset aegis");
-    bleSendLine("ADMIN: reboot / problem get 1-4 / dashboard editor");
+    bleSendLine("USER: 1-4 hint exit status clear aegis");
+    bleSendLine("ADMIN: reset / reboot / problem get 1-4 / dashboard editor");
   } else if (strcmp(command, "hint") == 0) {
     bleSendLine("Select problem 1-4 first.");
   } else if (strcmp(command, "clear") == 0) {
     bleSendLine("CLEAR");
-  } else if (strcmp(command, "reset") == 0) {
-    resetProgress();
-    bleSendLine("OK reset");
   } else if (strcmp(command, START_COMMAND) == 0) {
     bleSendLine("=== Aegis Hack The Badge / Rev.3 ===");
     bleSendLine("Problems: Serial / choices and examples: OLED");
-    bleSendLine("Commands: 1-4 status help hint exit clear reset aegis");
+    bleSendLine("Commands: 1-4 status help hint exit clear aegis");
   } else {
     bleSendLine("ERR unknown command; enter help");
   }
@@ -1100,6 +1123,9 @@ void loop() {
   updateUi(now);
   // Active OLED page와 무관한 전역 하드웨어 이벤트로 감지한다.
   if (updateHiddenAccess(now)) {
+    screen = Screen::HiddenGranted;
+    drawHiddenGranted();
+    beep(1047, 130);
     delay(1);
     return;
   }

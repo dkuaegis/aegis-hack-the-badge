@@ -65,12 +65,15 @@ archive/                              이전 설계/제작 이력
 tools/                                문서 생성 보조 스크립트
 firmware/                             ESP32-S3 문제/UI/관리자 펌웨어
 admin/                                Python BLE 브리지와 로컬 웹 대시보드
+player-console/                       플레이어용 Web Serial 콘솔과 Docker 배포 구성
 ```
 
 펌웨어 빌드, 문제 교체, Serial 명령과 무선 관리자 사용법은
 [`firmware/README.md`](firmware/README.md)를 참고하세요.
 브리지 설치, OS별 실행법과 운영 안내는
 [`admin/README.md`](admin/README.md)를 참고하세요.
+플레이어용 브라우저 USB 콘솔의 Docker 실행과 HTTPS 배포 안내는
+[`player-console/README.md`](player-console/README.md)를 참고하세요.
 
 ## 소프트웨어 구조
 
@@ -88,6 +91,7 @@ admin/                                Python BLE 브리지와 로컬 웹 대시�
 | `admin/bridge.py` | 배지 탐색·인증·연결, HTTP API, 대시보드 서빙 |
 | `admin/dashboard/index.html` | 배지별 상태, 관리자 셸, 리셋·재부팅·문제 편집 UI |
 | `admin/start.py` | 가상환경 생성, pip 의존성 확인·설치, 자가 검사, 서버 실행 |
+| `player-console/` | 관리자 기능 없이 브라우저와 USB CDC를 직접 연결하는 정적 웹 콘솔 |
 
 ## 참가자 사용 설명서
 
@@ -107,7 +111,6 @@ Serial 명령:
 | `status` | 문제 풀이 상태 표시 |
 | `help` | 사용 가능한 명령 표시 |
 | `clear` | Serial 터미널 화면 정리 |
-| `reset` | 풀이 상태 초기화 |
 | `aegis` | 시작 배너 재표시 |
 
 OLED 하단의 `LEFT`, `OK`, `RIGHT` 버튼으로 메뉴 이동과 Flappy Hacker를
@@ -134,9 +137,9 @@ Windows에서는 터미널에서 `admin\start-windows.bat`을 실행하거나 �
 대시보드에서 배지를 선택하면 다음 작업을 수행할 수 있습니다.
 
 - 1~4번과 Hidden Access의 풀이 상태 확인
-- 전체 풀이 상태 초기화와 배지 재부팅
+- 개별 또는 현재 연결된 전체 배지의 풀이 상태 초기화·재부팅
 - USB 사용자 셸 기능을 포함한 BLE 관리자 셸 사용
-- 1~4번 문제의 FLAG/최대 4지선다 유형 조회·수정
+- 1~4번 문제의 FLAG/최대 4지선다 유형 개별·일괄 수정
 
 행사 전에는 펌웨어와 브리지의 `BADGE_ADMIN_KEY`를 동일한 운영용
 키로 교체하세요. 자세한 OS별 준비, 설정, 문제 편집 제한과 문제 해결은

@@ -69,6 +69,9 @@ http://127.0.0.1:8080
 | `RESET SOLVED` | 해당 배지의 모든 풀이 상태 초기화 |
 | `REBOOT` | 해당 배지 재부팅 |
 | `EDIT PROBLEMS` | 1~4번 문제 조회·수정 |
+| `EDIT ALL ONLINE` | 현재 인증·연결된 모든 배지의 동일한 문제 일괄 수정 |
+| `RESET ALL ONLINE` | 현재 인증·연결된 모든 배지의 풀이 상태 초기화 |
+| `REBOOT ALL ONLINE` | 현재 인증·연결된 모든 배지 재부팅 |
 | 하단 터미널 | BLE 관리자 셸 |
 
 대시보드의 상태 갱신은 브리지 메모리의 최신 상태를 조회하며,
@@ -90,12 +93,13 @@ USB Serial 사용자 셸과 BLE 관리자 셸은 입력 상태를 서로 따로 
 
 ## 문제 편집
 
-`EDIT PROBLEMS`에서 1~4번만 수정할 수 있으며 Hidden Access는 편집
-대상이 아닙니다. 저장한 문제는 배지 NVS에 유지되고, 수정된 문제의
-기존 풀이 상태만 초기화됩니다.
+`EDIT PROBLEMS`는 선택한 배지만, `EDIT ALL ONLINE`은 현재 인증·연결된
+모든 배지를 동일한 내용으로 수정합니다. 두 모드 모두 1~4번만
+수정할 수 있으며 Hidden Access는 편집 대상이 아닙니다. 저장한 문제는
+배지 NVS에 유지되고, 수정된 문제의 기존 풀이 상태만 초기화됩니다.
 
 - 선택형: ASCII 보기 2~4개와 정답 번호 1~4
-- FLAG형: FLAG 문자열과 선택적 OLED 참고 문구 0~4개
+- FLAG형: FLAG 문자열과 OLED에 표시할 `보기` 문구 0~4개
 - 제한: 제목 23 bytes, 문제 본문 255 bytes, 정답 79 bytes,
   OLED 보기/문구 각 23 bytes
 - OLED 폰트 제약으로 제목과 OLED 보기/문구는 ASCII만 허용

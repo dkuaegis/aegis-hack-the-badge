@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#050806">
+  <title>AEGIS // Hack The Badge Console</title>
+  <link rel="stylesheet" href="styles.css">
+  <script src="app.js" defer></script>
+</head>
+<body>
+  <main>
+    <header>
+      <b>AEGIS // HACK THE BADGE</b>
+      <span id="browser-status">WEB SERIAL: CHECKING</span>
+    </header>
+
+    <div class="layout">
+      <aside class="sidebar">
+        <h1>// USB DEVICE</h1>
+        <div class="device-card">
+          <div class="device-top">
+            <b id="device-name">NO DEVICE</b>
+            <span id="connection-status" class="offline">OFFLINE</span>
+          </div>
+          <p id="device-info"></p>
+        </div>
+        <button id="connect" class="wide" type="button">CONNECT USB</button>
+
+        <section class="guide" aria-labelledby="guide-title">
+          <h2 id="guide-title">// QUICK START</h2>
+          <ol>
+            <li>배지를 USB로 연결합니다.</li>
+            <li><b>CONNECT USB</b>를 누릅니다.</li>
+            <li>목록에서 배지의 Serial 포트를 선택합니다.</li>
+            <li><code>aegis</code> 또는 <code>1</code>~<code>4</code>를 입력합니다.</li>
+          </ol>
+        </section>
+      </aside>
+
+      <section class="content">
+        <div class="toolbar">
+          <button id="clear" type="button">CLEAR DISPLAY</button>
+        </div>
+
+        <div class="terminal">
+          <div class="terminal-head"><span>player@hack-the-badge:~$</span><span id="traffic">RX 0 B // TX 0 B</span></div>
+          <pre id="output" tabindex="0" aria-label="배지 Serial 출력"></pre>
+          <form id="shell">
+            <label for="command">&gt;</label>
+            <input id="command" autocomplete="off" autocapitalize="off" spellcheck="false" maxlength="191" placeholder="CONNECT USB FIRST" disabled>
+            <button id="send" type="submit" disabled>SEND</button>
+          </form>
+        </div>
+      </section>
+    </div>
+  </main>
+</body>
+</html>
