@@ -21,6 +21,7 @@ ADMIN_KEY = os.environ.get("BADGE_ADMIN_KEY", DEFAULT_ADMIN_KEY)
 BLE_COMMAND_MAX = 767
 PROBLEM_LIMITS = {"title": 23, "prompt": 255, "answer": 79, "option": 23}
 DASHBOARD_PATH = Path(__file__).with_name("dashboard") / "index.html"
+FAVICON_PATH = DASHBOARD_PATH.with_name("favicon.svg")
 
 
 def auth_tag(key, badge_id, challenge):
@@ -122,6 +123,11 @@ def self_test():
     assert command.startswith("problem set\t1\tC\t2\t")
     response = "PROBLEM\t" + "\t".join(command.split("\t")[1:])
     assert parse_problem_line(response) == (1, sample)
+    flag = {"type": "flag", "title": "F", "prompt": "Submit", "answer": "Aegis{1}",
+            "options": ["OLED view 1", "OLED view 2"]}
+    flag_command = problem_command(2, flag)
+    flag_response = "PROBLEM\t" + "\t".join(flag_command.split("\t")[1:])
+    assert parse_problem_line(flag_response) == (2, flag)
     assert b"".join(command_chunks("Aegis{긴_FLAG_1234567890}")) == "Aegis{긴_FLAG_1234567890}\n".encode()
     try:
         normalize_problem({**sample, "answer": "3"})
@@ -295,8 +301,17 @@ def find_badge(badge_id):
     return next((badge for badge in sessions.values() if badge.id == badge_id), None)
 
 
+def ready_badges():
+    return [badge for badge in sessions.values()
+            if badge.online and badge.authenticated]
+
+
 async def dashboard_page(_request):
     return web.FileResponse(DASHBOARD_PATH)
+
+
+async def favicon(_request):
+    return web.FileResponse(FAVICON_PATH)
 
 
 async def badges_api(_request):
@@ -330,6 +345,33 @@ async def command_api(request):
     except RuntimeError as error:
         raise web.HTTPConflict(text=str(error)) from error
     return web.json_response({"ok": True})
+
+
+async def bulk_command_api(request):
+    try:
+        command = (await request.json())["command"].strip()
+        if command not in {"reset", "reboot"}:
+            raise ValueError("bulk command must be reset or reboot")
+    except (KeyError, TypeError, ValueError) as error:
+        raise web.HTTPBadRequest(text=str(error)) from error
+    badges = ready_badges()
+    if not badges:
+        raise web.HTTPConflict(text="no authenticated badges are online")
+
+    async def send(badge):
+        await badge.send_raw(command)
+        badge.log(f"> {command} [ALL ONLINE]")
+
+    results = await asyncio.gather(*(send(badge) for badge in badges),
+                                   return_exceptions=True)
+    failures = {badge.id: str(result) for badge, result in zip(badges, results)
+                if isinstance(result, Exception)}
+    return web.json_response({
+        "ok": not failures,
+        "succeeded": len(badges) - len(failures),
+        "total": len(badges),
+        "failures": failures,
+    })
 
 
 async def console_api(request):
@@ -370,10 +412,39 @@ async def problem_api(request):
     return web.json_response(problem)
 
 
+async def bulk_problem_api(request):
+    try:
+        index = int(request.match_info["index"])
+        if not 1 <= index <= 4:
+            raise ValueError("only problems 1-4 are editable")
+        command = problem_command(index, await request.json())
+    except (TypeError, KeyError, ValueError, UnicodeEncodeError) as error:
+        raise web.HTTPBadRequest(text=str(error)) from error
+    badges = ready_badges()
+    if not badges:
+        raise web.HTTPConflict(text="no authenticated badges are online")
+
+    results = await asyncio.gather(
+        *(badge.request_problem(index, command) for badge in badges),
+        return_exceptions=True,
+    )
+    failures = {badge.id: str(result) for badge, result in zip(badges, results)
+                if isinstance(result, Exception)}
+    return web.json_response({
+        "ok": not failures,
+        "updated": len(badges) - len(failures),
+        "total": len(badges),
+        "failures": failures,
+    })
+
+
 def create_app():
     app = web.Application()
     app.router.add_get("/", dashboard_page)
+    app.router.add_get("/favicon.svg", favicon)
     app.router.add_get("/api/badges", badges_api)
+    app.router.add_post("/api/badges/command", bulk_command_api)
+    app.router.add_put("/api/badges/problems/{index}", bulk_problem_api)
     app.router.add_post("/api/badges/{badge_id}/command", command_api)
     app.router.add_get("/api/badges/{badge_id}/console", console_api)
     app.router.add_get("/api/badges/{badge_id}/problems/{index}", problem_api)
