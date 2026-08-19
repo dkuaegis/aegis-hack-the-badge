@@ -1,0 +1,6 @@
+services:
+  console:
+    build: .
+    ports:
+      - "8081:8080"
+    restart: unless-stopped

@@ -58,8 +58,10 @@ Hidden Access 힌트는 Flappy Hacker에서 5점을 달성했을 때만 OLED에 
 문구는 같은 파일의 `MINIGAME_REWARD_LINE_1`, 기준 점수는 `main.cpp`의
 `FLAPPY_REWARD_SCORE`에서 변경할 수 있습니다.
 
-OLED 화면 흐름은 `Boot → Home → Missions → Intel → Status`이며, 사용자 화면의
-진행도와 상태에는 1~4번 Serial 문제만 표시합니다. Home에서
+OLED 화면 흐름은 `Boot → Home → Missions → Intel → Status`입니다.
+Hidden Access 성공 전에는 1~4번 Serial 문제만 표시하고, 성공 순간에
+`HIDDEN ACCESS / GRANTED`와 성공음을 출력한 뒤 Status에
+`HIDDEN ACCESS CLEAR`를 추가합니다. Home에서
 `LEFT/RIGHT`로 메뉴를 고르고 `OK`로 진입합니다. Intel과 Status는 `OK`를
 길게 눌러 Home으로 돌아갑니다.
 
@@ -72,7 +74,6 @@ OLED 화면 흐름은 `Boot → Home → Missions → Intel → Status`이며, �
 | `exit` | 문제 풀이 모드 종료 |
 | `status` | 전체 풀이 상태 |
 | `help` | 사용법 |
-| `reset` | 풀이 상태 초기화 |
 | `aegis` | 시작 배너 다시 표시 |
 
 ## BLE 관리자 셸
