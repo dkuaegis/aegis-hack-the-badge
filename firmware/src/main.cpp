@@ -22,6 +22,22 @@ constexpr uint32_t BUTTON_DEBOUNCE_MS = 30;
 constexpr uint32_t HIDDEN_HOLD_MS = 1200;
 constexpr uint8_t FLAPPY_REWARD_SCORE = 5;
 constexpr uint32_t FLAPPY_FRAME_MS = 40;
+constexpr uint8_t HOME_MENU_COUNT = 4;
+constexpr uint32_t FIREWALL_FRAME_MS = 30;
+constexpr uint8_t FIREWALL_COLS = 8;
+constexpr uint8_t FIREWALL_ROWS = 3;
+constexpr int16_t FIREWALL_BRICK_X = 4;
+constexpr int16_t FIREWALL_BRICK_Y = 10;
+constexpr int16_t FIREWALL_BRICK_W = 13;
+constexpr int16_t FIREWALL_BRICK_H = 5;
+constexpr int16_t FIREWALL_BRICK_GAP_X = 2;
+constexpr int16_t FIREWALL_BRICK_GAP_Y = 2;
+constexpr int16_t FIREWALL_PADDLE_Y = 59;
+constexpr int16_t FIREWALL_PADDLE_W = 24;
+constexpr int16_t FIREWALL_PADDLE_H = 3;
+constexpr int16_t FIREWALL_BALL_SIZE = 3;
+constexpr float FIREWALL_PADDLE_SPEED = 85.0f;
+constexpr uint32_t TROPHY_LED_STEP_MS = 120;
 constexpr uint32_t LONG_PRESS_MS = 700;
 constexpr char START_COMMAND[] = "aegis";
 constexpr char BLE_SERVICE_UUID[] = "6f8d0001-6a4b-4c52-9f2a-8f0f5d9b0001";
@@ -45,6 +61,7 @@ int8_t displayedProblem = -1;
 uint8_t menuItem = 0;
 uint8_t browserProblem = 0;
 uint32_t hiddenSince = 0;
+uint32_t hiddenVictoryAt = 0;
 char serialLine[192] = {};
 uint8_t serialLength = 0;
 char badgeId[19] = {};
@@ -105,9 +122,13 @@ void playerPrintf(PlayerTarget target, const char *format, ...) {
 }
 
 enum class Screen : uint8_t {
-  Home, Problems, Hint, Status, Game, HiddenGranted, Complete
+  Home, Problems, Hint, Status, Game, FirewallGame, HiddenGranted, Complete
 };
 enum class GamePhase : uint8_t { Intro, Running, Over };
+enum class FirewallPhase : uint8_t { Intro, Running, Over, Clear };
+enum class VictoryPhase : uint8_t {
+  Idle, FlashOn1, FlashOff1, FlashOn2, Fanfare, TrophyIdle
+};
 Screen screen = Screen::Home;
 GamePhase gamePhase = GamePhase::Intro;
 
@@ -120,6 +141,42 @@ struct FlappyState {
   bool passed = false;
   uint32_t lastFrame = 0;
 } game;
+
+struct FirewallState {
+  FirewallPhase phase = FirewallPhase::Intro;
+  float ballX = 64;
+  float ballY = 46;
+  float ballVX = 42;
+  float ballVY = -46;
+  float paddleX = 52;
+  bool bricks[FIREWALL_ROWS][FIREWALL_COLS] = {};
+  uint8_t remaining = 0;
+  uint32_t lastFrame = 0;
+} firewall;
+
+struct VictoryNote {
+  uint16_t frequency;
+  uint16_t duration;
+  uint16_t gap;
+};
+
+constexpr VictoryNote VICTORY_MELODY[] = {
+    {523, 90, 25},  {659, 90, 25},  {784, 90, 25},
+    {1047, 180, 40}, {784, 90, 25}, {1047, 90, 25},
+    {1319, 140, 30}, {1568, 360, 0},
+};
+
+struct VictoryState {
+  VictoryPhase phase = VictoryPhase::Idle;
+  bool active = false;
+  bool ledSweep = false;
+  bool notePlaying = false;
+  uint8_t melodyIndex = 0;
+  uint32_t nextAt = 0;
+  int8_t ledPosition = 0;
+  int8_t ledDirection = 1;
+  uint32_t ledNextAt = 0;
+} victory;
 
 struct Button {
   uint8_t pin;
@@ -217,15 +274,25 @@ bool allSolved() {
          solvedMaskFor(TOTAL_CHALLENGE_COUNT);
 }
 
-void updateLeds() {
+void updateProgressLeds() {
   for (uint8_t i = 0; i < TOTAL_CHALLENGE_COUNT; ++i) {
     digitalWrite(Pins::STATUS_LEDS[i], isSolved(solvedMask, i) ? HIGH : LOW);
   }
 }
 
+void setAllStatusLeds(bool on) {
+  for (uint8_t pin : Pins::STATUS_LEDS) digitalWrite(pin, on ? HIGH : LOW);
+}
+
+void stopVictoryMode() {
+  noTone(Pins::BUZZER);
+  victory = VictoryState{};
+  hiddenVictoryAt = 0;
+}
+
 void saveMask() {
   preferences.putUChar("solved", solvedMask);
-  updateLeds();
+  updateProgressLeds();
   bleStatusDirty = true;
 }
 
@@ -306,7 +373,8 @@ void drawBootFrame() {
 void drawBoot() { render(drawBootFrame); }
 
 void drawHomeFrame() {
-  static const char *const items[] = {"MISSIONS", "FLAPPY HACKER", "STATUS"};
+  static const char *const items[HOME_MENU_COUNT] = {
+      "MISSIONS", "FLAPPY HACKER", "FIREWALL BREAKER", "STATUS"};
   char progress[8];
   snprintf(progress, sizeof(progress), "%02u / %02u", serialSolvedCount(),
            static_cast<unsigned>(SERIAL_PROBLEM_COUNT));
@@ -448,6 +516,7 @@ void drawHiddenGrantedFrame() {
 void drawHiddenGranted() { render(drawHiddenGrantedFrame); }
 
 void resetProgress() {
+  stopVictoryMode();
   solvedMask = 0;
   saveMask();
   configureHiddenAccessPins();
@@ -459,15 +528,99 @@ void resetProgress() {
 }
 
 void drawCompleteFrame() {
-  oled.setFont(u8g2_font_6x10_tf);
-  centered(15, "ALL CLEAR");
-  inverseLabel(21, 17, "ACCESS ELEVATED");
-  oled.setFont(u8g2_font_6x10_tf);
-  centered(50, "AEGIS{PWNED}");
-  footer("OK: RECAP");
+  constexpr char trophy[] = "AEGIS{PWN3D!}";
+  oled.setFont(u8g2_font_5x7_tf);
+  centered(8, "Congratulations!");
+  oled.setFont(u8g2_font_9x15B_tf);
+  if (oled.getStrWidth(trophy) > 126) oled.setFont(u8g2_font_8x13B_tf);
+  centered(39, trophy);
+  oled.setFont(u8g2_font_4x6_tf);
+  centered(59, "You solved all problems XD");
 }
 
 void drawComplete() { render(drawCompleteFrame); }
+
+void printVictoryMessage() {
+  Serial.println(F("\n================================"));
+  Serial.println(F("   모든 문제를 해결했습니다!"));
+  Serial.println(F("================================\n"));
+  Serial.println(F("축하합니다!"));
+  Serial.println(F("AEGIS Hack The Badge의 모든 Challenge를 완료했습니다."));
+  Serial.println(F("\nAEGIS{PWN3D!}"));
+}
+
+void startVictorySequence(uint32_t now) {
+  resetPlayer(usbPlayer);
+  resetPlayer(blePlayer);
+  screen = Screen::Complete;
+  drawComplete();
+  printVictoryMessage();
+  victory = VictoryState{};
+  victory.active = true;
+  victory.phase = VictoryPhase::FlashOn1;
+  victory.nextAt = now + 250;
+  setAllStatusLeds(true);
+  bleStatusDirty = true;
+}
+
+void enterTrophyModeFromBoot(uint32_t now) {
+  stopVictoryMode();
+  screen = Screen::Complete;
+  drawComplete();
+  victory.phase = VictoryPhase::TrophyIdle;
+  victory.ledSweep = true;
+  victory.ledPosition = 0;
+  victory.ledDirection = 1;
+  victory.ledNextAt = now;
+  setAllStatusLeds(false);
+}
+
+void updateVictory(uint32_t now) {
+  if (!victory.active || static_cast<int32_t>(now - victory.nextAt) < 0) return;
+
+  if (victory.phase == VictoryPhase::FlashOn1) {
+    setAllStatusLeds(false);
+    victory.phase = VictoryPhase::FlashOff1;
+    victory.nextAt = now + 120;
+  } else if (victory.phase == VictoryPhase::FlashOff1) {
+    setAllStatusLeds(true);
+    victory.phase = VictoryPhase::FlashOn2;
+    victory.nextAt = now + 250;
+  } else if (victory.phase == VictoryPhase::FlashOn2) {
+    victory.phase = VictoryPhase::Fanfare;
+    victory.nextAt = now;
+  } else if (victory.phase == VictoryPhase::Fanfare) {
+    if (victory.notePlaying) {
+      noTone(Pins::BUZZER);
+      victory.notePlaying = false;
+      victory.nextAt = now + VICTORY_MELODY[victory.melodyIndex].gap;
+      ++victory.melodyIndex;
+    } else if (victory.melodyIndex <
+               sizeof(VICTORY_MELODY) / sizeof(VICTORY_MELODY[0])) {
+      const VictoryNote &note = VICTORY_MELODY[victory.melodyIndex];
+      tone(Pins::BUZZER, note.frequency, note.duration);
+      victory.notePlaying = true;
+      victory.nextAt = now + note.duration;
+    } else {
+      victory.active = false;
+      victory.ledSweep = true;
+      victory.phase = VictoryPhase::TrophyIdle;
+      victory.ledPosition = 0;
+      victory.ledDirection = 1;
+      victory.ledNextAt = now;
+    }
+  }
+}
+
+void updateTrophyLedSweep(uint32_t now) {
+  if (!victory.ledSweep || static_cast<int32_t>(now - victory.ledNextAt) < 0) return;
+  setAllStatusLeds(false);
+  digitalWrite(Pins::STATUS_LEDS[victory.ledPosition], HIGH);
+  if (victory.ledPosition == TOTAL_CHALLENGE_COUNT - 1) victory.ledDirection = -1;
+  else if (victory.ledPosition == 0) victory.ledDirection = 1;
+  victory.ledPosition += victory.ledDirection;
+  victory.ledNextAt = now + TROPHY_LED_STEP_MS;
+}
 
 void printBanner() {
   Serial.println();
@@ -527,6 +680,7 @@ void startProblem(PlayerTarget target, uint8_t index) {
 void showProblem(uint8_t index) { startProblem(PlayerTarget::Usb, index); }
 
 void finishProblem(PlayerTarget target, uint8_t index) {
+  const bool completedBefore = allSolved();
   const uint8_t next = markSolved(solvedMask, index);
   if (next != solvedMask) {
     solvedMask = next;
@@ -534,12 +688,14 @@ void finishProblem(PlayerTarget target, uint8_t index) {
   }
   playerPrintf(target, "정답입니다. 진행도: %u/%u", serialSolvedCount(),
                static_cast<unsigned>(SERIAL_PROBLEM_COUNT));
-  beep(1047, 130);
   resetPlayer(playerContext(target));
-  if (allSolved()) {
+  if (!completedBefore && allSolved()) {
+    startVictorySequence(millis());
+  } else if (allSolved()) {
     screen = Screen::Complete;
     drawComplete();
   } else {
+    beep(1047, 130);
     screen = Screen::Status;
     drawStatus();
   }
@@ -609,7 +765,6 @@ void handleLegacyAuth(PlayerTarget target, char *input) {
       playerLine(target, "AUTH SUCCESS");
       playerPrintf(target, "[REWARD FLAG] %s", problems[MISSION_LEGACY_AUTH].answer);
       drawLegacyAuthSuccess();
-      delay(650);
       finishProblem(target, MISSION_LEGACY_AUTH);
     }
   } else {
@@ -865,6 +1020,168 @@ void updateGame(uint32_t now) {
   drawGameRunning();
 }
 
+void resetFirewallBricks() {
+  for (uint8_t row = 0; row < FIREWALL_ROWS; ++row) {
+    for (uint8_t col = 0; col < FIREWALL_COLS; ++col) {
+      firewall.bricks[row][col] = true;
+    }
+  }
+  firewall.remaining = FIREWALL_ROWS * FIREWALL_COLS;
+}
+
+void drawFirewallIntroFrame() {
+  header("FIREWALL BREAKER");
+  oled.setFont(u8g2_font_6x10_tf);
+  centered(31, "PRESS OK");
+  oled.setFont(u8g2_font_5x7_tf);
+  centered(45, "DESTROY THE WALL");
+  footer("HOLD OK: EXIT");
+}
+
+void drawFirewallIntro() { render(drawFirewallIntroFrame); }
+
+void drawFirewallRunningFrame() {
+  for (uint8_t row = 0; row < FIREWALL_ROWS; ++row) {
+    for (uint8_t col = 0; col < FIREWALL_COLS; ++col) {
+      if (!firewall.bricks[row][col]) continue;
+      const int16_t x = FIREWALL_BRICK_X +
+                        col * (FIREWALL_BRICK_W + FIREWALL_BRICK_GAP_X);
+      const int16_t y = FIREWALL_BRICK_Y +
+                        row * (FIREWALL_BRICK_H + FIREWALL_BRICK_GAP_Y);
+      oled.drawBox(x, y, FIREWALL_BRICK_W, FIREWALL_BRICK_H);
+    }
+  }
+  oled.drawBox(static_cast<uint8_t>(firewall.ballX),
+               static_cast<uint8_t>(firewall.ballY),
+               FIREWALL_BALL_SIZE, FIREWALL_BALL_SIZE);
+  oled.drawBox(static_cast<uint8_t>(firewall.paddleX), FIREWALL_PADDLE_Y,
+               FIREWALL_PADDLE_W, FIREWALL_PADDLE_H);
+}
+
+void drawFirewallRunning() { render(drawFirewallRunningFrame); }
+
+void drawFirewallOverFrame() {
+  header("FIREWALL ACTIVE");
+  oled.setFont(u8g2_font_9x15B_tf);
+  centered(34, "ACCESS DENIED");
+  oled.setFont(u8g2_font_5x7_tf);
+  centered(49, "OK: RETRY");
+  footer("HOLD OK: EXIT");
+}
+
+void drawFirewallOver() { render(drawFirewallOverFrame); }
+
+void drawFirewallClearFrame() {
+  header("FIREWALL BREACHED");
+  oled.setFont(u8g2_font_9x15B_tf);
+  centered(34, "ACCESS OPEN");
+  oled.setFont(u8g2_font_5x7_tf);
+  centered(49, "OK: RETRY");
+  footer("HOLD OK: EXIT");
+}
+
+void drawFirewallClear() { render(drawFirewallClearFrame); }
+
+void enterFirewallGame() {
+  screen = Screen::FirewallGame;
+  firewall.phase = FirewallPhase::Intro;
+  drawFirewallIntro();
+}
+
+void startFirewallGame(uint32_t now) {
+  firewall.phase = FirewallPhase::Running;
+  firewall.ballX = 64;
+  firewall.ballY = 46;
+  firewall.ballVX = random(0, 2) ? 42 : -42;
+  firewall.ballVY = -46;
+  firewall.paddleX = (128 - FIREWALL_PADDLE_W) / 2.0f;
+  firewall.lastFrame = now;
+  resetFirewallBricks();
+  drawFirewallRunning();
+}
+
+void updateFirewallGame(uint32_t now) {
+  if (ok.longPressed) {
+    screen = Screen::Home;
+    drawHome();
+    return;
+  }
+  if (firewall.phase != FirewallPhase::Running) {
+    if (ok.pressed) startFirewallGame(now);
+    return;
+  }
+  if (now - firewall.lastFrame < FIREWALL_FRAME_MS) return;
+
+  const float dt = min<float>((now - firewall.lastFrame) / 1000.0f, 0.06f);
+  firewall.lastFrame = now;
+  if (left.stable) firewall.paddleX -= FIREWALL_PADDLE_SPEED * dt;
+  if (right.stable) firewall.paddleX += FIREWALL_PADDLE_SPEED * dt;
+  firewall.paddleX = max<float>(0, min<float>(128 - FIREWALL_PADDLE_W,
+                                              firewall.paddleX));
+
+  const float previousY = firewall.ballY;
+  firewall.ballX += firewall.ballVX * dt;
+  firewall.ballY += firewall.ballVY * dt;
+  if (firewall.ballX <= 0) {
+    firewall.ballX = 0;
+    firewall.ballVX = fabsf(firewall.ballVX);
+  } else if (firewall.ballX + FIREWALL_BALL_SIZE >= 128) {
+    firewall.ballX = 128 - FIREWALL_BALL_SIZE;
+    firewall.ballVX = -fabsf(firewall.ballVX);
+  }
+  if (firewall.ballY <= 0) {
+    firewall.ballY = 0;
+    firewall.ballVY = fabsf(firewall.ballVY);
+  }
+
+  if (firewall.ballVY > 0 &&
+      rectsOverlap(firewall.ballX, firewall.ballY,
+                   FIREWALL_BALL_SIZE, FIREWALL_BALL_SIZE,
+                   firewall.paddleX, FIREWALL_PADDLE_Y,
+                   FIREWALL_PADDLE_W, FIREWALL_PADDLE_H)) {
+    firewall.ballY = FIREWALL_PADDLE_Y - FIREWALL_BALL_SIZE;
+    firewall.ballVY = -fabsf(firewall.ballVY);
+    const float offset = (firewall.ballX + FIREWALL_BALL_SIZE / 2.0f -
+                          firewall.paddleX - FIREWALL_PADDLE_W / 2.0f) /
+                         (FIREWALL_PADDLE_W / 2.0f);
+    firewall.ballVX = max<float>(-70, min<float>(70, firewall.ballVX + offset * 18));
+    beep(760, 20);
+  }
+
+  bool brickHit = false;
+  for (uint8_t row = 0; row < FIREWALL_ROWS && !brickHit; ++row) {
+    for (uint8_t col = 0; col < FIREWALL_COLS; ++col) {
+      if (!firewall.bricks[row][col]) continue;
+      const float x = FIREWALL_BRICK_X +
+                      col * (FIREWALL_BRICK_W + FIREWALL_BRICK_GAP_X);
+      const float y = FIREWALL_BRICK_Y +
+                      row * (FIREWALL_BRICK_H + FIREWALL_BRICK_GAP_Y);
+      if (!rectsOverlap(firewall.ballX, firewall.ballY,
+                        FIREWALL_BALL_SIZE, FIREWALL_BALL_SIZE,
+                        x, y, FIREWALL_BRICK_W, FIREWALL_BRICK_H)) continue;
+      firewall.bricks[row][col] = false;
+      --firewall.remaining;
+      firewall.ballY = previousY;
+      firewall.ballVY = -firewall.ballVY;
+      brickHit = true;
+      beep(1200, 20);
+      break;
+    }
+  }
+
+  if (firewall.remaining == 0) {
+    firewall.phase = FirewallPhase::Clear;
+    beep(1500, 180);
+    drawFirewallClear();
+  } else if (firewall.ballY >= 64) {
+    firewall.phase = FirewallPhase::Over;
+    beep(200, 160);
+    drawFirewallOver();
+  } else {
+    drawFirewallRunning();
+  }
+}
+
 void updateUi(uint32_t now) {
   left.update(now);
   ok.update(now);
@@ -874,13 +1191,17 @@ void updateUi(uint32_t now) {
     updateGame(now);
     return;
   }
+  if (screen == Screen::FirewallGame) {
+    updateFirewallGame(now);
+    return;
+  }
 
   if (screen == Screen::Home) {
     if (left.pressed) {
-      menuItem = (menuItem + 2) % 3;
+      menuItem = (menuItem + HOME_MENU_COUNT - 1) % HOME_MENU_COUNT;
       drawHome();
     } else if (right.pressed) {
-      menuItem = (menuItem + 1) % 3;
+      menuItem = (menuItem + 1) % HOME_MENU_COUNT;
       drawHome();
     } else if (ok.pressed) {
       if (menuItem == 0) {
@@ -888,6 +1209,8 @@ void updateUi(uint32_t now) {
         drawProblems();
       } else if (menuItem == 1) {
         enterGame();
+      } else if (menuItem == 2) {
+        enterFirewallGame();
       } else {
         screen = Screen::Status;
         drawStatus();
@@ -910,7 +1233,7 @@ void updateUi(uint32_t now) {
   } else if (screen == Screen::HiddenGranted && ok.pressed) {
     screen = Screen::Status;
     drawStatus();
-  } else if (screen == Screen::Complete && ok.pressed) {
+  } else if (screen == Screen::Complete && !victory.active && ok.longPressed) {
     screen = Screen::Status;
     drawStatus();
   }
@@ -942,6 +1265,7 @@ const char *screenName() {
     case Screen::Hint: return "hint";
     case Screen::Status: return "status";
     case Screen::Game: return "game";
+    case Screen::FirewallGame: return "firewall-game";
     case Screen::HiddenGranted: return "hidden-granted";
     case Screen::Complete: return "complete";
   }
@@ -1147,6 +1471,7 @@ void setProblem(char *payload) {
   const uint8_t index = number - 1;
   problems[index] = candidate;
   saveProblem(index);
+  stopVictoryMode();
   solvedMask &= static_cast<uint8_t>(~solvedBit(index));
   saveMask();
   if (usbPlayer.problem == index) resetPlayer(usbPlayer);
@@ -1312,7 +1637,8 @@ void setup() {
   loadProblems();
   solvedMask = preferences.getUChar("solved", 0) &
                solvedMaskFor(TOTAL_CHALLENGE_COUNT);
-  updateLeds();
+  const bool completedAtBoot = allSolved();
+  if (!completedAtBoot) updateProgressLeds();
 
   configureHiddenAccessPins();
 
@@ -1321,8 +1647,12 @@ void setup() {
   printBanner();
   const uint32_t bootAt = millis();
   while (millis() - bootAt < 700) delay(5);
-  drawHome();
-  beep(880, 60);
+  if (completedAtBoot) {
+    enterTrophyModeFromBoot(millis());
+  } else {
+    drawHome();
+    beep(880, 60);
+  }
 }
 
 void loop() {
@@ -1335,8 +1665,14 @@ void loop() {
     screen = Screen::HiddenGranted;
     drawHiddenGranted();
     beep(1047, 130);
-    delay(1);
-    return;
+    if (allSolved()) hiddenVictoryAt = now + 750;
   }
+  if (hiddenVictoryAt != 0 &&
+      static_cast<int32_t>(now - hiddenVictoryAt) >= 0) {
+    hiddenVictoryAt = 0;
+    startVictorySequence(now);
+  }
+  updateVictory(now);
+  updateTrophyLedSweep(now);
   delay(1);
 }

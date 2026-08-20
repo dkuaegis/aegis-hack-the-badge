@@ -49,3 +49,8 @@ constexpr bool flappyCollision(float birdY, float pipeX, int gapY) {
          (pipeX < 35 && pipeX + 11 > 28 &&
           (birdY < gapY - 13 || birdY + 6 > gapY + 13));
 }
+
+constexpr bool rectsOverlap(float ax, float ay, float aw, float ah,
+                            float bx, float by, float bw, float bh) {
+  return ax < bx + bw && ax + aw > bx && ay < by + bh && ay + ah > by;
+}

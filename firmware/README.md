@@ -21,9 +21,10 @@ ESP32-S3-WROOM-1-N8R8용 펌웨어입니다. 기존
 ## 구현 기능
 
 - USB CDC Serial(115200): 한국어 문제 설명, 문제별 대화형 명령, FLAG 제출
-- 128x64 OLED: Cyber/Terminal/Badge UI, 문제 보기/예시, Flappy Hacker 미니게임
+- 128x64 OLED: Cyber/Terminal/Badge UI, 문제 보기/예시, Flappy Hacker와 Firewall Breaker 미니게임
 - LED1-LED5: 4개 Serial 문제와 `Hidden Access` 풀이 상태
 - NVS: 전원을 꺼도 풀이 상태 유지
+- Trophy Mode: 5개 Challenge 완료 시 `AEGIS{PWN3D!}`, 승리 fanfare, LED 왕복 애니메이션
 - `Hidden Access`: 전면 challenge pad의 올바른 두 접점을 1.2초간 쇼트하면 해금
 - BLE 관리자: Windows/macOS/Linux PC와 P2P 연결해 장비별 상태, reset, reboot, 무선 관리자 셸 제공
 
@@ -50,6 +51,20 @@ Mission 04의 응답은 `challenge XOR device-key`이며, 과거 인증 기록�
 해당 배지의 key로 런타임에 계산됩니다. 보상 FLAG를 직접 입력해도
 해결되지 않고, 올바른 `auth XXXX`가 인증되어야 즉시 해결됩니다.
 
+## 보너스 게임과 Trophy Mode
+
+Home의 `FIREWALL BREAKER`는 3×8 벽돌을 패들과 공으로 제거하는
+Breakout 보너스 게임입니다. `LEFT`/`RIGHT`를 누르는 동안 패들이
+이동하며, Intro/Running/Game Over/Clear 어느 상태에서나 `OK`를 길게
+누르면 Home으로 돌아갑니다. 게임 완료는 FLAG, `solvedMask`, 상태 LED에
+영향을 주지 않습니다.
+
+Serial Mission 4개와 Hidden Access를 모두 풀면 Trophy OLED가 즉시 표시되고,
+비차단 fanfare 후 5개 LED가 좌우로 왕복합니다. 5/5 상태로
+재부팅하면 멜로디를 반복하지 않고 Trophy와 LED 왕복만 복원합니다.
+Trophy에서 `OK`를 길게 누르면 Status를 볼 수 있으며, 관리자 `reset`은
+멜로디와 LED 애니메이션까지 모두 종료합니다.
+
 운영자 확인용 기본 Hidden Access 조합은 **C1을 개방한 상태에서 C0-C2를
 1.2초간 연결**하는 것입니다. 조합이나 유지 시간은 `logic.h`와 `main.cpp`의
 `HIDDEN_HOLD_MS`에서 변경할 수 있습니다.
@@ -62,7 +77,7 @@ Mission 04의 응답은 `challenge XOR device-key`이며, 과거 인증 기록�
 | [`src/main.cpp`](src/main.cpp) | OLED UI, 버튼·LED·부저, USB/BLE 셸, NVS, Hidden Access |
 | [`src/problems.h`](src/problems.h) | 1~4번 기본 문제, 필드 크기와 미니게임 보상 문구 |
 | [`src/pins.h`](src/pins.h) | Rev.3 PCB GPIO 매핑 |
-| [`src/logic.h`](src/logic.h) | 풀이 비트와 challenge pad 판정 로직 |
+| [`src/logic.h`](src/logic.h) | 풀이 비트, challenge pad, 미니게임 충돌 판정 로직 |
 | [`test/test_logic.cpp`](test/test_logic.cpp) | 하드웨어 없이 실행하는 핵심 로직 검사 |
 
 ## 업로드 준비
@@ -223,7 +238,7 @@ Hidden Access 힌트는 Flappy Hacker에서 5점을 달성했을 때만 OLED에 
 문구는 같은 파일의 `MINIGAME_REWARD_LINE_1`, 기준 점수는 `main.cpp`의
 `FLAPPY_REWARD_SCORE`에서 변경할 수 있습니다.
 
-OLED 화면 흐름은 `Boot → Home → Missions → Intel → Status`입니다.
+OLED 화면 흐름은 `Boot → Home → Missions / Flappy / Firewall / Status`입니다.
 Hidden Access 성공 전에는 1~4번 Serial 문제만 표시하고, 성공 순간에
 `HIDDEN ACCESS / GRANTED`와 성공음을 출력한 뒤 Status에
 `HIDDEN ACCESS CLEAR`를 추가합니다. Home에서
@@ -336,8 +351,8 @@ Secure Boot와 Flash Encryption을 활성화하지 않았습니다.
 
 ## 빠른 로직 검사
 
-PlatformIO 없이도 상태 비트, Hidden Access, Flappy 충돌, Legacy Auth XOR,
-4자리 HEX parser를 검사할 수 있습니다.
+PlatformIO 없이도 상태 비트, Hidden Access, Flappy/Firewall 충돌,
+Legacy Auth XOR, 4자리 HEX parser를 검사할 수 있습니다.
 
 ```bash
 clang++ -std=c++17 -Ifirmware/src firmware/test/test_logic.cpp -o /tmp/badge-logic-test
