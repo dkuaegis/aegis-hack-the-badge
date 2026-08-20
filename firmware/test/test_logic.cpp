@@ -30,4 +30,7 @@ int main() {
   assert(flappyCollision(0, 100, 32));
   assert(flappyCollision(58, 100, 32));
   assert(flappyCollision(4, 30, 32));
+  assert(rectsOverlap(10, 10, 3, 3, 12, 12, 5, 5));
+  assert(!rectsOverlap(10, 10, 3, 3, 13, 10, 5, 5));
+  assert(!rectsOverlap(10, 10, 3, 3, 10, 13, 5, 5));
 }
