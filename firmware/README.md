@@ -65,6 +65,24 @@ Serial Mission 4개와 Hidden Access를 모두 풀면 Trophy OLED가 즉시 표�
 Trophy에서 `OK`를 길게 누르면 Status를 볼 수 있으며, 관리자 `reset`은
 멜로디와 LED 애니메이션까지 모두 종료합니다.
 
+## 부팅 사운드와 연출
+
+부팅 터미널 타이핑이 끝나면 약 1.36초의 AEGIS 전용 시네마틱 사운드가
+한 번 재생됩니다. 220 Hz 저음에서 1047 Hz까지 연속 상승하고, 60 ms
+무음 뒤 최종 1175 Hz 임팩트 음과 동시에 OLED가 `SYSTEM ONLINE` 상태로
+잠기며 LED 5개가 모두 점등됩니다. 재생 종료 시 버저와 LED는 모두
+꺼지고 저장된 문제 진행 상태에 맞춰 정상 화면으로 전환됩니다.
+
+개발 중 부팅음을 끄려면 `platformio.ini`의 `build_flags`에 다음 항목을
+추가합니다. 화면 전환과 나머지 부팅 동작은 그대로 유지됩니다.
+
+```ini
+-DAEGIS_BOOT_SOUND_ENABLED=0
+```
+
+실기기에서 A3가 너무 작으면 220 Hz를 247~294 Hz로 높이고, 최종 D6가
+너무 날카로우면 1175 Hz를 1047~1100 Hz 범위로 낮춰 조정하세요.
+
 운영자 확인용 기본 Hidden Access 조합은 **C1을 개방한 상태에서 C0-C2를
 1.2초간 연결**하는 것입니다. 조합이나 유지 시간은 `logic.h`와 `main.cpp`의
 `HIDDEN_HOLD_MS`에서 변경할 수 있습니다.
