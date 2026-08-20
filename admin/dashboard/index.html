@@ -69,13 +69,15 @@ function renderDetail(){
   if(fingerprint===detailFingerprint)return;detailFingerprint=fingerprint;
   $('detail').innerHTML=`
     <div class="identity"><div><h2>${escapeHtml(badge.id)}</h2><p>${escapeHtml(status.screen||'waiting')} // ${badge.authenticated?'AUTHENTICATED':'AUTHENTICATING'}</p></div>
-    <div class="actions"><button id="edit">EDIT PROBLEMS</button><button class="danger" id="reset">RESET SOLVED</button><button id="reboot">REBOOT</button></div></div>
+    <div class="actions"><button id="edit">EDIT PROBLEMS</button><button id="solve">MARK ALL SOLVED</button><button class="danger" id="reset">RESET SOLVED</button><button id="reboot">REBOOT</button></div></div>
     <div class="stats"><div class="stat"><small>SOLVED</small><strong>${status.solved??'-'} / ${total}</strong></div><div class="stat"><small>SERIAL</small><strong>${status.serialSolved??'-'} / ${status.serialProblems??4}</strong></div><div class="stat"><small>HIDDEN</small><strong>${status.hiddenSolved?'CLEAR':'LOCKED'}</strong></div></div>
     <div class="missions" id="missions"></div>
-    <div class="terminal"><div class="terminal-head">root@${escapeHtml(badge.id)}:~#</div><pre id="console"></pre><form id="shell"><span>&gt;</span><input id="command" autocomplete="off" maxlength="767" placeholder="1-4 | help | status | reset | reboot"><button>SEND</button></form></div>`;
+    <div class="terminal"><div class="terminal-head">root@${escapeHtml(badge.id)}:~#</div><pre id="console"></pre><form id="shell"><span>&gt;</span><input id="command" autocomplete="off" maxlength="767" placeholder="1-4 | help | solve all | reset | reboot"><button>SEND</button></form></div>`;
   const ready=badge.online&&badge.authenticated;
   $('edit').disabled=$('reset').disabled=$('reboot').disabled=!ready;
+  $('solve').disabled=!ready||(status.solved??0)>=total;
   $('edit').onclick=()=>openEditor(false);
+  $('solve').onclick=()=>confirm('선택한 배지를 5/5 완료 처리할까요?')&&send('solve all');
   $('reset').onclick=()=>confirm('풀이 상태를 초기화할까요?')&&send('reset');
   $('reboot').onclick=()=>confirm('배지를 재부팅할까요?')&&send('reboot');
   $('shell').onsubmit=event=>{event.preventDefault();const input=$('command');if(input.value.trim())send(input.value.trim());input.value=''};

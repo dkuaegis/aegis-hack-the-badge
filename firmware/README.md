@@ -281,6 +281,7 @@ BLE 관리 채널은 연결마다 새 challenge를 만들고 fleet key 기반 HM
 | --- | --- |
 | `help` | 관리자 명령 목록 |
 | `status` | 장비 ID와 문제 풀이 상태 JSON |
+| `solve all` | 관리자 테스트용 5/5 완료 처리와 Trophy 이벤트 실행 |
 | `reset` | 전체 풀이 상태 초기화 |
 | `reboot` | 재부팅 |
 | `1`~`4`, `hint`, `exit`, `clear`, `aegis` | USB 사용자 셸과 동일 |
