@@ -17,6 +17,10 @@
 #include "pins.h"
 #include "problems.h"
 
+#ifndef AEGIS_BOOT_SOUND_ENABLED
+#define AEGIS_BOOT_SOUND_ENABLED 1
+#endif
+
 namespace {
 constexpr uint32_t SERIAL_BAUD = 115200;
 constexpr uint32_t BUTTON_DEBOUNCE_MS = 30;
@@ -51,6 +55,7 @@ constexpr const char *BOOT_TERMINAL_LINES[] = {
     "root@aegis:~# ./boot", "[OK] Aegis", "[OK] Hack The Badge ver.3",
     "[HW] - Hacking Box R3:V1V3 -", "dev: developed by.@Z3r0c0k3",
 };
+constexpr uint8_t BOOT_LED_SEQUENCE[] = {2, 1, 3, 0, 4, 1, 3, 0, 4};
 #ifndef BADGE_ADMIN_KEY
 #define BADGE_ADMIN_KEY "AEGIS_DEV_ONLY_CHANGE_ME"
 #endif
@@ -168,15 +173,21 @@ struct VictoryNote {
   uint16_t gap;
 };
 
+struct ToneStep {
+  uint16_t frequency;
+  uint16_t duration;
+};
+
 constexpr VictoryNote VICTORY_MELODY[] = {
     {523, 90, 25},  {659, 90, 25},  {784, 90, 25},
     {1047, 180, 40}, {784, 90, 25}, {1047, 90, 25},
     {1319, 140, 30}, {1568, 360, 0},
 };
 
-constexpr VictoryNote BOOT_FANFARE[] = {
-    {622, 360, 30}, {311, 100, 10}, {466, 180, 25}, {415, 220, 25},
-    {831, 180, 20}, {622, 320, 30}, {415, 180, 20}, {466, 560, 0},
+constexpr ToneStep BOOT_SOUND[] = {
+    {220, 180}, {294, 70}, {349, 70}, {440, 90},  {587, 70},
+    {698, 70},  {880, 100}, {1047, 100}, {880, 100}, {0, 60},
+    {1175, 450},
 };
 
 struct VictoryState {
@@ -395,12 +406,15 @@ void drawMsgCtfBootFrame() {
   oled.setBitmapMode(0);
 }
 
-void drawBootTerminalFrame(size_t visibleChars) {
+void drawBootTerminalFrame(size_t visibleChars, bool systemOnline) {
   oled.setFont(u8g2_font_4x6_tf);
   oled.drawBox(0, 0, 128, 8);
   oled.setDrawColor(0);
-  oled.drawStr(2, 6, "AEGIS SECURE BOOT // TTY0");
+  oled.drawStr(2, 6,
+               systemOnline ? "AEGIS // SYSTEM ONLINE"
+                            : "AEGIS SECURE BOOT // TTY0");
   oled.setDrawColor(1);
+  if (systemOnline) oled.drawFrame(0, 8, 128, 56);
 
   bool cursorDrawn = false;
   char line[40];
@@ -423,9 +437,9 @@ void drawBootTerminalFrame(size_t visibleChars) {
   }
 }
 
-void renderBootTerminalFrame(size_t visibleChars) {
+void renderBootTerminalFrame(size_t visibleChars, bool systemOnline = false) {
   oled.firstPage();
-  do drawBootTerminalFrame(visibleChars); while (oled.nextPage());
+  do drawBootTerminalFrame(visibleChars, systemOnline); while (oled.nextPage());
 }
 
 void fadeBootContrast(bool fadeIn) {
@@ -445,6 +459,32 @@ void fadeBootFrame(void (*frame)()) {
   oled.clearDisplay();
 }
 
+void playBootSound(size_t terminalChars) {
+#if AEGIS_BOOT_SOUND_ENABLED
+  for (uint8_t i = 0; i < sizeof(BOOT_SOUND) / sizeof(BOOT_SOUND[0]); ++i) {
+    const ToneStep &step = BOOT_SOUND[i];
+    if (i < sizeof(BOOT_LED_SEQUENCE) / sizeof(BOOT_LED_SEQUENCE[0])) {
+      setAllStatusLeds(false);
+      digitalWrite(Pins::STATUS_LEDS[BOOT_LED_SEQUENCE[i]], HIGH);
+    }
+    if (i == sizeof(BOOT_SOUND) / sizeof(BOOT_SOUND[0]) - 1) {
+      setAllStatusLeds(true);
+      renderBootTerminalFrame(terminalChars, true);
+    }
+    if (step.frequency == 0) {
+      noTone(Pins::BUZZER);
+    } else {
+      tone(Pins::BUZZER, step.frequency, step.duration);
+    }
+    delay(step.duration);
+  }
+#else
+  renderBootTerminalFrame(terminalChars, true);
+#endif
+  noTone(Pins::BUZZER);
+  setAllStatusLeds(false);
+}
+
 void showBootTerminal() {
   size_t totalChars = 0;
   for (const char *line : BOOT_TERMINAL_LINES) totalChars += strlen(line);
@@ -454,12 +494,7 @@ void showBootTerminal() {
     delay(BOOT_TERMINAL_CHAR_MS);
   }
   renderBootTerminalFrame(totalChars);
-  for (const VictoryNote &note : BOOT_FANFARE) {
-    tone(Pins::BUZZER, note.frequency, note.duration);
-    delay(note.duration);
-    noTone(Pins::BUZZER);
-    delay(note.gap);
-  }
+  playBootSound(totalChars);
   delay(350);
   fadeBootContrast(false);
   oled.clearDisplay();
