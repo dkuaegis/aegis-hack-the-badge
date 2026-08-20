@@ -10,6 +10,7 @@ import json
 import os
 import sys
 import time
+import unicodedata
 from collections import deque
 from pathlib import Path
 
@@ -40,10 +41,11 @@ def normalize_problem(data):
         raise ValueError("options must be an array")
     problem = {
         "type": problem_type,
-        "title": str(data.get("title", "")).strip(),
-        "prompt": str(data.get("prompt", "")).strip(),
-        "answer": str(data.get("answer", "")).strip(),
-        "options": [str(value).strip() for value in raw_options],
+        "title": unicodedata.normalize("NFC", str(data.get("title", "")).strip()),
+        "prompt": unicodedata.normalize("NFC", str(data.get("prompt", "")).strip()),
+        "answer": unicodedata.normalize("NFC", str(data.get("answer", "")).strip()),
+        "options": [unicodedata.normalize("NFC", str(value).strip())
+                    for value in raw_options],
     }
     problem["options"] = [value for value in problem["options"] if value]
     for key in ("title", "prompt", "answer"):
@@ -128,6 +130,7 @@ def self_test():
     flag_command = problem_command(2, flag)
     flag_response = "PROBLEM\t" + "\t".join(flag_command.split("\t")[1:])
     assert parse_problem_line(flag_response) == (2, flag)
+    assert normalize_problem({**flag, "prompt": "한글"})["prompt"] == "한글"
     assert b"".join(command_chunks("Aegis{긴_FLAG_1234567890}")) == "Aegis{긴_FLAG_1234567890}\n".encode()
     try:
         normalize_problem({**sample, "answer": "3"})
@@ -307,7 +310,9 @@ def ready_badges():
 
 
 async def dashboard_page(_request):
-    return web.FileResponse(DASHBOARD_PATH)
+    response = web.FileResponse(DASHBOARD_PATH)
+    response.headers["Cache-Control"] = "no-store"
+    return response
 
 
 async def favicon(_request):

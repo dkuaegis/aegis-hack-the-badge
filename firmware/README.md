@@ -20,7 +20,7 @@ ESP32-S3-WROOM-1-N8R8용 펌웨어입니다. 기존
 
 ## 구현 기능
 
-- USB CDC Serial(115200): 문제 설명, FLAG 제출, 상태 확인
+- USB CDC Serial(115200): 한국어 문제 설명, 문제별 대화형 명령, FLAG 제출
 - 128x64 OLED: Cyber/Terminal/Badge UI, 문제 보기/예시, Flappy Hacker 미니게임
 - LED1-LED5: 4개 Serial 문제와 `Hidden Access` 풀이 상태
 - NVS: 전원을 꺼도 풀이 상태 유지
@@ -31,6 +31,24 @@ ESP32-S3-WROOM-1-N8R8용 펌웨어입니다. 기존
 서로 분리됩니다. BLE 관리자 셸에서는 USB 사용자 명령과 관리자 명령을 모두
 사용할 수 있습니다. PC용 Python 브리지와 대시보드 실행법은
 [`../admin/README.md`](../admin/README.md)를 참고하세요.
+
+## Serial Mission 구성
+
+USB 사용자 셸과 BLE 관리자 셸의 문제 플레이는 같은 Challenge
+Engine을 사용하고, 각 전송 채널의 입력 상태는 독립적으로 유지합니다.
+문제 본문과 안내는 Serial에 한국어로, OLED 문구는 영문 ASCII로만
+표시합니다.
+
+| Mission | 풀이 방식 | `answer` 필드 |
+| --- | --- | --- |
+| 01 `LEAKED TRANSMISSION` | 현재 FLAG를 런타임 uppercase HEX로 변환해 복원 | 제출할 FLAG |
+| 02 `DEBUG LEFT ON` | 문제 내부 `help`/`info`/`log`를 탐색해 FLAG 발견 | 로그에 노출할 FLAG |
+| 03 `MAINTENANCE` | `info`의 module 단서로 숨겨진 `diag`를 찾아 FLAG 발견 | 진단 화면에 노출할 FLAG |
+| 04 `LEGACY AUTH` | 배지별 16-bit XOR challenge-response 인증 | 인증 성공 후 출력할 보상 FLAG |
+
+Mission 04의 응답은 `challenge XOR device-key`이며, 과거 인증 기록은
+해당 배지의 key로 런타임에 계산됩니다. 보상 FLAG를 직접 입력해도
+해결되지 않고, 올바른 `auth XXXX`가 인증되어야 즉시 해결됩니다.
 
 운영자 확인용 기본 Hidden Access 조합은 **C1을 개방한 상태에서 C0-C2를
 1.2초간 연결**하는 것입니다. 조합이나 유지 시간은 `logic.h`와 `main.cpp`의
@@ -181,6 +199,10 @@ pio run -t upload
 파괴적 명령입니다. 반드시 올바른 배지 포트를 확인하고, 실행 직후 펌웨어를
 다시 업로드하세요.
 
+현재 `PROBLEM_STORAGE_VERSION` 값은 `2`입니다. 이전 버전으로 NVS에
+저장된 문제는 validation에서 제외되고 새 기본 Mission 01~04가 로드됩니다.
+새 버전으로 관리자가 저장한 문제는 계속 NVS에 유지됩니다.
+
 ## 문제 교체
 
 [`src/problems.h`](src/problems.h)의 `DEFAULT_PROBLEMS` 배열은 NVS에 저장된 문제가
@@ -190,7 +212,7 @@ pio run -t upload
 
 - `title`: OLED와 상태표에 표시할 짧은 ASCII 제목
 - `type`: `F`(FLAG) 또는 `C`(2~4지선다)
-- `answer`: FLAG 문자열 또는 선택형 정답 번호
+- `answer`: Mission 01~03 FLAG/선택형 정답 번호, Mission 04 인증 성공 보상 FLAG
 - `serialText`: Serial에 출력할 문제 설명
 - `oledLines`: OLED에만 출력할 ASCII 보기/예시 최대 4줄(23바이트 이하)
 
@@ -219,7 +241,16 @@ Hidden Access 성공 전에는 1~4번 Serial 문제만 표시하고, 성공 순�
 | `help` | 사용법 |
 | `aegis` | 시작 배너 다시 표시 |
 
+`info`, `log`, `diag`, `auth`는 root 셸의 전역 명령이 아니며 해당
+Mission 안에서만 활성화됩니다. Mission 04의 diagnostic 셸에서 `exit`를
+한 번 입력하면 Mission 04로 돌아가고, 한 번 더 입력하면 문제를
+완전히 종료하며 현재 challenge를 무효화합니다.
+
 ## BLE 관리자 셸
+
+USB와 BLE 플레이어 셸은 공통 Challenge Engine을 사용합니다(Option A).
+실제 관리자 HMAC과 Mission 04의 의도적으로 약한 XOR 인증은 서로
+다른 독립된 기능이며 키나 인증 상태를 공유하지 않습니다.
 
 BLE 관리 채널은 연결마다 새 challenge를 만들고 fleet key 기반 HMAC 인증 후
 명령을 처리합니다. 기본 개발 키는 실제 행사 전에 반드시 교체하세요.
@@ -305,7 +336,8 @@ Secure Boot와 Flash Encryption을 활성화하지 않았습니다.
 
 ## 빠른 로직 검사
 
-PlatformIO 없이도 상태 비트와 Hidden Access 판정 로직을 검사할 수 있습니다.
+PlatformIO 없이도 상태 비트, Hidden Access, Flappy 충돌, Legacy Auth XOR,
+4자리 HEX parser를 검사할 수 있습니다.
 
 ```bash
 clang++ -std=c++17 -Ifirmware/src firmware/test/test_logic.cpp -o /tmp/badge-logic-test

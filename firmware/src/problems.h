@@ -3,12 +3,17 @@
 #include <stddef.h>
 #include <stdint.h>
 
-constexpr uint8_t PROBLEM_STORAGE_VERSION = 1;
+constexpr uint8_t PROBLEM_STORAGE_VERSION = 2;
 constexpr size_t PROBLEM_TITLE_SIZE = 24;
 constexpr size_t PROBLEM_ANSWER_SIZE = 80;
 constexpr size_t PROBLEM_TEXT_SIZE = 256;
 constexpr size_t PROBLEM_OPTION_SIZE = 24;
 constexpr uint8_t PROBLEM_OPTION_MAX = 4;
+
+constexpr uint8_t MISSION_LEAKED = 0;
+constexpr uint8_t MISSION_DEBUG = 1;
+constexpr uint8_t MISSION_MAINTENANCE = 2;
+constexpr uint8_t MISSION_LEGACY_AUTH = 3;
 
 struct Problem {
   uint8_t version;
@@ -20,35 +25,36 @@ struct Problem {
   char oledLines[PROBLEM_OPTION_MAX][PROBLEM_OPTION_SIZE];
 };
 
-// NVS에 사용자 문제가 없을 때 사용하눈 기본값입니다.
+// NVS에 현재 version의 문제가 없을 때 사용하는 기본값입니다.
 constexpr Problem DEFAULT_PROBLEMS[] = {
     {
         PROBLEM_STORAGE_VERSION, 'F', 4,
-        "The Word",
-        "Aegis{4}",
-        "[01] The Word\nAegis의 올바른 발음을 OLED 보기에서 골라 FLAG로 제출하세요.\n형식: Aegis{번호}",
-        {"1) eye-gis", "2) ay-gis", "3) age-is", "4) ee-jis"},
+        "LEAKED TRANSMISSION",
+        "Aegis{S3r14l_L34k}",
+        "[MISSION 01 // LEAKED TRANSMISSION]\n통신 기록에서 정체불명의 데이터가 발견되었습니다.\nHEX 데이터를 원래 메시지로 복원해 FLAG를 제출하세요.",
+        {"LEAKED", "TRANSMISSION", "", "HEX -> TEXT"},
     },
     {
         PROBLEM_STORAGE_VERSION, 'F', 4,
-        "CQ CQ CQ",
-        "Aegis{CQCQCQDEAEGISAEGISAR}",
-        "[02] CQ CQ CQ\nOLED에 표시된 통신 부호룰 평문으로 복원해 FLAG로 제출하세요.",
-        {"-.-. --.- -.-.", "--.- -.-. --.-", "-.. . .- . --.", ".. ... .- . --."},
+        "DEBUG LEFT ON",
+        "Aegis{D3bug_L0gs_4r3_D4ng3r0us}",
+        "[MISSION 02 // DEBUG LEFT ON]\n운영 장치에 디버그 기능이 남아 있습니다.\n콘솔을 조사해 노출된 FLAG를 찾으세요.\n먼저 사용 가능한 명령을 확인하세요.",
+        {"DEBUG", "LEFT ON", "EXPLORE", "THE CONSOLE"},
     },
     {
         PROBLEM_STORAGE_VERSION, 'F', 4,
-        "Decode",
-        "Aegis{D0_Y0u_Kn0W_Wh@T_3nC0dInG_1s?}",
-        "[03] Decode\nOLED의 문자열은 어떤 인코딩 결과입니다. 원문을 복원해 제출하세요.",
-        {"QWVnaXN7RDBfWTB", "1X0tuMFdfV2hAVF", "8zbkMwZEluR18xcz", "99"},
+        "MAINTENANCE",
+        "Aegis{H1dd3n_D14gn0st1c}",
+        "[MISSION 03 // MAINTENANCE]\n운영 펌웨어에 개발용 유지보수 기능이 남아 있습니다.\n일반 도움말에 없는 인터페이스를 찾아 FLAG를 획득하세요.",
+        {"MAINTENANCE", "", "INTERFACE", "HIDDEN"},
     },
     {
         PROBLEM_STORAGE_VERSION, 'F', 4,
-        "King Caesar",
-        "Aegis{C0ngr@tU1AtI0nS_Y0u_h@cK3D_@11_Th3s3_d3vIc3s}",
-        "[04] King Caesar\nOLED의 암호문에 고전 치환을 적용해 FLAG랄 복원하세요.",
-        {"Dhjlv{F0qju@wX1", "DwL0qV_B0x_k@fN", "3G_@11_Wk3v3_g3", "yLf3v}"},
+        "LEGACY AUTH",
+        // Dynamic 인증 성공 후 출력할 reward FLAG입니다.
+        "Aegis{L3g4cy_4uth_1s_N0t_S4f3}",
+        "[MISSION 04 // LEGACY AUTH]\n관리자 인증에 오래된 방식이 사용되고 있습니다.\n과거 기록을 분석해 현재 challenge의 response를 계산하세요.",
+        {"LEGACY AUTH", "", "ANALYZE", "THE PATTERN"},
     },
 };
 

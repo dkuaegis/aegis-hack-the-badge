@@ -41,8 +41,6 @@ U8G2_SSD1315_128X64_NONAME_1_HW_I2C oled(U8G2_R0, U8X8_PIN_NONE,
 
 uint8_t solvedMask = 0;
 Problem problems[SERIAL_PROBLEM_COUNT] = {};
-int8_t activeProblem = -1;
-int8_t bleActiveProblem = -1;
 int8_t displayedProblem = -1;
 uint8_t menuItem = 0;
 uint8_t browserProblem = 0;
@@ -67,6 +65,44 @@ struct BleCommand {
 };
 
 void bleSendLine(const char *line);
+
+enum class PlayerTarget : uint8_t { Usb, Ble };
+
+struct PlayerContext {
+  int8_t problem = -1;
+  bool diagnostic = false;
+  bool challengeValid = false;
+  uint16_t challenge = 0;
+};
+
+PlayerContext usbPlayer;
+PlayerContext blePlayer;
+uint16_t displayedAuthChallenge = 0;
+
+PlayerContext &playerContext(PlayerTarget target) {
+  return target == PlayerTarget::Usb ? usbPlayer : blePlayer;
+}
+
+void resetPlayer(PlayerContext &player) {
+  player.problem = -1;
+  player.diagnostic = false;
+  player.challengeValid = false;
+  player.challenge = 0;
+}
+
+void playerLine(PlayerTarget target, const char *line) {
+  if (target == PlayerTarget::Usb) Serial.println(line);
+  else bleSendLine(line);
+}
+
+void playerPrintf(PlayerTarget target, const char *format, ...) {
+  char line[320];
+  va_list args;
+  va_start(args, format);
+  vsnprintf(line, sizeof(line), format, args);
+  va_end(args);
+  playerLine(target, line);
+}
 
 enum class Screen : uint8_t {
   Home, Problems, Hint, Status, Game, HiddenGranted, Complete
@@ -323,6 +359,53 @@ void drawHint(uint8_t index) {
   render(drawHintFrame);
 }
 
+void drawDiagnosticAccessFrame() {
+  header("03 // MAINTENANCE");
+  oled.setFont(u8g2_font_6x10_tf);
+  centered(21, "DIAGNOSTIC");
+  centered(31, "INTERFACE");
+  inverseLabel(37, 12, "ACCESS GRANTED");
+  footer("FLAG VIA SHELL");
+}
+
+void drawDiagnosticAccess() {
+  screen = Screen::Hint;
+  displayedProblem = MISSION_MAINTENANCE;
+  render(drawDiagnosticAccessFrame);
+}
+
+void drawLegacyAuthChallengeFrame() {
+  char challenge[12];
+  snprintf(challenge, sizeof(challenge), "%04X", displayedAuthChallenge);
+  header("AUTH REQUIRED");
+  oled.setFont(u8g2_font_6x10_tf);
+  centered(25, "CHALLENGE");
+  oled.setFont(u8g2_font_9x15B_tf);
+  centered(43, challenge);
+  footer("AUTH XXXX VIA SHELL");
+}
+
+void drawLegacyAuthChallenge(uint16_t challenge) {
+  screen = Screen::Hint;
+  displayedProblem = MISSION_LEGACY_AUTH;
+  displayedAuthChallenge = challenge;
+  render(drawLegacyAuthChallengeFrame);
+}
+
+void drawLegacyAuthSuccessFrame() {
+  header("AUTH SUCCESS");
+  oled.setFont(u8g2_font_6x10_tf);
+  centered(27, "ACCESS");
+  inverseLabel(32, 14, "ELEVATED");
+  footer("MISSION CLEAR");
+}
+
+void drawLegacyAuthSuccess() {
+  screen = Screen::Hint;
+  displayedProblem = MISSION_LEGACY_AUTH;
+  render(drawLegacyAuthSuccessFrame);
+}
+
 void drawStatusFrame() {
   char total[8];
   const bool hiddenSolved = isSolved(solvedMask, HIDDEN_ACCESS_INDEX);
@@ -368,7 +451,9 @@ void resetProgress() {
   solvedMask = 0;
   saveMask();
   configureHiddenAccessPins();
-  activeProblem = bleActiveProblem = displayedProblem = -1;
+  resetPlayer(usbPlayer);
+  resetPlayer(blePlayer);
+  displayedProblem = -1;
   screen = Screen::Status;
   drawStatus();
 }
@@ -399,34 +484,208 @@ void printStatus() {
   }
 }
 
-void showProblem(uint8_t index) {
-  activeProblem = index;
+uint16_t legacyAuthKey() {
+  return static_cast<uint16_t>((ESP.getEfuseMac() & 0xffffU) ^ 0x1337U);
+}
+
+void printLeakedTransmission(PlayerTarget target) {
+  char hex[PROBLEM_ANSWER_SIZE * 3] = {};
+  size_t used = 0;
+  const char *answer = problems[MISSION_LEAKED].answer;
+  for (size_t i = 0; answer[i] != '\0' && used + 4 < sizeof(hex); ++i) {
+    const int written = snprintf(hex + used, sizeof(hex) - used, "%s%02X",
+                                 i == 0 ? "" : " ",
+                                 static_cast<uint8_t>(answer[i]));
+    if (written < 0) break;
+    used += static_cast<size_t>(written);
+  }
+  playerLine(target, "\n[CAPTURED PAYLOAD // HEX]");
+  playerLine(target, hex);
+}
+
+void startProblem(PlayerTarget target, uint8_t index) {
+  PlayerContext &player = playerContext(target);
+  resetPlayer(player);
+  player.problem = index;
   screen = Screen::Hint;
   drawHint(index);
-  Serial.println();
-  Serial.println(problems[index].serialText);
-  Serial.println(problems[index].type == 'C'
-                     ? F("\nOLED 보기를 확인하고 정답 번호 또는 exit를 입력하세요.")
-                     : F("\nOLED 보기/예시를 확인하고 FLAG 또는 exit를 입력하세요."));
+  playerLine(target, "");
+  playerLine(target, problems[index].serialText);
+  if (index == MISSION_LEAKED) {
+    printLeakedTransmission(target);
+    playerLine(target, "\n복원한 FLAG를 입력하세요. 종료: exit");
+  } else if (index == MISSION_DEBUG) {
+    playerLine(target, "\n디버그 콘솔이 열렸습니다. 명령을 조사하세요.");
+  } else if (index == MISSION_MAINTENANCE) {
+    playerLine(target, "\n유지보수 콘솔이 열렸습니다. 숨겨진 기능을 찾으세요.");
+  } else {
+    playerLine(target, "\n레거시 인증 콘솔이 열렸습니다. 진단 인터페이스를 찾으세요.");
+  }
   beep(659);
 }
 
-void solved(uint8_t index) {
+void showProblem(uint8_t index) { startProblem(PlayerTarget::Usb, index); }
+
+void finishProblem(PlayerTarget target, uint8_t index) {
   const uint8_t next = markSolved(solvedMask, index);
   if (next != solvedMask) {
     solvedMask = next;
     saveMask();
   }
-  Serial.printf("정답입니다. 진행도: %u/%u\n", serialSolvedCount(),
-                static_cast<unsigned>(SERIAL_PROBLEM_COUNT));
+  playerPrintf(target, "정답입니다. 진행도: %u/%u", serialSolvedCount(),
+               static_cast<unsigned>(SERIAL_PROBLEM_COUNT));
   beep(1047, 130);
-  activeProblem = -1;
+  resetPlayer(playerContext(target));
   if (allSolved()) {
     screen = Screen::Complete;
     drawComplete();
   } else {
     screen = Screen::Status;
     drawStatus();
+  }
+}
+
+void incorrect(PlayerTarget target) {
+  playerLine(target, "정답이 아닙니다. 다시 시도하거나 exit를 입력하세요.");
+  beep(196, 150);
+}
+
+void printLegacyLog(PlayerTarget target) {
+  constexpr uint16_t history[] = {0x1234, 0xABCD, 0x7777};
+  const uint16_t key = legacyAuthKey();
+  playerLine(target, "[AUTH HISTORY]");
+  for (uint16_t challenge : history) {
+    playerPrintf(target, "challenge=%04X response=%04X", challenge,
+                 legacyAuthResponse(challenge, key));
+  }
+}
+
+void handleLegacyAuth(PlayerTarget target, char *input) {
+  PlayerContext &player = playerContext(target);
+  if (!player.diagnostic) {
+    if (strcmp(input, "diag") == 0) {
+      player.diagnostic = true;
+      playerLine(target, "진단 셸에 접속했습니다. help를 입력하세요.");
+    } else if (strcmp(input, "help") == 0) {
+      playerLine(target, "사용 가능: help, diag, hint, exit");
+    } else {
+      playerLine(target, "인증 절차를 통해야 보상 FLAG를 획득할 수 있습니다.");
+    }
+    return;
+  }
+
+  if (strcmp(input, "exit") == 0) {
+    player.diagnostic = false;
+    player.challengeValid = false;
+    player.challenge = 0;
+    drawHint(MISSION_LEGACY_AUTH);
+    playerLine(target, "진단 셸에서 나왔습니다. 문제 종료: exit");
+  } else if (strcmp(input, "help") == 0) {
+    playerLine(target, "사용 가능: help, dump, log, auth, auth XXXX, exit");
+  } else if (strcmp(input, "dump") == 0) {
+    playerLine(target, "[AUTH CONFIGURATION]");
+    playerLine(target, "인증 방식 : legacy-v1");
+    playerPrintf(target, "Device ID : %.12s", badgeId);
+  } else if (strcmp(input, "log") == 0) {
+    printLegacyLog(target);
+  } else if (strcmp(input, "auth") == 0) {
+    do player.challenge = static_cast<uint16_t>(esp_random());
+    while (player.challenge == 0);
+    player.challengeValid = true;
+    playerPrintf(target, "challenge: %04X", player.challenge);
+    playerLine(target, "응답 형식: auth XXXX (16진수 4자리)");
+    drawLegacyAuthChallenge(player.challenge);
+  } else if (strncmp(input, "auth ", 5) == 0) {
+    uint16_t response = 0;
+    if (!player.challengeValid) {
+      playerLine(target, "먼저 auth로 challenge를 발급받으세요.");
+    } else if (!parseHex16(input + 5, response)) {
+      playerLine(target, "응답은 16진수 4자리여야 합니다. 예: auth 1A2B");
+    } else if (response != legacyAuthResponse(player.challenge, legacyAuthKey())) {
+      playerLine(target, "AUTH FAILED. 같은 challenge로 다시 시도하세요.");
+      beep(196, 150);
+    } else {
+      player.challengeValid = false;
+      playerLine(target, "AUTH SUCCESS");
+      playerPrintf(target, "[REWARD FLAG] %s", problems[MISSION_LEGACY_AUTH].answer);
+      drawLegacyAuthSuccess();
+      delay(650);
+      finishProblem(target, MISSION_LEGACY_AUTH);
+    }
+  } else {
+    playerLine(target, "알 수 없는 진단 명령입니다. help를 입력하세요.");
+  }
+}
+
+void handleProblemInput(PlayerTarget target, char *input) {
+  PlayerContext &player = playerContext(target);
+  const uint8_t index = static_cast<uint8_t>(player.problem);
+
+  if (strcmp(input, "hint") == 0) {
+    drawHint(index);
+    playerLine(target, "OLED에 보기/예시를 다시 표시했습니다.");
+    return;
+  }
+  if (index == MISSION_LEGACY_AUTH && player.diagnostic) {
+    handleLegacyAuth(target, input);
+    return;
+  }
+  if (strcmp(input, "exit") == 0) {
+    resetPlayer(player);
+    screen = Screen::Home;
+    drawHome();
+    playerLine(target, "문제에서 나왔습니다.");
+    return;
+  }
+
+  if (index == MISSION_LEAKED) {
+    if (strcmp(input, problems[index].answer) == 0) finishProblem(target, index);
+    else incorrect(target);
+  } else if (index == MISSION_DEBUG) {
+    if (strcmp(input, problems[index].answer) == 0) {
+      finishProblem(target, index);
+    } else if (strcmp(input, "help") == 0) {
+      playerLine(target, "사용 가능: help, info, log, hint, exit");
+    } else if (strcmp(input, "info") == 0) {
+      playerLine(target, "[DEVICE INFORMATION]");
+      playerLine(target, "장치명      : AEGIS BADGE Rev.3");
+      playerLine(target, "펌웨어      : 3.x");
+      playerLine(target, "동작 모드   : PLAYER");
+      playerLine(target, "디버그 모드 : ENABLED");
+      playerLine(target, "경고: 운영 환경에서 디버그 기능이 활성화되어 있습니다.");
+    } else if (strcmp(input, "log") == 0) {
+      playerLine(target, "[SYSTEM LOG]");
+      playerLine(target, "10:31:02 시스템 부팅 완료");
+      playerLine(target, "10:31:02 OLED 초기화 완료");
+      playerLine(target, "10:31:03 Serial Console 시작");
+      playerLine(target, "10:31:03 사용자 문제 데이터 로드");
+      playerPrintf(target, "10:31:03 DEBUG: recovery_token=%s",
+                   problems[index].answer);
+    } else {
+      playerLine(target, "알 수 없는 디버그 명령입니다. help를 입력하세요.");
+    }
+  } else if (index == MISSION_MAINTENANCE) {
+    if (strcmp(input, problems[index].answer) == 0) {
+      finishProblem(target, index);
+    } else if (strcmp(input, "help") == 0) {
+      playerLine(target, "사용 가능: help, info, hint, exit");
+    } else if (strcmp(input, "info") == 0) {
+      playerLine(target, "[DEVICE INFORMATION]");
+      playerLine(target, "장치명 : AEGIS BADGE Rev.3");
+      playerLine(target, "빌드   : rev3-prod");
+      playerLine(target, "로드된 모듈: display, storage, serial, diag");
+    } else if (strcmp(input, "diag") == 0) {
+      playerLine(target, "[DIAGNOSTIC INTERFACE]");
+      playerLine(target, "유지보수 인터페이스에 접근했습니다.");
+      playerLine(target, "운영 펌웨어에서 관리자용 진단 기능이 노출되어 있습니다.");
+      playerPrintf(target, "FLAG: %s", problems[index].answer);
+      playerLine(target, "FLAG를 제출하거나 exit를 입력하세요.");
+      drawDiagnosticAccess();
+    } else {
+      playerLine(target, "알 수 없는 유지보수 명령입니다. help를 입력하세요.");
+    }
+  } else {
+    handleLegacyAuth(target, input);
   }
 }
 
@@ -437,21 +696,8 @@ void handleSerialLine(char *input) {
   *end = '\0';
   if (*input == '\0') return;
 
-  if (activeProblem >= 0) {
-    if (strcmp(input, "exit") == 0) {
-      activeProblem = -1;
-      screen = Screen::Home;
-      drawHome();
-      Serial.println(F("문제에서 나왔습니다."));
-    } else if (strcmp(input, "hint") == 0) {
-      drawHint(activeProblem);
-      Serial.println(F("OLED에 보기/예시를 다시 표시했습니다."));
-    } else if (strcmp(input, problems[activeProblem].answer) == 0) {
-      solved(activeProblem);
-    } else {
-      Serial.println(F("정답이 아닙니다. 다시 시도하거나 exit를 입력하세요."));
-      beep(196, 150);
-    }
+  if (usbPlayer.problem >= 0) {
+    handleProblemInput(PlayerTarget::Usb, input);
     return;
   }
 
@@ -461,9 +707,13 @@ void handleSerialLine(char *input) {
   } else if (strcmp(input, "status") == 0) {
     printStatus();
   } else if (strcmp(input, "help") == 0) {
-    Serial.println(F("1-4 중 하나를 선택하고 정답 번호 또는 FLAG를 제출하세요."));
-    Serial.println(F("문제의 보기/예시는 OLED에만 표시됩니다."));
-    Serial.println(F("OLED 미니게임은 하단 3개 버튼으로 플레이합니다."));
+    Serial.println(F("사용 가능한 명령어:"));
+    Serial.println(F("  1-4       문제 선택"));
+    Serial.println(F("  status    문제 진행 상태 확인"));
+    Serial.println(F("  help      도움말"));
+    Serial.println(F("  clear     콘솔 화면 정리"));
+    Serial.println(F("  aegis     배지 정보 다시 표시"));
+    Serial.println(F("문제 내부에서는 각 문제에 맞는 명령을 사용할 수 있습니다."));
   } else if (strcmp(input, "hint") == 0) {
     Serial.println(F("먼저 1-4 중 문제를 선택하세요."));
   } else if (strcmp(input, "clear") == 0) {
@@ -899,8 +1149,8 @@ void setProblem(char *payload) {
   saveProblem(index);
   solvedMask &= static_cast<uint8_t>(~solvedBit(index));
   saveMask();
-  if (activeProblem == index) activeProblem = -1;
-  if (bleActiveProblem == index) bleActiveProblem = -1;
+  if (usbPlayer.problem == index) resetPlayer(usbPlayer);
+  if (blePlayer.problem == index) resetPlayer(blePlayer);
   if (displayedProblem == index) {
     screen = Screen::Problems;
     browserProblem = index;
@@ -922,27 +1172,6 @@ void printBleStatus() {
   }
 }
 
-void solveBleProblem(uint8_t index) {
-  const uint8_t next = markSolved(solvedMask, index);
-  if (next != solvedMask) {
-    solvedMask = next;
-    saveMask();
-  }
-  char line[64];
-  snprintf(line, sizeof(line), "CORRECT. progress: %u/%u", serialSolvedCount(),
-           static_cast<unsigned>(SERIAL_PROBLEM_COUNT));
-  bleSendLine(line);
-  bleActiveProblem = -1;
-  beep(1047, 130);
-  if (allSolved()) {
-    screen = Screen::Complete;
-    drawComplete();
-  } else {
-    screen = Screen::Status;
-    drawStatus();
-  }
-}
-
 void handleBleShell(char *command) {
   while (*command == ' ' || *command == '\t') ++command;
   char *end = command + strlen(command);
@@ -950,34 +1179,14 @@ void handleBleShell(char *command) {
   *end = '\0';
   if (*command == '\0') return;
 
-  if (bleActiveProblem >= 0) {
-    if (strcmp(command, "exit") == 0) {
-      bleActiveProblem = -1;
-      screen = Screen::Home;
-      drawHome();
-      bleSendLine("Exited problem.");
-    } else if (strcmp(command, "hint") == 0) {
-      drawHint(bleActiveProblem);
-      bleSendLine("OLED hint refreshed.");
-    } else if (strcmp(command, problems[bleActiveProblem].answer) == 0) {
-      solveBleProblem(bleActiveProblem);
-    } else {
-      bleSendLine("Incorrect. Retry or enter exit.");
-      beep(196, 150);
-    }
+  if (blePlayer.problem >= 0) {
+    handleProblemInput(PlayerTarget::Ble, command);
     return;
   }
 
   if (strlen(command) == 1 && command[0] >= '1' &&
       command[0] < '1' + static_cast<int>(SERIAL_PROBLEM_COUNT)) {
-    bleActiveProblem = command[0] - '1';
-    screen = Screen::Hint;
-    drawHint(bleActiveProblem);
-    bleSendLine(problems[bleActiveProblem].serialText);
-    bleSendLine(problems[bleActiveProblem].type == 'C'
-                    ? "Check OLED and submit the answer number or exit."
-                    : "Check OLED and submit FLAG or exit.");
-    beep(659);
+    startProblem(PlayerTarget::Ble, command[0] - '1');
   } else if (strcmp(command, "help") == 0) {
     bleSendLine("USER: 1-4 hint exit status clear aegis");
     bleSendLine("ADMIN: reset / reboot / problem get 1-4 / dashboard editor");

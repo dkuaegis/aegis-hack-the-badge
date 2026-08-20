@@ -51,7 +51,7 @@ function showConnected(activePort) {
   $('connection-status').className = 'online';
   connectButton.textContent = 'DISCONNECT';
   commandInput.disabled = false;
-  commandInput.placeholder = '1-4 | hint | status | help | exit';
+  commandInput.placeholder = 'COMMAND OR FLAG';
   sendButton.disabled = false;
   commandInput.focus();
 }

@@ -81,6 +81,8 @@ http://127.0.0.1:8080
 
 대시보드에서 배지를 선택하면 다음 명령을 무선으로 실행할 수 있습니다.
 USB Serial 사용자 셸과 BLE 관리자 셸은 입력 상태를 서로 따로 유지합니다.
+두 셸의 1~4번 문제 플레이는 같은 대화형 Challenge Engine을 사용하므로
+HEX 표시, 디버그/진단 명령, Legacy Auth 동작이 동일합니다.
 
 | 명령 | 기능 |
 | --- | --- |
@@ -100,6 +102,8 @@ USB Serial 사용자 셸과 BLE 관리자 셸은 입력 상태를 서로 따로 
 
 - 선택형: ASCII 보기 2~4개와 정답 번호 1~4
 - FLAG형: FLAG 문자열과 OLED에 표시할 `보기` 문구 0~4개
+- Mission 04의 `ANSWER / REWARD FLAG`는 직접 제출할 정답이 아니라,
+  동적 challenge-response 인증 성공 후 출력되는 보상 FLAG입니다.
 - 제한: 제목 23 bytes, 문제 본문 255 bytes, 정답 79 bytes,
   OLED 보기/문구 각 23 bytes
 - OLED 폰트 제약으로 제목과 OLED 보기/문구는 ASCII만 허용
