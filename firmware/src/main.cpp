@@ -13,6 +13,7 @@
 
 #include "logic.h"
 #include "logo.h"
+#include "msg_ctf_logo.h"
 #include "pins.h"
 #include "problems.h"
 
@@ -39,10 +40,17 @@ constexpr int16_t FIREWALL_BALL_SIZE = 3;
 constexpr float FIREWALL_PADDLE_SPEED = 85.0f;
 constexpr uint32_t TROPHY_LED_STEP_MS = 120;
 constexpr uint32_t LONG_PRESS_MS = 700;
+constexpr uint8_t OLED_NORMAL_CONTRAST = 0xcf;
+constexpr uint8_t BOOT_FADE_STEP_MS = 52;
+constexpr uint8_t BOOT_TERMINAL_CHAR_MS = 22;
 constexpr char START_COMMAND[] = "aegis";
 constexpr char BLE_SERVICE_UUID[] = "6f8d0001-6a4b-4c52-9f2a-8f0f5d9b0001";
 constexpr char BLE_RX_UUID[] = "6f8d0002-6a4b-4c52-9f2a-8f0f5d9b0001";
 constexpr char BLE_TX_UUID[] = "6f8d0003-6a4b-4c52-9f2a-8f0f5d9b0001";
+constexpr const char *BOOT_TERMINAL_LINES[] = {
+    "root@aegis:~# ./boot", "[OK] Aegis", "[OK] Hack The Badge ver.3",
+    "[HW] - Hacking Box R3:V1V3 -", "dev: developed by.@Z3r0c0k3",
+};
 #ifndef BADGE_ADMIN_KEY
 #define BADGE_ADMIN_KEY "AEGIS_DEV_ONLY_CHANGE_ME"
 #endif
@@ -164,6 +172,11 @@ constexpr VictoryNote VICTORY_MELODY[] = {
     {523, 90, 25},  {659, 90, 25},  {784, 90, 25},
     {1047, 180, 40}, {784, 90, 25}, {1047, 90, 25},
     {1319, 140, 30}, {1568, 360, 0},
+};
+
+constexpr VictoryNote BOOT_FANFARE[] = {
+    {622, 360, 30}, {311, 100, 10}, {466, 180, 25}, {415, 220, 25},
+    {831, 180, 20}, {622, 320, 30}, {415, 180, 20}, {466, 560, 0},
 };
 
 struct VictoryState {
@@ -367,10 +380,97 @@ void beep(uint16_t frequency = 880, uint16_t duration = 70) {
 }
 
 void drawBootFrame() {
+  oled.drawDisc(64, 32, 30);
+  oled.setDrawColor(0);
+  oled.setBitmapMode(1);
   oled.drawXBMP(32, 0, 64, 64, AEGIS_LOGO_64);
+  oled.setBitmapMode(0);
+  oled.setDrawColor(1);
+  oled.drawCircle(64, 32, 30);
 }
 
-void drawBoot() { render(drawBootFrame); }
+void drawMsgCtfBootFrame() {
+  oled.setBitmapMode(1);
+  oled.drawXBMP(0, 0, 128, 64, MSG_CTF_LOGO_128X64);
+  oled.setBitmapMode(0);
+}
+
+void drawBootTerminalFrame(size_t visibleChars) {
+  oled.setFont(u8g2_font_4x6_tf);
+  oled.drawBox(0, 0, 128, 8);
+  oled.setDrawColor(0);
+  oled.drawStr(2, 6, "AEGIS SECURE BOOT // TTY0");
+  oled.setDrawColor(1);
+
+  bool cursorDrawn = false;
+  char line[40];
+  for (uint8_t i = 0;
+       i < sizeof(BOOT_TERMINAL_LINES) / sizeof(BOOT_TERMINAL_LINES[0]); ++i) {
+    const size_t length = strlen(BOOT_TERMINAL_LINES[i]);
+    const size_t shown = min(visibleChars, length);
+    memcpy(line, BOOT_TERMINAL_LINES[i], shown);
+    line[shown] = '\0';
+    const uint8_t baseline = 17 + i * 10;
+    oled.drawStr(2, baseline, line);
+    if (!cursorDrawn && shown < length) {
+      oled.drawBox(2 + oled.getStrWidth(line), baseline - 5, 3, 6);
+      cursorDrawn = true;
+    }
+    visibleChars -= shown;
+  }
+  if (!cursorDrawn) {
+    oled.drawBox(2 + oled.getStrWidth(BOOT_TERMINAL_LINES[4]), 52, 3, 6);
+  }
+}
+
+void renderBootTerminalFrame(size_t visibleChars) {
+  oled.firstPage();
+  do drawBootTerminalFrame(visibleChars); while (oled.nextPage());
+}
+
+void fadeBootContrast(bool fadeIn) {
+  for (uint8_t step = 0; step <= 16; ++step) {
+    const uint8_t level = fadeIn ? step : 16 - step;
+    oled.setContrast(OLED_NORMAL_CONTRAST * level / 16);
+    delay(BOOT_FADE_STEP_MS);
+  }
+}
+
+void fadeBootFrame(void (*frame)()) {
+  oled.setContrast(0);
+  render(frame);
+  fadeBootContrast(true);
+  delay(220);
+  fadeBootContrast(false);
+  oled.clearDisplay();
+}
+
+void showBootTerminal() {
+  size_t totalChars = 0;
+  for (const char *line : BOOT_TERMINAL_LINES) totalChars += strlen(line);
+  oled.setContrast(OLED_NORMAL_CONTRAST);
+  for (size_t visible = 0; visible < totalChars; visible += 2) {
+    renderBootTerminalFrame(visible);
+    delay(BOOT_TERMINAL_CHAR_MS);
+  }
+  renderBootTerminalFrame(totalChars);
+  for (const VictoryNote &note : BOOT_FANFARE) {
+    tone(Pins::BUZZER, note.frequency, note.duration);
+    delay(note.duration);
+    noTone(Pins::BUZZER);
+    delay(note.gap);
+  }
+  delay(350);
+  fadeBootContrast(false);
+  oled.clearDisplay();
+}
+
+void playBootAnimation() {
+  fadeBootFrame(drawBootFrame);
+  fadeBootFrame(drawMsgCtfBootFrame);
+  showBootTerminal();
+  oled.setContrast(OLED_NORMAL_CONTRAST);
+}
 
 void drawHomeFrame() {
   static const char *const items[HOME_MENU_COUNT] = {
@@ -561,18 +661,6 @@ void startVictorySequence(uint32_t now) {
   victory.nextAt = now + 250;
   setAllStatusLeds(true);
   bleStatusDirty = true;
-}
-
-void enterTrophyModeFromBoot(uint32_t now) {
-  stopVictoryMode();
-  screen = Screen::Complete;
-  drawComplete();
-  victory.phase = VictoryPhase::TrophyIdle;
-  victory.ledSweep = true;
-  victory.ledPosition = 0;
-  victory.ledDirection = 1;
-  victory.ledNextAt = now;
-  setAllStatusLeds(false);
 }
 
 void updateVictory(uint32_t now) {
@@ -1643,7 +1731,7 @@ void setup() {
   oled.setI2CAddress(0x3c << 1);
   oled.setBusClock(400000);
   oled.begin();
-  drawBoot();
+  playBootAnimation();
 
   preferences.begin("badge", false);
   loadProblems();
@@ -1660,10 +1748,9 @@ void setup() {
   const uint32_t bootAt = millis();
   while (millis() - bootAt < 700) delay(5);
   if (completedAtBoot) {
-    enterTrophyModeFromBoot(millis());
+    startVictorySequence(millis());
   } else {
     drawHome();
-    beep(880, 60);
   }
 }
 

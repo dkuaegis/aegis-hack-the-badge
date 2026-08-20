@@ -61,7 +61,7 @@ Breakout 보너스 게임입니다. `LEFT`/`RIGHT`를 누르는 동안 패들이
 
 Serial Mission 4개와 Hidden Access를 모두 풀면 Trophy OLED가 즉시 표시되고,
 비차단 fanfare 후 5개 LED가 좌우로 왕복합니다. 5/5 상태로
-재부팅하면 멜로디를 반복하지 않고 Trophy와 LED 왕복만 복원합니다.
+재부팅하면 짧은 부팅음 후 Trophy, fanfare, LED 왕복을 다시 실행합니다.
 Trophy에서 `OK`를 길게 누르면 Status를 볼 수 있으며, 관리자 `reset`은
 멜로디와 LED 애니메이션까지 모두 종료합니다.
 
