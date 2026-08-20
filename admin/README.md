@@ -66,6 +66,7 @@ http://127.0.0.1:8080
 | 화면 | 기능 |
 | --- | --- |
 | `SOLVED`, `SERIAL`, `HIDDEN` | 전체, 1~4번, Hidden Access 풀이 상태 |
+| `MARK ALL SOLVED` | 선택한 배지를 5/5로 처리하고 Trophy 이벤트 실행 |
 | `RESET SOLVED` | 해당 배지의 모든 풀이 상태 초기화 |
 | `REBOOT` | 해당 배지 재부팅 |
 | `EDIT PROBLEMS` | 1~4번 문제 조회·수정 |
@@ -88,6 +89,7 @@ HEX 표시, 디버그/진단 명령, Legacy Auth 동작이 동일합니다.
 | --- | --- |
 | `help` | 명령 목록 |
 | `status` | 장비 ID와 문제 풀이 상태 갱신 |
+| `solve all` | 모든 Challenge를 해결 처리하고 Trophy/fanfare 실행 |
 | `reset` | 모든 풀이 상태 초기화 |
 | `reboot` | 배지 재부팅 |
 | `1`~`4` | USB와 동일한 문제 선택 |
