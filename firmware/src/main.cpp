@@ -622,6 +622,14 @@ void updateTrophyLedSweep(uint32_t now) {
   victory.ledNextAt = now + TROPHY_LED_STEP_MS;
 }
 
+void solveAllForAdmin(uint32_t now) {
+  if (allSolved()) return;
+  solvedMask = solvedMaskFor(TOTAL_CHALLENGE_COUNT);
+  saveMask();
+  configureHiddenAccessPins();
+  startVictorySequence(now);
+}
+
 void printBanner() {
   Serial.println();
   Serial.println(F("=== Aegis Hack The Badge / Rev.3 ==="));
@@ -1514,7 +1522,7 @@ void handleBleShell(char *command) {
     startProblem(PlayerTarget::Ble, command[0] - '1');
   } else if (strcmp(command, "help") == 0) {
     bleSendLine("USER: 1-4 hint exit status clear aegis");
-    bleSendLine("ADMIN: reset / reboot / problem get 1-4 / dashboard editor");
+    bleSendLine("ADMIN: solve all / reset / reboot / problem get 1-4 / dashboard editor");
   } else if (strcmp(command, "hint") == 0) {
     bleSendLine("Select problem 1-4 first.");
   } else if (strcmp(command, "clear") == 0) {
@@ -1561,6 +1569,10 @@ void handleBleCommand(char *command) {
     }
   } else if (strncmp(command, "problem set\t", 12) == 0) {
     setProblem(command + 12);
+  } else if (strcmp(command, "solve all") == 0) {
+    solveAllForAdmin(millis());
+    bleSendLine("OK solve all");
+    sendBleStatus();
   } else if (strcmp(command, "reset") == 0) {
     resetProgress();
     bleSendLine("OK reset");
