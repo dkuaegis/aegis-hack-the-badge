@@ -139,8 +139,8 @@ PlatformIO 설치, 완전 초기화, BOOT 복구, 업로드 후 점검, 핀 매�
 
 1. 배지를 USB로 PC에 연결하고 Serial 터미널을 `115200 baud`로 엽니다.
 2. `aegis`를 입력한 뒤 `1`~`4`로 문제를 선택합니다.
-3. 문제 본문은 Serial에서, 보기와 예시는 OLED에서 확인합니다.
-4. 선택형은 정답 번호를, FLAG형은 FLAG 문자열을 Serial에 입력합니다.
+3. 한국어 문제 본문은 Serial에서, 영문 ASCII 힌트는 OLED에서 확인합니다.
+4. 문제 안내에 따라 문제 내부 명령 또는 FLAG를 Serial에 입력합니다.
 5. 해결한 문제는 상태 LED와 OLED `STATUS`에 반영됩니다.
 
 Serial 명령:
