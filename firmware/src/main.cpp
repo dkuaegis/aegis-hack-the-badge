@@ -5,6 +5,10 @@
 #include <BLEUtils.h>
 #include <Preferences.h>
 #include <U8g2lib.h>
+#include <WiFi.h>
+#include <esp_now.h>
+#include <esp_wifi.h>
+#include <esp32-hal-ledc.h>
 #include <freertos/FreeRTOS.h>
 #include <freertos/queue.h>
 #include <mbedtls/base64.h>
@@ -27,7 +31,7 @@ constexpr uint32_t BUTTON_DEBOUNCE_MS = 30;
 constexpr uint32_t HIDDEN_HOLD_MS = 1200;
 constexpr uint8_t FLAPPY_REWARD_SCORE = 5;
 constexpr uint32_t FLAPPY_FRAME_MS = 40;
-constexpr uint8_t HOME_MENU_COUNT = 4;
+constexpr uint8_t HOME_MENU_COUNT = 5;
 constexpr uint32_t FIREWALL_FRAME_MS = 30;
 constexpr uint8_t FIREWALL_COLS = 8;
 constexpr uint8_t FIREWALL_ROWS = 3;
@@ -47,6 +51,20 @@ constexpr uint32_t LONG_PRESS_MS = 700;
 constexpr uint8_t OLED_NORMAL_CONTRAST = 0xcf;
 constexpr uint8_t BOOT_FADE_STEP_MS = 52;
 constexpr uint8_t BOOT_TERMINAL_CHAR_MS = 22;
+constexpr uint8_t BUZZER_CHANNEL = 7;
+constexpr uint8_t MORSE_CHANNEL = 1;
+constexpr uint16_t MORSE_FREQUENCY = 720;
+constexpr uint16_t MORSE_UNIT_MS = 180;
+constexpr uint16_t MORSE_DIT_MS = 100;
+constexpr uint16_t MORSE_DAH_MS = 300;
+constexpr uint16_t MORSE_STRAIGHT_DAH_MS = 240;
+constexpr uint32_t MORSE_LETTER_GAP_MS = MORSE_UNIT_MS * 3;
+constexpr uint32_t MORSE_WORD_GAP_MS = MORSE_UNIT_MS * 7;
+constexpr uint16_t MORSE_PACKET_MAGIC = 0xae63;
+constexpr uint16_t BUZZER_DUTY[] = {4,  8,  16,  32,  64,
+                                    96, 144, 216, 324, 511};
+static_assert(sizeof(BUZZER_DUTY) / sizeof(BUZZER_DUTY[0]) == 10,
+              "Buzzer volume requires ten duty levels");
 constexpr char START_COMMAND[] = "aegis";
 constexpr char BLE_SERVICE_UUID[] = "6f8d0001-6a4b-4c52-9f2a-8f0f5d9b0001";
 constexpr char BLE_RX_UUID[] = "6f8d0002-6a4b-4c52-9f2a-8f0f5d9b0001";
@@ -75,12 +93,15 @@ uint8_t menuItem = 0;
 uint8_t browserProblem = 0;
 uint32_t hiddenSince = 0;
 uint32_t hiddenVictoryAt = 0;
+uint32_t buzzerStopAt = 0;
+uint8_t buzzerVolume = 10;
 char serialLine[192] = {};
 uint8_t serialLength = 0;
 char badgeId[19] = {};
 BLEServer *bleServer = nullptr;
 BLECharacteristic *bleTx = nullptr;
 QueueHandle_t bleCommands = nullptr;
+QueueHandle_t morsePackets = nullptr;
 volatile bool bleConnected = false;
 volatile bool bleRestartAdvertising = false;
 volatile bool bleAuthenticated = false;
@@ -135,7 +156,8 @@ void playerPrintf(PlayerTarget target, const char *format, ...) {
 }
 
 enum class Screen : uint8_t {
-  Home, Problems, Hint, Status, Game, FirewallGame, HiddenGranted, Complete
+  Home, Problems, Hint, Status, Game, FirewallGame, MorseLink, HiddenGranted,
+  Complete
 };
 enum class GamePhase : uint8_t { Intro, Running, Over };
 enum class FirewallPhase : uint8_t { Intro, Running, Over, Clear };
@@ -166,6 +188,38 @@ struct FirewallState {
   uint8_t remaining = 0;
   uint32_t lastFrame = 0;
 } firewall;
+
+struct __attribute__((packed)) MorsePacket {
+  uint16_t magic;
+  uint8_t version;
+  char symbol;
+  uint32_t sender;
+};
+
+struct MorseLine {
+  uint32_t sender = 0;
+  uint8_t bits = 0;
+  uint8_t length = 0;
+  char symbols[7] = {};
+  char text[22] = {};
+  uint8_t textLength = 0;
+  uint32_t lastElementAt = 0;
+  bool letterDone = true;
+  bool wordDone = true;
+};
+
+struct MorseState {
+  MorseLine rx;
+  MorseLine tx;
+  uint32_t ownId = 0;
+  bool ready = false;
+  bool ditPending = false;
+  bool straightActive = false;
+  uint32_t straightStartedAt = 0;
+} morse;
+
+constexpr uint8_t MORSE_BROADCAST[] = {0xff, 0xff, 0xff,
+                                        0xff, 0xff, 0xff};
 
 struct VictoryNote {
   uint16_t frequency;
@@ -308,8 +362,31 @@ void setAllStatusLeds(bool on) {
   for (uint8_t pin : Pins::STATUS_LEDS) digitalWrite(pin, on ? HIGH : LOW);
 }
 
+void initBuzzer() {
+  ledcSetup(BUZZER_CHANNEL, 2000, 10);
+  ledcAttachPin(Pins::BUZZER, BUZZER_CHANNEL);
+  ledcWrite(BUZZER_CHANNEL, 0);
+}
+
+void buzzerStop() {
+  ledcWrite(BUZZER_CHANNEL, 0);
+  buzzerStopAt = 0;
+}
+
+void buzzerTone(uint16_t frequency, uint16_t duration = 0) {
+  ledcWriteTone(BUZZER_CHANNEL, frequency);
+  ledcWrite(BUZZER_CHANNEL, BUZZER_DUTY[buzzerVolume - 1]);
+  buzzerStopAt = duration ? millis() + duration : 0;
+}
+
+void updateBuzzer(uint32_t now) {
+  if (buzzerStopAt != 0 && static_cast<int32_t>(now - buzzerStopAt) >= 0) {
+    buzzerStop();
+  }
+}
+
 void stopVictoryMode() {
-  noTone(Pins::BUZZER);
+  buzzerStop();
   victory = VictoryState{};
   hiddenVictoryAt = 0;
 }
@@ -387,7 +464,7 @@ void configureHiddenAccessPins() {
 }
 
 void beep(uint16_t frequency = 880, uint16_t duration = 70) {
-  tone(Pins::BUZZER, frequency, duration);
+  buzzerTone(frequency, duration);
 }
 
 void drawBootFrame() {
@@ -472,16 +549,16 @@ void playBootSound(size_t terminalChars) {
       renderBootTerminalFrame(terminalChars, true);
     }
     if (step.frequency == 0) {
-      noTone(Pins::BUZZER);
+      buzzerStop();
     } else {
-      tone(Pins::BUZZER, step.frequency, step.duration);
+      buzzerTone(step.frequency, step.duration);
     }
     delay(step.duration);
   }
 #else
   renderBootTerminalFrame(terminalChars, true);
 #endif
-  noTone(Pins::BUZZER);
+  buzzerStop();
   setAllStatusLeds(false);
 }
 
@@ -509,7 +586,8 @@ void playBootAnimation() {
 
 void drawHomeFrame() {
   static const char *const items[HOME_MENU_COUNT] = {
-      "MISSIONS", "FLAPPY HACKER", "FIREWALL BREAKER", "STATUS"};
+      "MISSIONS", "FLAPPY HACKER", "FIREWALL BREAKER", "MORSE LINK",
+      "STATUS"};
   char progress[8];
   snprintf(progress, sizeof(progress), "%02u / %02u", serialSolvedCount(),
            static_cast<unsigned>(SERIAL_PROBLEM_COUNT));
@@ -553,8 +631,8 @@ void drawHintFrame() {
     centered(19 + row * 9, problems[displayedProblem].oledLines[row]);
   }
   footer(problems[displayedProblem].type == 'C'
-             ? "CHOICE VIA SHELL"
-             : "FLAG VIA SHELL");
+             ? "L:BACK / CHOICE:SHELL"
+             : "L:BACK / FLAG:SHELL");
 }
 
 void drawHint(uint8_t index) {
@@ -568,7 +646,7 @@ void drawDiagnosticAccessFrame() {
   centered(21, "DIAGNOSTIC");
   centered(31, "INTERFACE");
   inverseLabel(37, 12, "ACCESS GRANTED");
-  footer("FLAG VIA SHELL");
+  footer("L:BACK / FLAG:SHELL");
 }
 
 void drawDiagnosticAccess() {
@@ -585,7 +663,7 @@ void drawLegacyAuthChallengeFrame() {
   centered(25, "CHALLENGE");
   oled.setFont(u8g2_font_9x15B_tf);
   centered(43, challenge);
-  footer("AUTH XXXX VIA SHELL");
+  footer("L:BACK / AUTH:SHELL");
 }
 
 void drawLegacyAuthChallenge(uint16_t challenge) {
@@ -600,7 +678,7 @@ void drawLegacyAuthSuccessFrame() {
   oled.setFont(u8g2_font_6x10_tf);
   centered(27, "ACCESS");
   inverseLabel(32, 14, "ELEVATED");
-  footer("MISSION CLEAR");
+  footer("L:BACK / MISSION CLEAR");
 }
 
 void drawLegacyAuthSuccess() {
@@ -630,7 +708,7 @@ void drawStatusFrame() {
   } else {
     centered(45, "SERIAL MISSIONS");
   }
-  footer("HOLD OK: BACK");
+  footer("LEFT: BACK");
 }
 
 void drawStatus() { render(drawStatusFrame); }
@@ -645,7 +723,7 @@ void drawHiddenGrantedFrame() {
   oled.setDrawColor(1);
   oled.setFont(u8g2_font_6x10_tf);
   centered(50, "CHALLENGE 05 CLEAR");
-  footer("OK: STATUS");
+  footer("LEFT: STATUS");
 }
 
 void drawHiddenGranted() { render(drawHiddenGrantedFrame); }
@@ -670,7 +748,8 @@ void drawCompleteFrame() {
   if (oled.getStrWidth(trophy) > 126) oled.setFont(u8g2_font_8x13B_tf);
   centered(39, trophy);
   oled.setFont(u8g2_font_4x6_tf);
-  centered(59, "You solved all problems XD");
+  centered(53, "You solved all problems XD");
+  footer("LEFT: STATUS");
 }
 
 void drawComplete() { render(drawCompleteFrame); }
@@ -714,14 +793,14 @@ void updateVictory(uint32_t now) {
     victory.nextAt = now;
   } else if (victory.phase == VictoryPhase::Fanfare) {
     if (victory.notePlaying) {
-      noTone(Pins::BUZZER);
+      buzzerStop();
       victory.notePlaying = false;
       victory.nextAt = now + VICTORY_MELODY[victory.melodyIndex].gap;
       ++victory.melodyIndex;
     } else if (victory.melodyIndex <
                sizeof(VICTORY_MELODY) / sizeof(VICTORY_MELODY[0])) {
       const VictoryNote &note = VICTORY_MELODY[victory.melodyIndex];
-      tone(Pins::BUZZER, note.frequency, note.duration);
+      buzzerTone(note.frequency, note.duration);
       victory.notePlaying = true;
       victory.nextAt = now + note.duration;
     } else {
@@ -1166,7 +1245,7 @@ void drawFirewallIntroFrame() {
   centered(31, "PRESS OK");
   oled.setFont(u8g2_font_5x7_tf);
   centered(45, "DESTROY THE WALL");
-  footer("HOLD OK: EXIT");
+  footer("HOLD LEFT: EXIT");
 }
 
 void drawFirewallIntro() { render(drawFirewallIntroFrame); }
@@ -1197,7 +1276,7 @@ void drawFirewallOverFrame() {
   centered(34, "ACCESS DENIED");
   oled.setFont(u8g2_font_5x7_tf);
   centered(49, "OK: RETRY");
-  footer("HOLD OK: EXIT");
+  footer("HOLD LEFT: EXIT");
 }
 
 void drawFirewallOver() { render(drawFirewallOverFrame); }
@@ -1208,7 +1287,7 @@ void drawFirewallClearFrame() {
   centered(34, "ACCESS OPEN");
   oled.setFont(u8g2_font_5x7_tf);
   centered(49, "OK: RETRY");
-  footer("HOLD OK: EXIT");
+  footer("HOLD LEFT: EXIT");
 }
 
 void drawFirewallClear() { render(drawFirewallClearFrame); }
@@ -1232,7 +1311,7 @@ void startFirewallGame(uint32_t now) {
 }
 
 void updateFirewallGame(uint32_t now) {
-  if (ok.longPressed) {
+  if (left.longPressed) {
     screen = Screen::Home;
     drawHome();
     return;
@@ -1313,6 +1392,177 @@ void updateFirewallGame(uint32_t now) {
   }
 }
 
+void appendMorseText(MorseLine &line, char value) {
+  if (value == ' ' &&
+      (line.textLength == 0 || line.text[line.textLength - 1] == ' ')) return;
+  if (line.textLength + 1 >= sizeof(line.text)) {
+    memmove(line.text, line.text + 1, sizeof(line.text) - 2);
+    line.textLength = sizeof(line.text) - 2;
+  }
+  line.text[line.textLength++] = value;
+  line.text[line.textLength] = '\0';
+}
+
+void appendMorseSymbol(MorseLine &line, char symbol, uint32_t now) {
+  if (line.letterDone) {
+    line.bits = 0;
+    line.length = 0;
+    line.symbols[0] = '\0';
+  }
+  if (line.length < sizeof(line.symbols) - 1) {
+    line.bits = static_cast<uint8_t>((line.bits << 1) | (symbol == '-'));
+    line.symbols[line.length++] = symbol;
+    line.symbols[line.length] = '\0';
+  }
+  line.lastElementAt = now;
+  line.letterDone = false;
+  line.wordDone = false;
+}
+
+bool updateMorseLine(MorseLine &line, uint32_t now) {
+  if (line.length == 0) return false;
+  bool changed = false;
+  if (!line.letterDone && now - line.lastElementAt >= MORSE_LETTER_GAP_MS) {
+    appendMorseText(line, decodeMorse(line.bits, line.length));
+    line.letterDone = true;
+    changed = true;
+  }
+  if (!line.wordDone && now - line.lastElementAt >= MORSE_WORD_GAP_MS) {
+    appendMorseText(line, ' ');
+    line.wordDone = true;
+    changed = true;
+  }
+  return changed;
+}
+
+void drawMorseLinkFrame() {
+  char sender[16];
+  char current[16];
+  snprintf(sender, sizeof(sender), "RX %06lX%s",
+           static_cast<unsigned long>(morse.rx.sender & 0xffffff),
+           morse.ready ? "" : " OFF");
+  snprintf(current, sizeof(current), "NOW %s",
+           morse.rx.length && !morse.rx.letterDone ? morse.rx.symbols : "-");
+  header("MORSE LINK // CH1");
+  oled.setFont(u8g2_font_5x7_tf);
+  oled.drawStr(2, 19, sender);
+  oled.drawStr(2, 29, morse.rx.textLength ? morse.rx.text : "> WAITING SIGNAL");
+  oled.drawStr(2, 39, current);
+  oled.drawStr(2, 50, "TX>");
+  oled.drawStr(20, 50, morse.tx.textLength ? morse.tx.text : morse.tx.symbols);
+  footer("L:. M:KEY R:- HOLD L:EXIT");
+}
+
+void drawMorseLink() { render(drawMorseLinkFrame); }
+
+void enterMorseLink() {
+  morse.ditPending = false;
+  morse.straightActive = false;
+  screen = Screen::MorseLink;
+  drawMorseLink();
+}
+
+void receiveMorsePacket(const uint8_t *, const uint8_t *data, int length) {
+  if (morsePackets == nullptr || length != sizeof(MorsePacket)) return;
+  MorsePacket packet{};
+  memcpy(&packet, data, sizeof(packet));
+  if (packet.magic != MORSE_PACKET_MAGIC || packet.version != 1 ||
+      (packet.symbol != '.' && packet.symbol != '-')) return;
+  xQueueSend(morsePackets, &packet, 0);
+}
+
+void initMorseRadio() {
+  morse.ownId = static_cast<uint32_t>(ESP.getEfuseMac() & 0xffffff);
+  morsePackets = xQueueCreate(8, sizeof(MorsePacket));
+  WiFi.mode(WIFI_STA);
+  esp_wifi_set_channel(MORSE_CHANNEL, WIFI_SECOND_CHAN_NONE);
+  if (morsePackets == nullptr || esp_now_init() != ESP_OK) {
+    Serial.println(F("Morse P2P init failed"));
+    return;
+  }
+  esp_now_register_recv_cb(receiveMorsePacket);
+  esp_now_peer_info_t peer{};
+  memcpy(peer.peer_addr, MORSE_BROADCAST, sizeof(MORSE_BROADCAST));
+  peer.channel = MORSE_CHANNEL;
+  peer.ifidx = WIFI_IF_STA;
+  peer.encrypt = false;
+  const esp_err_t result = esp_now_add_peer(&peer);
+  morse.ready = result == ESP_OK || result == ESP_ERR_ESPNOW_EXIST;
+  Serial.printf("Morse P2P %s: %06lX / channel %u\n",
+                morse.ready ? "ready" : "failed",
+                static_cast<unsigned long>(morse.ownId), MORSE_CHANNEL);
+}
+
+void sendMorseSymbol(char symbol, uint32_t now, bool playTone) {
+  appendMorseSymbol(morse.tx, symbol, now);
+  if (morse.ready) {
+    const MorsePacket packet{MORSE_PACKET_MAGIC, 1, symbol, morse.ownId};
+    esp_now_send(MORSE_BROADCAST, reinterpret_cast<const uint8_t *>(&packet),
+                 sizeof(packet));
+  }
+  if (playTone) buzzerTone(MORSE_FREQUENCY,
+                           symbol == '.' ? MORSE_DIT_MS : MORSE_DAH_MS);
+  drawMorseLink();
+}
+
+void updateMorseRadio(uint32_t now) {
+  MorsePacket packet{};
+  bool changed = false;
+  while (morsePackets != nullptr &&
+         xQueueReceive(morsePackets, &packet, 0) == pdTRUE) {
+    if (packet.sender == morse.ownId) continue;
+    if (morse.rx.sender != 0 && morse.rx.sender != packet.sender &&
+        !morse.rx.wordDone) continue;
+    if (morse.rx.sender != packet.sender) {
+      morse.rx = MorseLine{};
+      morse.rx.sender = packet.sender;
+    }
+    appendMorseSymbol(morse.rx, packet.symbol, now);
+    if (screen == Screen::MorseLink) {
+      buzzerTone(MORSE_FREQUENCY,
+                 packet.symbol == '.' ? MORSE_DIT_MS : MORSE_DAH_MS);
+    }
+    changed = true;
+  }
+  changed |= updateMorseLine(morse.rx, now);
+  changed |= updateMorseLine(morse.tx, now);
+  if (changed && screen == Screen::MorseLink) drawMorseLink();
+}
+
+void updateMorseLink(uint32_t now) {
+  if (left.longPressed) {
+    morse.ditPending = false;
+    morse.straightActive = false;
+    buzzerStop();
+    screen = Screen::Home;
+    drawHome();
+    return;
+  }
+
+  if (left.pressed) {
+    morse.ditPending = true;
+    buzzerTone(MORSE_FREQUENCY, MORSE_DIT_MS);
+  } else if (morse.ditPending && !left.stable) {
+    morse.ditPending = false;
+    sendMorseSymbol('.', now, false);
+  }
+
+  if (morse.straightActive && !ok.stable) {
+    const char symbol = now - morse.straightStartedAt >= MORSE_STRAIGHT_DAH_MS
+                            ? '-'
+                            : '.';
+    morse.straightActive = false;
+    buzzerStop();
+    sendMorseSymbol(symbol, now, false);
+  } else if (ok.pressed) {
+    morse.straightActive = true;
+    morse.straightStartedAt = now;
+    buzzerTone(MORSE_FREQUENCY);
+  }
+
+  if (right.pressed) sendMorseSymbol('-', now, true);
+}
+
 void updateUi(uint32_t now) {
   left.update(now);
   ok.update(now);
@@ -1324,6 +1574,10 @@ void updateUi(uint32_t now) {
   }
   if (screen == Screen::FirewallGame) {
     updateFirewallGame(now);
+    return;
+  }
+  if (screen == Screen::MorseLink) {
+    updateMorseLink(now);
     return;
   }
 
@@ -1342,13 +1596,18 @@ void updateUi(uint32_t now) {
         enterGame();
       } else if (menuItem == 2) {
         enterFirewallGame();
+      } else if (menuItem == 3) {
+        enterMorseLink();
       } else {
         screen = Screen::Status;
         drawStatus();
       }
     }
   } else if (screen == Screen::Problems) {
-    if (left.pressed) {
+    if (left.longPressed) {
+      screen = Screen::Home;
+      drawHome();
+    } else if (left.pressed) {
       browserProblem = (browserProblem + SERIAL_PROBLEM_COUNT - 1) % SERIAL_PROBLEM_COUNT;
       drawProblems();
     } else if (right.pressed) {
@@ -1358,13 +1617,13 @@ void updateUi(uint32_t now) {
       showProblem(browserProblem);
     }
   } else if ((screen == Screen::Hint || screen == Screen::Status) &&
-             ok.longPressed) {
+             left.pressed) {
     screen = Screen::Home;
     drawHome();
-  } else if (screen == Screen::HiddenGranted && ok.pressed) {
+  } else if (screen == Screen::HiddenGranted && left.pressed) {
     screen = Screen::Status;
     drawStatus();
-  } else if (screen == Screen::Complete && !victory.active && ok.longPressed) {
+  } else if (screen == Screen::Complete && !victory.active && left.pressed) {
     screen = Screen::Status;
     drawStatus();
   }
@@ -1397,6 +1656,7 @@ const char *screenName() {
     case Screen::Status: return "status";
     case Screen::Game: return "game";
     case Screen::FirewallGame: return "firewall-game";
+    case Screen::MorseLink: return "morse-link";
     case Screen::HiddenGranted: return "hidden-granted";
     case Screen::Complete: return "complete";
   }
@@ -1425,12 +1685,13 @@ void sendBleStatus() {
   snprintf(line, sizeof(line),
            "STATUS {\"id\":\"%s\",\"solvedMask\":%u,\"solved\":%u,"
            "\"total\":%u,\"serialSolved\":%u,\"serialProblems\":%u,"
-           "\"hiddenSolved\":%s,\"screen\":\"%s\",\"uptimeMs\":%lu}",
+           "\"hiddenSolved\":%s,\"volume\":%u,\"screen\":\"%s\","
+           "\"uptimeMs\":%lu}",
            badgeId, solvedMask, solvedCount(),
            static_cast<unsigned>(TOTAL_CHALLENGE_COUNT), serialSolvedCount(),
            static_cast<unsigned>(SERIAL_PROBLEM_COUNT),
            isSolved(solvedMask, HIDDEN_ACCESS_INDEX) ? "true" : "false",
-           screenName(), static_cast<unsigned long>(millis()));
+           buzzerVolume, screenName(), static_cast<unsigned long>(millis()));
   bleSendLine(line);
   bleStatusDirty = false;
 }
@@ -1645,7 +1906,7 @@ void handleBleShell(char *command) {
     startProblem(PlayerTarget::Ble, command[0] - '1');
   } else if (strcmp(command, "help") == 0) {
     bleSendLine("USER: 1-4 hint exit status clear aegis");
-    bleSendLine("ADMIN: solve all / reset / reboot / problem get 1-4 / dashboard editor");
+    bleSendLine("ADMIN: solve all / reset / reboot / volume 1-10 / problem get 1-4");
   } else if (strcmp(command, "hint") == 0) {
     bleSendLine("Select problem 1-4 first.");
   } else if (strcmp(command, "clear") == 0) {
@@ -1703,6 +1964,21 @@ void handleBleCommand(char *command) {
   } else if (strcmp(command, "reboot") == 0) {
     bleSendLine("OK reboot");
     rebootAt = millis() + 250;
+  } else if (strncmp(command, "volume ", 7) == 0) {
+    char *end = nullptr;
+    const long volume = strtol(command + 7, &end, 10);
+    if (end == command + 7 || *end != '\0' || volume < 1 || volume > 10) {
+      bleSendLine("ERR volume must be 1-10");
+    } else {
+      buzzerVolume = static_cast<uint8_t>(volume);
+      preferences.putUChar("volume", buzzerVolume);
+      bleStatusDirty = true;
+      char response[20];
+      snprintf(response, sizeof(response), "OK volume %u", buzzerVolume);
+      bleSendLine(response);
+      beep(880, 250);
+      sendBleStatus();
+    }
   } else {
     handleBleShell(command);
   }
@@ -1754,6 +2030,10 @@ void setup() {
   Serial.begin(SERIAL_BAUD);
   pinMode(Pins::BUZZER, OUTPUT);
   digitalWrite(Pins::BUZZER, LOW);
+  initBuzzer();
+  preferences.begin("badge", false);
+  buzzerVolume = preferences.getUChar("volume", 10);
+  if (buzzerVolume < 1 || buzzerVolume > 10) buzzerVolume = 10;
 
   for (uint8_t pin : Pins::STATUS_LEDS) {
     pinMode(pin, OUTPUT);
@@ -1768,7 +2048,6 @@ void setup() {
   oled.begin();
   playBootAnimation();
 
-  preferences.begin("badge", false);
   loadProblems();
   solvedMask = preferences.getUChar("solved", 0) &
                solvedMaskFor(TOTAL_CHALLENGE_COUNT);
@@ -1778,6 +2057,7 @@ void setup() {
   configureHiddenAccessPins();
 
   randomSeed(esp_random());
+  initMorseRadio();
   startBleAdmin();
   printBanner();
   const uint32_t bootAt = millis();
@@ -1794,6 +2074,8 @@ void loop() {
   pollSerial();
   updateBleAdmin(now);
   updateUi(now);
+  updateMorseRadio(now);
+  updateBuzzer(now);
   // Active OLED page와 무관한 전역 하드웨어 이벤트로 감지한다.
   if (updateHiddenAccess(now)) {
     screen = Screen::HiddenGranted;

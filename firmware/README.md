@@ -16,6 +16,7 @@ ESP32-S3-WROOM-1-N8R8용 펌웨어입니다. 기존
 | USB | ESP32-S3 native USB CDC, `115200 baud` |
 | 디스플레이 | 128x64 I2C OLED, SDA GPIO4 / SCL GPIO5 |
 | 관리자 통신 | BLE GATT P2P, `AEGIS-XXXXXX` advertising |
+| 배지 간 통신 | ESP-NOW broadcast, Wi-Fi channel 1 |
 | 영구 저장 | ESP32 NVS (`Preferences`) |
 
 ## 구현 기능
@@ -27,6 +28,7 @@ ESP32-S3-WROOM-1-N8R8용 펌웨어입니다. 기존
 - Trophy Mode: 5개 Challenge 완료 시 `AEGIS{PWN3D!}`, 승리 fanfare, LED 왕복 애니메이션
 - `Hidden Access`: 전면 challenge pad의 올바른 두 접점을 1.2초간 쇼트하면 해금
 - BLE 관리자: Windows/macOS/Linux PC와 P2P 연결해 장비별 상태, reset, reboot, 무선 관리자 셸 제공
+- Morse Link: 공유기 없이 배지끼리 모스 신호를 방송하고 A-Z/0-9를 자동 번역
 
 배지는 `AEGIS-XXXXXX` 이름으로 항상 BLE advertising하며 USB와 BLE 입력 상태는
 서로 분리됩니다. BLE 관리자 셸에서는 USB 사용자 명령과 관리자 명령을 모두
@@ -55,15 +57,33 @@ Mission 04의 응답은 `challenge XOR device-key`이며, 과거 인증 기록�
 
 Home의 `FIREWALL BREAKER`는 3×8 벽돌을 패들과 공으로 제거하는
 Breakout 보너스 게임입니다. `LEFT`/`RIGHT`를 누르는 동안 패들이
-이동하며, Intro/Running/Game Over/Clear 어느 상태에서나 `OK`를 길게
+이동하며, Intro/Running/Game Over/Clear 어느 상태에서나 `LEFT`를 길게
 누르면 Home으로 돌아갑니다. 게임 완료는 FLAG, `solvedMask`, 상태 LED에
 영향을 주지 않습니다.
 
 Serial Mission 4개와 Hidden Access를 모두 풀면 Trophy OLED가 즉시 표시되고,
 비차단 fanfare 후 5개 LED가 좌우로 왕복합니다. 5/5 상태로
 재부팅하면 짧은 부팅음 후 Trophy, fanfare, LED 왕복을 다시 실행합니다.
-Trophy에서 `OK`를 길게 누르면 Status를 볼 수 있으며, 관리자 `reset`은
+Trophy fanfare 종료 후 `LEFT`를 누르면 Status를 볼 수 있으며, 관리자 `reset`은
 멜로디와 LED 애니메이션까지 모두 종료합니다.
+
+## Morse Link 배지 간 통신
+
+Home의 `MORSE LINK`는 ESP-NOW channel 1 broadcast를 사용하므로 공유기,
+핫스팟이나 페어링 없이 같은 펌웨어를 올린 여러 배지가 직접 통신합니다.
+기존 BLE 관리자 채널은 그대로 유지됩니다.
+
+| 입력 | 동작 |
+| --- | --- |
+| `LEFT` | 고정 길이 dit(`.`) 패들 |
+| `RIGHT` | 고정 길이 dah(`-`) 패들 |
+| `OK` | 누른 시간이 짧으면 dit, 길면 dah인 straight key |
+| `LEFT` 짧게/길게 | dit 전송 / Home으로 복귀 |
+
+신호 사이의 휴지 시간을 기준으로 문자를 구분하고 A-Z와 0-9를 OLED에서
+자동 번역합니다. 같은 순간 여러 배지가 송신하면 일반 무전과 마찬가지로
+신호가 겹칠 수 있으므로 한 번에 한 명씩 송신해야 합니다. 도달 거리는 행사장
+구조와 2.4 GHz 혼잡도에 따라 달라지므로 전체 배포 전에 현장에서 확인하세요.
 
 ## 부팅 사운드와 연출
 
@@ -256,12 +276,13 @@ Hidden Access 힌트는 Flappy Hacker에서 5점을 달성했을 때만 OLED에 
 문구는 같은 파일의 `MINIGAME_REWARD_LINE_1`, 기준 점수는 `main.cpp`의
 `FLAPPY_REWARD_SCORE`에서 변경할 수 있습니다.
 
-OLED 화면 흐름은 `Boot → Home → Missions / Flappy / Firewall / Status`입니다.
+OLED 화면 흐름은
+`Boot → Home → Missions / Flappy / Firewall / Morse Link / Status`입니다.
 Hidden Access 성공 전에는 1~4번 Serial 문제만 표시하고, 성공 순간에
 `HIDDEN ACCESS / GRANTED`와 성공음을 출력한 뒤 Status에
 `HIDDEN ACCESS CLEAR`를 추가합니다. Home에서
-`LEFT/RIGHT`로 메뉴를 고르고 `OK`로 진입합니다. Intel과 Status는 `OK`를
-길게 눌러 Home으로 돌아갑니다.
+`LEFT/RIGHT`로 메뉴를 고르고 `OK`로 진입합니다. Hint와 Status는 `LEFT`를
+눌러 Home으로 돌아갑니다. 좌우 조작에 `LEFT`가 필요한 화면은 길게 누릅니다.
 
 ## Serial 명령
 
@@ -302,6 +323,7 @@ BLE 관리 채널은 연결마다 새 challenge를 만들고 fleet key 기반 HM
 | `solve all` | 관리자 테스트용 5/5 완료 처리와 Trophy 이벤트 실행 |
 | `reset` | 전체 풀이 상태 초기화 |
 | `reboot` | 재부팅 |
+| `volume 1`~`10` | 모든 버저 효과음의 PWM 음량을 설정하고 NVS에 저장 |
 | `1`~`4`, `hint`, `exit`, `clear`, `aegis` | USB 사용자 셸과 동일 |
 | `problem get 1`~`4` | 대시보드가 사용하는 문제 조회 명령 |
 
@@ -371,7 +393,7 @@ Secure Boot와 Flash Encryption을 활성화하지 않았습니다.
 ## 빠른 로직 검사
 
 PlatformIO 없이도 상태 비트, Hidden Access, Flappy/Firewall 충돌,
-Legacy Auth XOR, 4자리 HEX parser를 검사할 수 있습니다.
+Legacy Auth XOR, 4자리 HEX parser와 Morse decoder를 검사할 수 있습니다.
 
 ```bash
 clang++ -std=c++17 -Ifirmware/src firmware/test/test_logic.cpp -o /tmp/badge-logic-test

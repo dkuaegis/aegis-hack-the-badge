@@ -69,6 +69,7 @@ http://127.0.0.1:8080
 | `MARK ALL SOLVED` | 선택한 배지를 5/5로 처리하고 Trophy 이벤트 실행 |
 | `RESET SOLVED` | 해당 배지의 모든 풀이 상태 초기화 |
 | `REBOOT` | 해당 배지 재부팅 |
+| `BUZZER VOLUME` | 선택한 배지의 전체 효과음 크기를 1~10으로 조절·저장 |
 | `EDIT PROBLEMS` | 1~4번 문제 조회·수정 |
 | `EDIT ALL ONLINE` | 현재 인증·연결된 모든 배지의 동일한 문제 일괄 수정 |
 | `RESET ALL ONLINE` | 현재 인증·연결된 모든 배지의 풀이 상태 초기화 |
@@ -92,6 +93,7 @@ HEX 표시, 디버그/진단 명령, Legacy Auth 동작이 동일합니다.
 | `solve all` | 모든 Challenge를 해결 처리하고 Trophy/fanfare 실행 |
 | `reset` | 모든 풀이 상태 초기화 |
 | `reboot` | 배지 재부팅 |
+| `volume 1`~`10` | 버저 음량 저장 및 새 음량으로 테스트음 재생 |
 | `1`~`4` | USB와 동일한 문제 선택 |
 | `hint`, `exit`, `clear`, `aegis` | USB 사용자 셸과 동일한 기능 |
 
