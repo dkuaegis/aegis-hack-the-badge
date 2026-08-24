@@ -33,4 +33,11 @@ int main() {
   assert(rectsOverlap(10, 10, 3, 3, 12, 12, 5, 5));
   assert(!rectsOverlap(10, 10, 3, 3, 13, 10, 5, 5));
   assert(!rectsOverlap(10, 10, 3, 3, 10, 13, 5, 5));
+  assert(decodeMorse(0b01, 2) == 'A');
+  assert(decodeMorse(0b1000, 4) == 'B');
+  assert(decodeMorse(0b000, 3) == 'S');
+  assert(decodeMorse(0b111, 3) == 'O');
+  assert(decodeMorse(0b01111, 5) == '1');
+  assert(decodeMorse(0b11111, 5) == '0');
+  assert(decodeMorse(0b0011, 4) == '?');
 }
