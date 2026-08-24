@@ -54,3 +54,29 @@ constexpr bool rectsOverlap(float ax, float ay, float aw, float ah,
                             float bx, float by, float bw, float bh) {
   return ax < bx + bw && ax + aw > bx && ay < by + bh && ay + ah > by;
 }
+
+inline char decodeMorse(uint8_t bits, uint8_t length) {
+  static const char one[] = "ET";
+  static const char two[] = "IANM";
+  static const char three[] = "SURWDKGO";
+  static const char four[] = "HVF?L?PJ" "BXCYZQ??";
+  if (length == 1) return one[bits];
+  if (length == 2) return two[bits];
+  if (length == 3) return three[bits];
+  if (length == 4) return four[bits];
+  if (length == 5) {
+    switch (bits) {
+      case 0: return '5';
+      case 1: return '4';
+      case 3: return '3';
+      case 7: return '2';
+      case 15: return '1';
+      case 16: return '6';
+      case 24: return '7';
+      case 28: return '8';
+      case 30: return '9';
+      case 31: return '0';
+    }
+  }
+  return '?';
+}
