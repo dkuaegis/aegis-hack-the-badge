@@ -98,7 +98,6 @@ uint8_t buzzerVolume = 10;
 char serialLine[192] = {};
 uint8_t serialLength = 0;
 char badgeId[19] = {};
-BLEServer *bleServer = nullptr;
 BLECharacteristic *bleTx = nullptr;
 QueueHandle_t bleCommands = nullptr;
 QueueHandle_t morsePackets = nullptr;
@@ -110,10 +109,6 @@ uint32_t bleChallenge = 0;
 uint32_t rebootAt = 0;
 char bleRxLine[BLE_COMMAND_MAX] = {};
 size_t bleRxLength = 0;
-
-struct BleCommand {
-  char text[BLE_COMMAND_MAX];
-};
 
 void bleSendLine(const char *line);
 
@@ -832,19 +827,27 @@ void solveAllForAdmin(uint32_t now) {
   startVictorySequence(now);
 }
 
-void printBanner() {
-  Serial.println();
-  Serial.println(F("=== Aegis Hack The Badge / Rev.3 ==="));
-  Serial.println(F("문제 본문: Serial / 보기와 예시: OLED"));
-  Serial.println(F("명령: 1-4, status, help, hint, exit, clear, aegis"));
+void printBanner(PlayerTarget target) {
+  playerLine(target, "");
+  playerLine(target, "=== Aegis Hack The Badge / Rev.3 ===");
+  playerLine(target, "문제 본문: Serial / 보기와 예시: OLED");
+  playerLine(target, "명령: 1-4, status, help, hint, exit, clear, aegis");
 }
 
-void printStatus() {
-  Serial.println(F("\n[challenge status]"));
+void printStatus(PlayerTarget target) {
+  playerLine(target, "\n[challenge status]");
   for (uint8_t i = 0; i < SERIAL_PROBLEM_COUNT; ++i) {
-    Serial.printf("%u. %-13s [%c]\n", i + 1, problems[i].title,
-                  isSolved(solvedMask, i) ? 'O' : 'X');
+    playerPrintf(target, "%u. %-13s [%c]", i + 1, problems[i].title,
+                 isSolved(solvedMask, i) ? 'O' : 'X');
   }
+}
+
+char *trim(char *text) {
+  while (*text == ' ' || *text == '\t') ++text;
+  char *end = text + strlen(text);
+  while (end > text && (end[-1] == ' ' || end[-1] == '\t')) --end;
+  *end = '\0';
+  return text;
 }
 
 uint16_t legacyAuthKey() {
@@ -1055,10 +1058,7 @@ void handleProblemInput(PlayerTarget target, char *input) {
 }
 
 void handleSerialLine(char *input) {
-  while (*input == ' ' || *input == '\t') ++input;
-  char *end = input + strlen(input);
-  while (end > input && (end[-1] == ' ' || end[-1] == '\t')) --end;
-  *end = '\0';
+  input = trim(input);
   if (*input == '\0') return;
 
   if (usbPlayer.problem >= 0) {
@@ -1070,7 +1070,7 @@ void handleSerialLine(char *input) {
       input[0] < '1' + static_cast<int>(SERIAL_PROBLEM_COUNT)) {
     showProblem(input[0] - '1');
   } else if (strcmp(input, "status") == 0) {
-    printStatus();
+    printStatus(PlayerTarget::Usb);
   } else if (strcmp(input, "help") == 0) {
     Serial.println(F("사용 가능한 명령어:"));
     Serial.println(F("  1-4       문제 선택"));
@@ -1084,7 +1084,7 @@ void handleSerialLine(char *input) {
   } else if (strcmp(input, "clear") == 0) {
     for (uint8_t i = 0; i < 30; ++i) Serial.println();
   } else if (strcmp(input, START_COMMAND) == 0) {
-    printBanner();
+    printBanner(PlayerTarget::Usb);
   } else {
     Serial.println(F("알 수 없는 명령입니다. help를 입력하세요."));
   }
@@ -1879,21 +1879,8 @@ void setProblem(char *payload) {
   sendProblem(index);
 }
 
-void printBleStatus() {
-  bleSendLine("[challenge status]");
-  char line[64];
-  for (uint8_t i = 0; i < SERIAL_PROBLEM_COUNT; ++i) {
-    snprintf(line, sizeof(line), "%u. %-13s [%c]", i + 1, problems[i].title,
-             isSolved(solvedMask, i) ? 'O' : 'X');
-    bleSendLine(line);
-  }
-}
-
 void handleBleShell(char *command) {
-  while (*command == ' ' || *command == '\t') ++command;
-  char *end = command + strlen(command);
-  while (end > command && (end[-1] == ' ' || end[-1] == '\t')) --end;
-  *end = '\0';
+  command = trim(command);
   if (*command == '\0') return;
 
   if (blePlayer.problem >= 0) {
@@ -1912,9 +1899,7 @@ void handleBleShell(char *command) {
   } else if (strcmp(command, "clear") == 0) {
     bleSendLine("CLEAR");
   } else if (strcmp(command, START_COMMAND) == 0) {
-    bleSendLine("=== Aegis Hack The Badge / Rev.3 ===");
-    bleSendLine("Problems: Serial / choices and examples: OLED");
-    bleSendLine("Commands: 1-4 status help hint exit clear aegis");
+    printBanner(PlayerTarget::Ble);
   } else {
     bleSendLine("ERR unknown command; enter help");
   }
@@ -1942,7 +1927,7 @@ void handleBleCommand(char *command) {
     return;
   }
   if (strcmp(command, "status") == 0) {
-    printBleStatus();
+    printStatus(PlayerTarget::Ble);
     sendBleStatus();
   } else if (strncmp(command, "problem get ", 12) == 0) {
     const int number = atoi(command + 12);
@@ -1972,7 +1957,6 @@ void handleBleCommand(char *command) {
     } else {
       buzzerVolume = static_cast<uint8_t>(volume);
       preferences.putUChar("volume", buzzerVolume);
-      bleStatusDirty = true;
       char response[20];
       snprintf(response, sizeof(response), "OK volume %u", buzzerVolume);
       bleSendLine(response);
@@ -1990,11 +1974,11 @@ void startBleAdmin() {
   char deviceName[13];
   snprintf(deviceName, sizeof(deviceName), "AEGIS-%06lX",
            static_cast<unsigned long>(mac & 0xffffff));
-  bleCommands = xQueueCreate(2, sizeof(BleCommand));
+  bleCommands = xQueueCreate(2, BLE_COMMAND_MAX);
   BLEDevice::init(deviceName);
-  bleServer = BLEDevice::createServer();
-  bleServer->setCallbacks(&badgeServerCallbacks);
-  BLEService *service = bleServer->createService(BLE_SERVICE_UUID);
+  BLEServer *server = BLEDevice::createServer();
+  server->setCallbacks(&badgeServerCallbacks);
+  BLEService *service = server->createService(BLE_SERVICE_UUID);
   bleTx = service->createCharacteristic(
       BLE_TX_UUID, BLECharacteristic::PROPERTY_NOTIFY);
   bleTx->addDescriptor(new BLE2902());
@@ -2016,10 +2000,10 @@ void updateBleAdmin(uint32_t now) {
     bleRxLength = 0;
     BLEDevice::startAdvertising();
   }
-  BleCommand command{};
+  char command[BLE_COMMAND_MAX] = {};
   while (bleCommands != nullptr &&
-         xQueueReceive(bleCommands, &command, 0) == pdTRUE) {
-    handleBleCommand(command.text);
+         xQueueReceive(bleCommands, command, 0) == pdTRUE) {
+    handleBleCommand(command);
   }
   if (bleConnected && bleAuthenticated && bleStatusDirty) sendBleStatus();
   if (rebootAt != 0 && static_cast<int32_t>(now - rebootAt) >= 0) ESP.restart();
@@ -2059,7 +2043,7 @@ void setup() {
   randomSeed(esp_random());
   initMorseRadio();
   startBleAdmin();
-  printBanner();
+  printBanner(PlayerTarget::Usb);
   const uint32_t bootAt = millis();
   while (millis() - bootAt < 700) delay(5);
   if (completedAtBoot) {

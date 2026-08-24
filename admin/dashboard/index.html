@@ -35,9 +35,16 @@
   </form>
 </dialog>
 <script>
-const API='/api';
 let badges=[],selected='',consoleAfter=0,consoleText='',detailFingerprint='',editScope='single',editorSource='',volumeTimer=0;
 const $=id=>document.getElementById(id);
+
+async function api(path,method='GET',body){
+  const options={method};
+  if(body!==undefined){options.headers={'Content-Type':'application/json'};options.body=JSON.stringify(body)}
+  const response=await fetch('/api'+path,options);
+  if(!response.ok)throw new Error(await response.text()||response.statusText);
+  return response.json();
+}
 
 const readyBadges=()=>badges.filter(badge=>badge.online&&badge.authenticated);
 
@@ -90,15 +97,13 @@ function renderDetail(){
 }
 
 async function send(command){
-  try{const response=await fetch(`${API}/badges/${encodeURIComponent(selected)}/command`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({command})});if(!response.ok)throw new Error(await response.text());if(command==='clear'){consoleText='';const output=$('console');if(output)output.textContent=''}}
+  try{await api(`/badges/${encodeURIComponent(selected)}/command`,'POST',{command});if(command==='clear'){consoleText='';const output=$('console');if(output)output.textContent=''}}
   catch(error){alert(`COMMAND FAILED: ${error.message}`)}
 }
 
 async function sendAll(command){
   try{
-    const response=await fetch(`${API}/badges/command`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({command})});
-    if(!response.ok)throw new Error(await response.text());
-    const result=await response.json(),failed=Object.keys(result.failures).length;
+    const result=await api('/badges/command','POST',{command}),failed=Object.keys(result.failures).length;
     alert(`${command.toUpperCase()}: ${result.succeeded}/${result.total} SUCCESS${failed?` // ${failed} FAILED`:''}`);
   }catch(error){alert(`BULK COMMAND FAILED: ${error.message}`)}
 }
@@ -107,9 +112,7 @@ async function loadProblem(){
   const index=$('problem-index').value;
   setEditorState('LOADING...',true);
   try{
-    const response=await fetch(`${API}/badges/${encodeURIComponent(editorSource)}/problems/${index}`);
-    if(!response.ok)throw new Error(await response.text());
-    const problem=await response.json();
+    const problem=await api(`/badges/${encodeURIComponent(editorSource)}/problems/${index}`);
     $('problem-type').value=problem.type;$('problem-title').value=problem.title;$('problem-prompt').value=problem.prompt;$('problem-answer').value=problem.answer;
     document.querySelectorAll('.problem-option').forEach((input,i)=>input.value=problem.options[i]||'');updateEditorType();setEditorState(`M0${index} READY`);
   }catch(error){setEditorState(`LOAD FAILED: ${error.message}`,true,true)}
@@ -138,20 +141,20 @@ $('editor-close').onclick=()=>$('editor').close();
 $('editor-form').onsubmit=async event=>{
   event.preventDefault();
   const index=$('problem-index').value,problem={type:$('problem-type').value,title:$('problem-title').value,prompt:$('problem-prompt').value,answer:$('problem-answer').value,options:[...document.querySelectorAll('.problem-option')].map(input=>input.value)};
-  const endpoint=editScope==='all'?`${API}/badges/problems/${index}`:`${API}/badges/${encodeURIComponent(editorSource)}/problems/${index}`;
+  const endpoint=editScope==='all'?`/badges/problems/${index}`:`/badges/${encodeURIComponent(editorSource)}/problems/${index}`;
   setEditorState('SAVING...',true);
-  try{const response=await fetch(endpoint,{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify(problem)});if(!response.ok)throw new Error(await response.text());const result=await response.json();const failed=editScope==='all'?Object.keys(result.failures).length:0;setEditorState(editScope==='all'?`SAVED ${result.updated}/${result.total}${failed?' // FAILED '+failed:''}`:`SAVED M0${index} // VERIFIED`,false,!!failed);await loadBadges()}
+  try{const result=await api(endpoint,'PUT',problem);const failed=editScope==='all'?Object.keys(result.failures).length:0;setEditorState(editScope==='all'?`SAVED ${result.updated}/${result.total}${failed?' // FAILED '+failed:''}`:`SAVED M0${index} // VERIFIED`,false,!!failed);await loadBadges()}
   catch(error){setEditorState(`SAVE FAILED: ${error.message}`,false,true)}
 };
 
 async function loadBadges(){
-  try{const response=await fetch(`${API}/badges`);if(!response.ok)throw new Error();badges=await response.json();$('bridge').textContent='BLE BRIDGE: ONLINE';if(selected&&!badges.some(item=>item.id===selected))selected='';renderList();renderFleetActions();renderDetail()}
+  try{badges=await api('/badges');$('bridge').textContent='BLE BRIDGE: ONLINE';if(selected&&!badges.some(item=>item.id===selected))selected='';renderList();renderFleetActions();renderDetail()}
   catch{$('bridge').textContent='BLE BRIDGE: OFFLINE'}
 }
 
 async function loadConsole(){
   if(!selected)return;
-  try{const response=await fetch(`${API}/badges/${encodeURIComponent(selected)}/console?after=${consoleAfter}`),data=await response.json();for(const line of data.lines){consoleText+=`[${line.at}] ${line.text}\n`}consoleAfter=data.last;const output=$('console');if(!output)return;output.textContent=consoleText;output.scrollTop=output.scrollHeight}catch{}
+  try{const data=await api(`/badges/${encodeURIComponent(selected)}/console?after=${consoleAfter}`);for(const line of data.lines){consoleText+=`[${line.at}] ${line.text}\n`}consoleAfter=data.last;const output=$('console');if(!output)return;output.textContent=consoleText;output.scrollTop=output.scrollHeight}catch{}
 }
 
 function escapeHtml(value){return String(value).replace(/[&<>"']/g,char=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]))}
