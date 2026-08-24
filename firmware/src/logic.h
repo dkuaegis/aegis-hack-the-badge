@@ -80,3 +80,17 @@ inline char decodeMorse(uint8_t bits, uint8_t length) {
   }
   return '?';
 }
+
+constexpr char classifyMorsePress(uint32_t heldMs, uint32_t dahThresholdMs) {
+  return heldMs >= dahThresholdMs ? '-' : '.';
+}
+
+constexpr bool morseGapReached(uint32_t now, uint32_t elementEnd,
+                               uint32_t gapMs) {
+  return static_cast<int32_t>(now - elementEnd) >= static_cast<int32_t>(gapMs);
+}
+
+constexpr uint32_t macSuffix24(const uint8_t mac[6]) {
+  return (static_cast<uint32_t>(mac[3]) << 16) |
+         (static_cast<uint32_t>(mac[4]) << 8) | mac[5];
+}

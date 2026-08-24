@@ -6,6 +6,7 @@
 #include <Preferences.h>
 #include <U8g2lib.h>
 #include <WiFi.h>
+#include <esp_mac.h>
 #include <esp_now.h>
 #include <esp_wifi.h>
 #include <esp32-hal-ledc.h>
@@ -54,13 +55,15 @@ constexpr uint8_t BOOT_TERMINAL_CHAR_MS = 22;
 constexpr uint8_t BUZZER_CHANNEL = 7;
 constexpr uint8_t MORSE_CHANNEL = 1;
 constexpr uint16_t MORSE_FREQUENCY = 720;
-constexpr uint16_t MORSE_UNIT_MS = 180;
+constexpr uint16_t MORSE_UNIT_MS = 100;
 constexpr uint16_t MORSE_DIT_MS = 100;
 constexpr uint16_t MORSE_DAH_MS = 300;
-constexpr uint16_t MORSE_STRAIGHT_DAH_MS = 240;
+constexpr uint16_t MORSE_STRAIGHT_DAH_MS = MORSE_UNIT_MS * 2;
 constexpr uint32_t MORSE_LETTER_GAP_MS = MORSE_UNIT_MS * 3;
 constexpr uint32_t MORSE_WORD_GAP_MS = MORSE_UNIT_MS * 7;
 constexpr uint16_t MORSE_PACKET_MAGIC = 0xae63;
+constexpr uint8_t MORSE_PACKET_VERSION = 3;
+constexpr uint8_t MORSE_QUEUE_DEPTH = 16;
 constexpr uint16_t BUZZER_DUTY[] = {4,  8,  16,  32,  64,
                                     96, 144, 216, 324, 511};
 static_assert(sizeof(BUZZER_DUTY) / sizeof(BUZZER_DUTY[0]) == 10,
@@ -98,6 +101,7 @@ uint8_t buzzerVolume = 10;
 char serialLine[192] = {};
 uint8_t serialLength = 0;
 char badgeId[19] = {};
+uint8_t deviceMac[6] = {};
 BLECharacteristic *bleTx = nullptr;
 QueueHandle_t bleCommands = nullptr;
 QueueHandle_t morsePackets = nullptr;
@@ -111,6 +115,8 @@ char bleRxLine[BLE_COMMAND_MAX] = {};
 size_t bleRxLength = 0;
 
 void bleSendLine(const char *line);
+void initMorseRadio();
+void stopMorseRadio();
 
 enum class PlayerTarget : uint8_t { Usb, Ble };
 
@@ -188,7 +194,9 @@ struct __attribute__((packed)) MorsePacket {
   uint16_t magic;
   uint8_t version;
   char symbol;
+  uint16_t durationMs;
   uint32_t sender;
+  uint32_t receivedAt;
 };
 
 struct MorseLine {
@@ -198,7 +206,7 @@ struct MorseLine {
   char symbols[7] = {};
   char text[22] = {};
   uint8_t textLength = 0;
-  uint32_t lastElementAt = 0;
+  uint32_t lastElementEndAt = 0;
   bool letterDone = true;
   bool wordDone = true;
 };
@@ -209,8 +217,17 @@ struct MorseState {
   uint32_t ownId = 0;
   bool ready = false;
   bool ditPending = false;
+  bool dahPending = false;
   bool straightActive = false;
+  bool exitChordActive = false;
+  uint32_t ditStartedAt = 0;
+  uint32_t dahStartedAt = 0;
+  uint32_t ditRepeatAt = 0;
+  uint32_t dahRepeatAt = 0;
   uint32_t straightStartedAt = 0;
+  uint32_t exitChordStartedAt = 0;
+  volatile int8_t lastSendStatus = 0;
+  volatile bool sendStatusDirty = false;
 } morse;
 
 constexpr uint8_t MORSE_BROADCAST[] = {0xff, 0xff, 0xff,
@@ -851,7 +868,7 @@ char *trim(char *text) {
 }
 
 uint16_t legacyAuthKey() {
-  return static_cast<uint16_t>((ESP.getEfuseMac() & 0xffffU) ^ 0x1337U);
+  return static_cast<uint16_t>(macSuffix24(deviceMac) ^ 0x1337U);
 }
 
 void printLeakedTransmission(PlayerTarget target) {
@@ -954,7 +971,8 @@ void handleLegacyAuth(PlayerTarget target, char *input) {
   } else if (strcmp(input, "dump") == 0) {
     playerLine(target, "[AUTH CONFIGURATION]");
     playerLine(target, "인증 방식 : legacy-v1");
-    playerPrintf(target, "Device ID : %.12s", badgeId);
+    playerPrintf(target, "Device ID : AEGIS-%06lX",
+                 static_cast<unsigned long>(macSuffix24(deviceMac)));
   } else if (strcmp(input, "log") == 0) {
     printLegacyLog(target);
   } else if (strcmp(input, "auth") == 0) {
@@ -1403,7 +1421,35 @@ void appendMorseText(MorseLine &line, char value) {
   line.text[line.textLength] = '\0';
 }
 
-void appendMorseSymbol(MorseLine &line, char symbol, uint32_t now) {
+bool finishMorseLetter(MorseLine &line) {
+  if (line.letterDone || line.length == 0) return false;
+  appendMorseText(line, decodeMorse(line.bits, line.length));
+  line.letterDone = true;
+  return true;
+}
+
+bool finishMorseWord(MorseLine &line) {
+  const bool changed = finishMorseLetter(line);
+  if (line.wordDone || line.textLength == 0) return changed;
+  appendMorseText(line, ' ');
+  line.wordDone = true;
+  return true;
+}
+
+bool updateMorseLine(MorseLine &line, uint32_t now) {
+  if (line.length == 0) return false;
+  if (morseGapReached(now, line.lastElementEndAt, MORSE_WORD_GAP_MS)) {
+    return finishMorseWord(line);
+  }
+  if (morseGapReached(now, line.lastElementEndAt, MORSE_LETTER_GAP_MS)) {
+    return finishMorseLetter(line);
+  }
+  return false;
+}
+
+void appendMorseSymbol(MorseLine &line, char symbol, uint32_t startedAt,
+                       uint16_t durationMs) {
+  updateMorseLine(line, startedAt);
   if (line.letterDone) {
     line.bits = 0;
     line.length = 0;
@@ -1414,33 +1460,20 @@ void appendMorseSymbol(MorseLine &line, char symbol, uint32_t now) {
     line.symbols[line.length++] = symbol;
     line.symbols[line.length] = '\0';
   }
-  line.lastElementAt = now;
+  line.lastElementEndAt = startedAt + durationMs;
   line.letterDone = false;
   line.wordDone = false;
-}
-
-bool updateMorseLine(MorseLine &line, uint32_t now) {
-  if (line.length == 0) return false;
-  bool changed = false;
-  if (!line.letterDone && now - line.lastElementAt >= MORSE_LETTER_GAP_MS) {
-    appendMorseText(line, decodeMorse(line.bits, line.length));
-    line.letterDone = true;
-    changed = true;
-  }
-  if (!line.wordDone && now - line.lastElementAt >= MORSE_WORD_GAP_MS) {
-    appendMorseText(line, ' ');
-    line.wordDone = true;
-    changed = true;
-  }
-  return changed;
 }
 
 void drawMorseLinkFrame() {
   char sender[16];
   char current[16];
-  snprintf(sender, sizeof(sender), "RX %06lX%s",
+  const char txState = !morse.ready ? '!' :
+                       morse.lastSendStatus > 0 ? '+' :
+                       morse.lastSendStatus < 0 ? 'X' : '-';
+  snprintf(sender, sizeof(sender), "RX %06lX TX%c",
            static_cast<unsigned long>(morse.rx.sender & 0xffffff),
-           morse.ready ? "" : " OFF");
+           txState);
   snprintf(current, sizeof(current), "NOW %s",
            morse.rx.length && !morse.rx.letterDone ? morse.rx.symbols : "-");
   header("MORSE LINK // CH1");
@@ -1450,117 +1483,239 @@ void drawMorseLinkFrame() {
   oled.drawStr(2, 39, current);
   oled.drawStr(2, 50, "TX>");
   oled.drawStr(20, 50, morse.tx.textLength ? morse.tx.text : morse.tx.symbols);
-  footer("L:. M:KEY R:- HOLD L:EXIT");
+  footer("L:. M:KEY R:- L+R:EXIT");
 }
 
 void drawMorseLink() { render(drawMorseLinkFrame); }
 
 void enterMorseLink() {
   morse.ditPending = false;
+  morse.dahPending = false;
   morse.straightActive = false;
+  morse.exitChordActive = false;
+  initMorseRadio();
   screen = Screen::MorseLink;
   drawMorseLink();
 }
 
-void receiveMorsePacket(const uint8_t *, const uint8_t *data, int length) {
-  if (morsePackets == nullptr || length != sizeof(MorsePacket)) return;
+void receiveMorsePacket(const uint8_t *senderMac, const uint8_t *data,
+                        int length) {
+  if (senderMac == nullptr || morsePackets == nullptr ||
+      length != sizeof(MorsePacket)) return;
   MorsePacket packet{};
   memcpy(&packet, data, sizeof(packet));
-  if (packet.magic != MORSE_PACKET_MAGIC || packet.version != 1 ||
-      (packet.symbol != '.' && packet.symbol != '-')) return;
+  const bool element = packet.symbol == '.' || packet.symbol == '-';
+  const bool boundary = packet.symbol == '/' || packet.symbol == ' ';
+  if (packet.magic != MORSE_PACKET_MAGIC ||
+      packet.version != MORSE_PACKET_VERSION ||
+      (!element && !boundary) ||
+      (element && (packet.durationMs < 30 || packet.durationMs > 2000)) ||
+      (boundary && packet.durationMs != 0)) return;
+  packet.sender = macSuffix24(senderMac);
+  packet.receivedAt = millis();
   xQueueSend(morsePackets, &packet, 0);
 }
 
+void morsePacketSent(const uint8_t *, esp_now_send_status_t status) {
+  morse.lastSendStatus = status == ESP_NOW_SEND_SUCCESS ? 1 : -1;
+  morse.sendStatusDirty = true;
+}
+
 void initMorseRadio() {
-  morse.ownId = static_cast<uint32_t>(ESP.getEfuseMac() & 0xffffff);
-  morsePackets = xQueueCreate(8, sizeof(MorsePacket));
-  WiFi.mode(WIFI_STA);
-  esp_wifi_set_channel(MORSE_CHANNEL, WIFI_SECOND_CHAN_NONE);
-  if (morsePackets == nullptr || esp_now_init() != ESP_OK) {
-    Serial.println(F("Morse P2P init failed"));
+  if (morse.ready) return;
+  morse.ownId = macSuffix24(deviceMac);
+  morsePackets = xQueueCreate(MORSE_QUEUE_DEPTH, sizeof(MorsePacket));
+  if (morsePackets == nullptr) {
+    Serial.println(F("Morse P2P failed: queue"));
     return;
   }
-  esp_now_register_recv_cb(receiveMorsePacket);
+  WiFi.mode(WIFI_STA);
+  const esp_err_t channelResult =
+      esp_wifi_set_channel(MORSE_CHANNEL, WIFI_SECOND_CHAN_NONE);
+  const esp_err_t initResult = esp_now_init();
+  if (channelResult != ESP_OK || initResult != ESP_OK) {
+    Serial.printf("Morse P2P failed: channel=%d init=%d\n",
+                  channelResult, initResult);
+    stopMorseRadio();
+    return;
+  }
+  if (esp_now_register_recv_cb(receiveMorsePacket) != ESP_OK ||
+      esp_now_register_send_cb(morsePacketSent) != ESP_OK) {
+    Serial.println(F("Morse P2P failed: callbacks"));
+    stopMorseRadio();
+    return;
+  }
   esp_now_peer_info_t peer{};
   memcpy(peer.peer_addr, MORSE_BROADCAST, sizeof(MORSE_BROADCAST));
-  peer.channel = MORSE_CHANNEL;
+  peer.channel = 0;
   peer.ifidx = WIFI_IF_STA;
   peer.encrypt = false;
   const esp_err_t result = esp_now_add_peer(&peer);
   morse.ready = result == ESP_OK || result == ESP_ERR_ESPNOW_EXIST;
+  if (!morse.ready) {
+    Serial.printf("Morse P2P failed: peer=%d\n", result);
+    stopMorseRadio();
+    return;
+  }
   Serial.printf("Morse P2P %s: %06lX / channel %u\n",
-                morse.ready ? "ready" : "failed",
+                "ready",
                 static_cast<unsigned long>(morse.ownId), MORSE_CHANNEL);
 }
 
-void sendMorseSymbol(char symbol, uint32_t now, bool playTone) {
-  appendMorseSymbol(morse.tx, symbol, now);
-  if (morse.ready) {
-    const MorsePacket packet{MORSE_PACKET_MAGIC, 1, symbol, morse.ownId};
-    esp_now_send(MORSE_BROADCAST, reinterpret_cast<const uint8_t *>(&packet),
-                 sizeof(packet));
+void stopMorseRadio() {
+  esp_now_unregister_recv_cb();
+  esp_now_unregister_send_cb();
+  esp_now_deinit();
+  morse.ready = false;
+  morse.lastSendStatus = 0;
+  morse.sendStatusDirty = false;
+  if (morsePackets != nullptr) {
+    vQueueDelete(morsePackets);
+    morsePackets = nullptr;
   }
-  if (playTone) buzzerTone(MORSE_FREQUENCY,
-                           symbol == '.' ? MORSE_DIT_MS : MORSE_DAH_MS);
-  drawMorseLink();
+  WiFi.mode(WIFI_OFF);
+}
+
+void broadcastMorse(char symbol, uint16_t durationMs = 0) {
+  if (!morse.ready) return;
+  if (esp_wifi_set_channel(MORSE_CHANNEL, WIFI_SECOND_CHAN_NONE) != ESP_OK) {
+    morse.lastSendStatus = -1;
+    morse.sendStatusDirty = true;
+    return;
+  }
+  const MorsePacket packet{MORSE_PACKET_MAGIC, MORSE_PACKET_VERSION,
+                           symbol, durationMs,
+                           morse.ownId, 0};
+  const esp_err_t result = esp_now_send(
+      MORSE_BROADCAST, reinterpret_cast<const uint8_t *>(&packet),
+      sizeof(packet));
+  if (result != ESP_OK) {
+    morse.lastSendStatus = -1;
+    morse.sendStatusDirty = true;
+    Serial.printf("Morse send failed: %d\n", result);
+  }
+}
+
+bool updateTxMorse(uint32_t now) {
+  if (morse.straightActive) return false;
+  const bool letterDone = morse.tx.letterDone;
+  const bool wordDone = morse.tx.wordDone;
+  const bool changed = updateMorseLine(morse.tx, now);
+  if (!letterDone && morse.tx.letterDone) broadcastMorse('/');
+  if (!wordDone && morse.tx.wordDone) broadcastMorse(' ');
+  return changed;
+}
+
+void sendMorseSymbol(char symbol, uint32_t startedAt, uint16_t durationMs) {
+  updateTxMorse(startedAt);
+  appendMorseSymbol(morse.tx, symbol, startedAt, durationMs);
+  broadcastMorse(symbol, durationMs);
 }
 
 void updateMorseRadio(uint32_t now) {
   MorsePacket packet{};
-  bool changed = false;
+  bool changed = morse.sendStatusDirty;
+  uint16_t receivedToneMs = 0;
+  morse.sendStatusDirty = false;
   while (morsePackets != nullptr &&
          xQueueReceive(morsePackets, &packet, 0) == pdTRUE) {
     if (packet.sender == morse.ownId) continue;
     if (morse.rx.sender != 0 && morse.rx.sender != packet.sender &&
         !morse.rx.wordDone) continue;
     if (morse.rx.sender != packet.sender) {
+      if (packet.symbol == '/' || packet.symbol == ' ') continue;
       morse.rx = MorseLine{};
       morse.rx.sender = packet.sender;
     }
-    appendMorseSymbol(morse.rx, packet.symbol, now);
-    if (screen == Screen::MorseLink) {
-      buzzerTone(MORSE_FREQUENCY,
-                 packet.symbol == '.' ? MORSE_DIT_MS : MORSE_DAH_MS);
+    if (packet.symbol == '.' || packet.symbol == '-') {
+      const uint16_t duration = min<uint16_t>(packet.durationMs, 1000);
+      appendMorseSymbol(morse.rx, packet.symbol, packet.receivedAt, duration);
+      if (screen == Screen::MorseLink) receivedToneMs = duration;
+    } else if (packet.symbol == '/') {
+      finishMorseLetter(morse.rx);
+    } else {
+      finishMorseWord(morse.rx);
     }
     changed = true;
   }
   changed |= updateMorseLine(morse.rx, now);
-  changed |= updateMorseLine(morse.tx, now);
-  if (changed && screen == Screen::MorseLink) drawMorseLink();
+  changed |= updateTxMorse(now);
+  const bool localToneActive = morse.ditPending || morse.dahPending ||
+                               morse.straightActive;
+  if (changed && screen == Screen::MorseLink && !localToneActive) {
+    drawMorseLink();
+  }
+  if (receivedToneMs != 0 && screen == Screen::MorseLink) {
+    buzzerTone(MORSE_FREQUENCY, receivedToneMs);
+  }
 }
 
 void updateMorseLink(uint32_t now) {
-  if (left.longPressed) {
+  if (left.stable && right.stable) {
+    if (!morse.exitChordActive) {
+      morse.exitChordActive = true;
+      morse.exitChordStartedAt = now;
+      morse.ditPending = false;
+      morse.dahPending = false;
+      morse.straightActive = false;
+      buzzerStop();
+    }
+    if (now - morse.exitChordStartedAt < LONG_PRESS_MS) return;
     morse.ditPending = false;
+    morse.dahPending = false;
     morse.straightActive = false;
     buzzerStop();
+    stopMorseRadio();
     screen = Screen::Home;
     drawHome();
     return;
   }
+  morse.exitChordActive = false;
 
-  if (left.pressed) {
-    morse.ditPending = true;
-    buzzerTone(MORSE_FREQUENCY, MORSE_DIT_MS);
-  } else if (morse.ditPending && !left.stable) {
+  if (morse.dahPending && now - morse.dahStartedAt >= MORSE_DAH_MS) {
+    morse.dahPending = false;
+    buzzerStop();
+    drawMorseLink();
+    morse.dahRepeatAt = millis() + MORSE_UNIT_MS;
+  }
+  if (morse.ditPending && now - morse.ditStartedAt >= MORSE_DIT_MS) {
     morse.ditPending = false;
-    sendMorseSymbol('.', now, false);
+    buzzerStop();
+    drawMorseLink();
+    morse.ditRepeatAt = millis() + MORSE_UNIT_MS;
+  }
+
+  const bool ditReady = left.pressed ||
+      morseGapReached(now, morse.ditRepeatAt, 0);
+  const bool dahReady = right.pressed ||
+      morseGapReached(now, morse.dahRepeatAt, 0);
+  if (left.stable && ditReady && !morse.ditPending &&
+      !morse.straightActive && !morse.dahPending) {
+    morse.ditPending = true;
+    morse.ditStartedAt = millis();
+    buzzerTone(MORSE_FREQUENCY, MORSE_DIT_MS);
+    sendMorseSymbol('.', morse.ditStartedAt, MORSE_DIT_MS);
+  } else if (right.stable && dahReady && !morse.dahPending &&
+             !morse.straightActive && !morse.ditPending) {
+    morse.dahPending = true;
+    morse.dahStartedAt = millis();
+    buzzerTone(MORSE_FREQUENCY, MORSE_DAH_MS);
+    sendMorseSymbol('-', morse.dahStartedAt, MORSE_DAH_MS);
   }
 
   if (morse.straightActive && !ok.stable) {
-    const char symbol = now - morse.straightStartedAt >= MORSE_STRAIGHT_DAH_MS
-                            ? '-'
-                            : '.';
+    const uint32_t held = now - morse.straightStartedAt;
+    const char symbol = classifyMorsePress(held, MORSE_STRAIGHT_DAH_MS);
     morse.straightActive = false;
     buzzerStop();
-    sendMorseSymbol(symbol, now, false);
-  } else if (ok.pressed) {
+    sendMorseSymbol(symbol, morse.straightStartedAt,
+                    min<uint32_t>(held, 1000));
+    drawMorseLink();
+  } else if (ok.pressed && !morse.ditPending && !morse.dahPending) {
     morse.straightActive = true;
     morse.straightStartedAt = now;
     buzzerTone(MORSE_FREQUENCY);
   }
-
-  if (right.pressed) sendMorseSymbol('-', now, true);
 }
 
 void updateUi(uint32_t now) {
@@ -1969,11 +2124,12 @@ void handleBleCommand(char *command) {
 }
 
 void startBleAdmin() {
-  const uint64_t mac = ESP.getEfuseMac() & 0xffffffffffffULL;
-  snprintf(badgeId, sizeof(badgeId), "AEGIS-%012llX", mac);
+  snprintf(badgeId, sizeof(badgeId), "AEGIS-%02X%02X%02X%02X%02X%02X",
+           deviceMac[0], deviceMac[1], deviceMac[2], deviceMac[3],
+           deviceMac[4], deviceMac[5]);
   char deviceName[13];
   snprintf(deviceName, sizeof(deviceName), "AEGIS-%06lX",
-           static_cast<unsigned long>(mac & 0xffffff));
+           static_cast<unsigned long>(macSuffix24(deviceMac)));
   bleCommands = xQueueCreate(2, BLE_COMMAND_MAX);
   BLEDevice::init(deviceName);
   BLEServer *server = BLEDevice::createServer();
@@ -2012,6 +2168,7 @@ void updateBleAdmin(uint32_t now) {
 
 void setup() {
   Serial.begin(SERIAL_BAUD);
+  ESP_ERROR_CHECK(esp_read_mac(deviceMac, ESP_MAC_WIFI_STA));
   pinMode(Pins::BUZZER, OUTPUT);
   digitalWrite(Pins::BUZZER, LOW);
   initBuzzer();
@@ -2041,7 +2198,6 @@ void setup() {
   configureHiddenAccessPins();
 
   randomSeed(esp_random());
-  initMorseRadio();
   startBleAdmin();
   printBanner(PlayerTarget::Usb);
   const uint32_t bootAt = millis();
