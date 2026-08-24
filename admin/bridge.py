@@ -155,13 +155,11 @@ from aiohttp import web
 from bleak import BleakClient, BleakScanner
 
 sessions = {}
-session_tasks = {}
 
 
 class BadgeSession:
     def __init__(self, device):
         self.device = device
-        self.address = device.address
         self.id = device.name or device.address
         self.client = None
         self.online = False
@@ -172,8 +170,8 @@ class BadgeSession:
         self.lines = deque(maxlen=400)
         self.sequence = 0
         self.write_lock = asyncio.Lock()
-        self.problems = {}
         self.problem_waiters = {}
+        self.task = None
 
     def log(self, text):
         self.sequence += 1
@@ -199,7 +197,6 @@ class BadgeSession:
         if line.startswith("PROBLEM\t"):
             try:
                 index, problem = parse_problem_line(line)
-                self.problems[index] = problem
                 waiter = self.problem_waiters.pop(index, None)
                 if waiter and not waiter.done():
                     waiter.set_result(problem)
@@ -240,11 +237,10 @@ class BadgeSession:
                 )
 
     async def request_problem(self, index, command):
-        loop = asyncio.get_running_loop()
         previous = self.problem_waiters.pop(index, None)
         if previous and not previous.done():
             previous.cancel()
-        waiter = loop.create_future()
+        waiter = asyncio.get_running_loop().create_future()
         self.problem_waiters[index] = waiter
         try:
             await self.send_raw(command)
@@ -292,7 +288,7 @@ async def scan_loop():
                     continue
                 session = BadgeSession(device)
                 sessions[device.address] = session
-                session_tasks[device.address] = asyncio.create_task(session.run())
+                session.task = asyncio.create_task(session.run())
         except asyncio.CancelledError:
             raise
         except Exception as error:
@@ -300,13 +296,52 @@ async def scan_loop():
         await asyncio.sleep(2)
 
 
-def find_badge(badge_id):
-    return next((badge for badge in sessions.values() if badge.id == badge_id), None)
+def badge_from_request(request, require_ready=False):
+    badge_id = request.match_info["badge_id"]
+    badge = next((item for item in sessions.values() if item.id == badge_id), None)
+    if badge is None:
+        raise web.HTTPNotFound(text="unknown badge")
+    if require_ready and not (badge.online and badge.authenticated):
+        raise web.HTTPConflict(text="badge is not ready")
+    return badge
 
 
-def ready_badges():
-    return [badge for badge in sessions.values()
-            if badge.online and badge.authenticated]
+def problem_index(request):
+    index = int(request.match_info["index"])
+    if not 1 <= index <= 4:
+        raise ValueError("only problems 1-4 are editable")
+    return index
+
+
+async def request_command(request):
+    data = await request.json()
+    if not isinstance(data, dict):
+        raise ValueError("request body must be a JSON object")
+    command = data.get("command")
+    if not isinstance(command, str) or not command.strip():
+        raise ValueError("command must be a non-empty string")
+    return command.strip()
+
+
+async def bulk_result(operation, completed_key):
+    badges = [badge for badge in sessions.values()
+              if badge.online and badge.authenticated]
+    if not badges:
+        raise web.HTTPConflict(text="no authenticated badges are online")
+    results = await asyncio.gather(
+        *(operation(badge) for badge in badges), return_exceptions=True
+    )
+    failures = {
+        badge.id: str(result)
+        for badge, result in zip(badges, results)
+        if isinstance(result, Exception)
+    }
+    return web.json_response({
+        "ok": not failures,
+        completed_key: len(badges) - len(failures),
+        "total": len(badges),
+        "failures": failures,
+    })
 
 
 async def dashboard_page(_request):
@@ -335,14 +370,9 @@ async def badges_api(_request):
 
 
 async def command_api(request):
-    badge = find_badge(request.match_info["badge_id"])
-    if badge is None:
-        raise web.HTTPNotFound(text="unknown badge")
-    if not badge.online or not badge.authenticated:
-        raise web.HTTPConflict(text="badge is not ready")
+    badge = badge_from_request(request, require_ready=True)
     try:
-        data = await request.json()
-        command = data["command"].strip()
+        command = await request_command(request)
         await badge.send_raw(command)
         badge.log(f"> {command}")
     except (KeyError, TypeError, UnicodeEncodeError, ValueError) as error:
@@ -354,35 +384,20 @@ async def command_api(request):
 
 async def bulk_command_api(request):
     try:
-        command = (await request.json())["command"].strip()
+        command = await request_command(request)
         if command not in {"reset", "reboot"}:
             raise ValueError("bulk command must be reset or reboot")
     except (KeyError, TypeError, ValueError) as error:
         raise web.HTTPBadRequest(text=str(error)) from error
-    badges = ready_badges()
-    if not badges:
-        raise web.HTTPConflict(text="no authenticated badges are online")
-
     async def send(badge):
         await badge.send_raw(command)
         badge.log(f"> {command} [ALL ONLINE]")
 
-    results = await asyncio.gather(*(send(badge) for badge in badges),
-                                   return_exceptions=True)
-    failures = {badge.id: str(result) for badge, result in zip(badges, results)
-                if isinstance(result, Exception)}
-    return web.json_response({
-        "ok": not failures,
-        "succeeded": len(badges) - len(failures),
-        "total": len(badges),
-        "failures": failures,
-    })
+    return await bulk_result(send, "succeeded")
 
 
 async def console_api(request):
-    badge = find_badge(request.match_info["badge_id"])
-    if badge is None:
-        raise web.HTTPNotFound(text="unknown badge")
+    badge = badge_from_request(request)
     try:
         after = int(request.query.get("after", "0"))
     except ValueError as error:
@@ -394,15 +409,9 @@ async def console_api(request):
 
 
 async def problem_api(request):
-    badge = find_badge(request.match_info["badge_id"])
-    if badge is None:
-        raise web.HTTPNotFound(text="unknown badge")
-    if not badge.online or not badge.authenticated:
-        raise web.HTTPConflict(text="badge is not ready")
+    badge = badge_from_request(request, require_ready=True)
     try:
-        index = int(request.match_info["index"])
-        if not 1 <= index <= 4:
-            raise ValueError("only problems 1-4 are editable")
+        index = problem_index(request)
         if request.method == "GET":
             command = f"problem get {index}"
         else:
@@ -419,28 +428,14 @@ async def problem_api(request):
 
 async def bulk_problem_api(request):
     try:
-        index = int(request.match_info["index"])
-        if not 1 <= index <= 4:
-            raise ValueError("only problems 1-4 are editable")
+        index = problem_index(request)
         command = problem_command(index, await request.json())
     except (TypeError, KeyError, ValueError, UnicodeEncodeError) as error:
         raise web.HTTPBadRequest(text=str(error)) from error
-    badges = ready_badges()
-    if not badges:
-        raise web.HTTPConflict(text="no authenticated badges are online")
-
-    results = await asyncio.gather(
-        *(badge.request_problem(index, command) for badge in badges),
-        return_exceptions=True,
+    return await bulk_result(
+        lambda badge: badge.request_problem(index, command),
+        "updated",
     )
-    failures = {badge.id: str(result) for badge, result in zip(badges, results)
-                if isinstance(result, Exception)}
-    return web.json_response({
-        "ok": not failures,
-        "updated": len(badges) - len(failures),
-        "total": len(badges),
-        "failures": failures,
-    })
 
 
 def create_app():
@@ -470,9 +465,11 @@ async def main():
     try:
         await asyncio.Event().wait()
     finally:
-        scanner.cancel()
-        for task in session_tasks.values():
+        tasks = [scanner, *(badge.task for badge in sessions.values()
+                            if badge.task)]
+        for task in tasks:
             task.cancel()
+        await asyncio.gather(*tasks, return_exceptions=True)
         await runner.cleanup()
 
 
