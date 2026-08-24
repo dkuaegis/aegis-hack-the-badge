@@ -37,7 +37,22 @@ int main() {
   assert(decodeMorse(0b1000, 4) == 'B');
   assert(decodeMorse(0b000, 3) == 'S');
   assert(decodeMorse(0b111, 3) == 'O');
+  assert(decodeMorse(0b1010, 4) == 'C');
+  assert(decodeMorse(0b1101, 4) == 'Q');
   assert(decodeMorse(0b01111, 5) == '1');
   assert(decodeMorse(0b11111, 5) == '0');
   assert(decodeMorse(0b0011, 4) == '?');
+  assert(classifyMorsePress(100, 200) == '.');
+  assert(classifyMorsePress(199, 200) == '.');
+  assert(classifyMorsePress(200, 200) == '-');
+  assert(classifyMorsePress(300, 200) == '-');
+  assert(!morseGapReached(400, 300, 300));  // C: dah -> dit, intra-gap
+  assert(!morseGapReached(600, 500, 300));  // C: dit -> dah, intra-gap
+  assert(!morseGapReached(800, 900, 300));  // active dah cannot end C early
+  assert(morseGapReached(1400, 1100, 300)); // C -> Q, letter-gap
+  constexpr uint8_t macA[] = {0xAA, 0xBB, 0xCC, 0x11, 0x22, 0x33};
+  constexpr uint8_t macB[] = {0xAA, 0xBB, 0xCC, 0x44, 0x55, 0x66};
+  static_assert(macSuffix24(macA) == 0x112233, "MAC suffix A");
+  static_assert(macSuffix24(macB) == 0x445566, "MAC suffix B");
+  static_assert(macSuffix24(macA) != macSuffix24(macB), "unique badge IDs");
 }
