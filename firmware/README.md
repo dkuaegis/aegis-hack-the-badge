@@ -81,6 +81,9 @@ BLE 관리자 브릿지 연결은 계속 유지됩니다.
 | `OK` | 누른 시간이 짧으면 dit, 길면 dah인 straight key |
 | `LEFT` + `RIGHT` 길게 | Home으로 복귀 |
 
+Home으로 복귀하면 해당 세션의 RX/TX 기록을 지우므로 다음
+Morse Link 진입은 빈 송수신 화면에서 시작합니다.
+
 dit 100 ms, dah 300 ms, 문자 간 300 ms, 단어 간 700 ms를 기준으로 하며
 문자/단어 경계도 함께 전송해 A-Z와 0-9를 OLED에서 자동 번역합니다.
 화면의 `TX+`는 ESP-NOW 무선 송신 완료, `TXX`는 송신 실패, `TX!`는 무선 초기화
