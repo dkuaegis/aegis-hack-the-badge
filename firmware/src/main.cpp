@@ -1666,6 +1666,8 @@ void updateMorseLink(uint32_t now) {
     morse.straightActive = false;
     buzzerStop();
     stopMorseRadio();
+    morse.rx = MorseLine{};
+    morse.tx = MorseLine{};
     screen = Screen::Home;
     drawHome();
     return;
