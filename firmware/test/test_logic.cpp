@@ -55,4 +55,8 @@ int main() {
   static_assert(macSuffix24(macA) == 0x112233, "MAC suffix A");
   static_assert(macSuffix24(macB) == 0x445566, "MAC suffix B");
   static_assert(macSuffix24(macA) != macSuffix24(macB), "unique badge IDs");
+  static_assert(stepMorseChannel(1, -1) == 13, "channel wraps left");
+  static_assert(stepMorseChannel(13, 1) == 1, "channel wraps right");
+  static_assert(stepMorseChannel(6, -1) == 5, "channel steps left");
+  static_assert(stepMorseChannel(6, 1) == 7, "channel steps right");
 }
