@@ -115,8 +115,10 @@ HEX 표시, 디버그/진단 명령, Legacy Auth 동작이 동일합니다.
 ## 관리자 키
 
 기본 개발 키는 `AEGIS_DEV_ONLY_CHANGE_ME`입니다. 실제 행사 전
-`firmware/src/main.cpp`의 `BADGE_ADMIN_KEY` 기본값을 바꿔 펌웨어를
-다시 업로드하고 브리지에도 동일한 값을 설정합니다.
+소스의 기본값을 직접 바꾸지 말고, 펌웨어 빌드와 브리지에 동일한
+`BADGE_ADMIN_KEY`를 주입합니다. 운영 키 생성부터 펌웨어 업로드까지의
+전체 절차는 [펌웨어 프로덕션 배포](../firmware/README.md#최종-프로덕션-배포)를
+따릅니다.
 
 macOS/Linux:
 

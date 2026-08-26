@@ -16,7 +16,7 @@ ESP32-S3-WROOM-1-N8R8용 펌웨어입니다. 기존
 | USB | ESP32-S3 native USB CDC, `115200 baud` |
 | 디스플레이 | 128x64 I2C OLED, SDA GPIO4 / SCL GPIO5 |
 | 관리자 통신 | BLE GATT P2P, `AEGIS-XXXXXX` advertising |
-| 배지 간 통신 | ESP-NOW broadcast, Wi-Fi channel 1 |
+| 배지 간 통신 | ESP-NOW broadcast, Wi-Fi 채널 1~13(기본 1) |
 | 영구 저장 | ESP32 NVS (`Preferences`) |
 
 ## 구현 기능
@@ -69,8 +69,9 @@ Trophy fanfare 종료 후 `LEFT`를 누르면 Status를 볼 수 있으며, 관�
 
 ## Morse Link 배지 간 통신
 
-Home의 `MORSE LINK`는 ESP-NOW channel 1 broadcast를 사용하므로 공유기,
+Home의 `MORSE LINK`는 ESP-NOW broadcast를 사용하므로 공유기,
 핫스팟이나 페어링 없이 같은 펌웨어를 올린 여러 배지가 직접 통신합니다.
+Morse Link에 진입하면 항상 만남의 광장 역할인 채널 1에서 시작합니다.
 ESP32-S3의 Wi-Fi/BLE 공존 기능을 사용하므로 Morse 화면에서도
 BLE 관리자 브릿지 연결은 계속 유지됩니다.
 
@@ -79,10 +80,14 @@ BLE 관리자 브릿지 연결은 계속 유지됩니다.
 | `LEFT` | dit(`.`) 패들, 누르고 있으면 반복 |
 | `RIGHT` | dah(`-`) 패들, 누르고 있으면 반복 |
 | `OK` | 누른 시간이 짧으면 dit, 길면 dah인 straight key |
-| `LEFT` + `RIGHT` 길게 | Home으로 복귀 |
+| `LEFT` + `RIGHT` 길게 | 채널 1~13 선택 화면으로 이동 |
 
-Home으로 복귀하면 해당 세션의 RX/TX 기록을 지우므로 다음
-Morse Link 진입은 빈 송수신 화면에서 시작합니다.
+채널 1에서 `QSY 6`과 같이 이동할 채널을 모스로 합의한 뒤
+`LEFT`+`RIGHT`를 길게 누릅니다. 선택 화면에서 `LEFT`/`RIGHT`로
+채널을 고르고 `OK`를 누르면 이동합니다. 선택 화면에서
+`LEFT`+`RIGHT`를 다시 길게 누르면 Home으로 복귀합니다.
+채널 이동과 Home 복귀 시 RX/TX 기록을 지우며, Home에서 다시
+Morse Link에 진입하면 채널 1의 빈 송수신 화면에서 시작합니다.
 
 dit 100 ms, dah 300 ms, 문자 간 300 ms, 단어 간 700 ms를 기준으로 하며
 문자/단어 경계도 함께 전송해 A-Z와 0-9를 OLED에서 자동 번역합니다.
@@ -317,10 +322,10 @@ USB와 BLE 플레이어 셸은 공통 Challenge Engine을 사용합니다(Option
 BLE 관리 채널은 연결마다 새 challenge를 만들고 fleet key 기반 HMAC 인증 후
 명령을 처리합니다. 기본 개발 키는 실제 행사 전에 반드시 교체하세요.
 
-기본 키는 `src/main.cpp`의 `BADGE_ADMIN_KEY`이며
-`AEGIS_DEV_ONLY_CHANGE_ME`로 설정되어 있습니다. 행사 전 이 값을 운영용
-키로 변경해 모든 배지에 다시 업로드하고, 브리지 실행 환경의
-`BADGE_ADMIN_KEY`에도 동일한 값을 설정합니다. 두 값이 다르면 장치는
+기본 키는 `src/main.cpp`의 `BADGE_ADMIN_KEY` fallback인
+`AEGIS_DEV_ONLY_CHANGE_ME`입니다. 실제 행사 빌드는 소스를 수정하지 말고
+아래 프로덕션 배포 절차로 운영 키를 주입하세요. 펌웨어와 브리지의
+`BADGE_ADMIN_KEY`가 다르면 장치는
 발견되지만 `AUTHENTICATED` 상태가 되지 않습니다. OS별 설정 예시는
 [`../admin/README.md`](../admin/README.md#관리자-키)를 참고하세요.
 
@@ -386,16 +391,101 @@ Secure Boot와 Flash Encryption을 활성화하지 않았습니다.
 | 기본 문제를 수정했는데 예전 문제가 보임 | NVS 문제가 기본값보다 우선합니다. 관리자 편집을 사용하거나 전체 flash를 지웁니다. |
 | 풀이 LED가 업로드 후에도 켜짐 | 정상적인 NVS 유지 동작입니다. 관리자 `RESET SOLVED`로 초기화합니다. |
 | 배지는 발견되지만 인증되지 않음 | 펌웨어와 브리지의 `BADGE_ADMIN_KEY`가 같은지 확인합니다. |
+| Morse Link에서 상대 신호가 안 보임 | 두 배지의 OLED 상단 채널 번호가 같은지 확인하고, 채널 1에서 다시 합류합니다. |
 | OLED가 비어 있음 | OLED 전원·납땜, SDA GPIO4, SCL GPIO5, I2C 주소 `0x3C`를 확인합니다. |
 
-## 행사 전 배포 체크리스트
+## 최종 프로덕션 배포
 
-- `BADGE_ADMIN_KEY`를 개발 기본값에서 운영용 키로 교체합니다.
+### 1. Fleet 관리자 키 생성
+
+`BADGE_ADMIN_KEY`는 모든 배지와 브리지가 공유하는 운영 비밀키입니다.
+Mission 04의 문제용 XOR 키와는 관계가 없습니다. 배포용 터미널에서 한 번
+생성한 뒤, 같은 터미널에서 펌웨어 빌드와 브리지 실행을 진행합니다.
+
+macOS / Linux:
+
+```bash
+export BADGE_ADMIN_KEY="$(python3 -c 'import secrets; print(secrets.token_hex(32))')"
+```
+
+Windows PowerShell:
+
+```powershell
+$env:BADGE_ADMIN_KEY = py -3 -c "import secrets; print(secrets.token_hex(32))"
+```
+
+키는 Git, README, 스크린샷, 공유 로그에 남기지 말고 따로 보관하세요. 키를
+분실하거나 교체하면 전체 배지를 새 키로 재빌드·재업로드하고 브리지도
+재시작해야 합니다. 키가 포함된 펌웨어 바이너리도 운영 비밀로 다루세요.
+
+### 2. 운영 키로 펌웨어 빌드·업로드
+
+소스의 개발 fallback을 바꾸지 말고 PlatformIO 빌드 플래그로 키를 주입합니다.
+`PLATFORMIO_BUILD_FLAGS`는 [`platformio.ini`](platformio.ini)의 기존 USB/PSRAM 플래그에
+추가로 적용됩니다.
+
+macOS / Linux:
+
+```bash
+export PLATFORMIO_BUILD_FLAGS="-DBADGE_ADMIN_KEY=\\\"$BADGE_ADMIN_KEY\\\""
+pio run -d firmware
+pio run -d firmware -t upload
+```
+
+Windows PowerShell:
+
+```powershell
+$env:PLATFORMIO_BUILD_FLAGS = '-DBADGE_ADMIN_KEY=\"' + $env:BADGE_ADMIN_KEY + '\"'
+pio run -d firmware
+pio run -d firmware -t upload
+```
+
+첫 보드에 빌드한 운영 바이너리와 동일한 commit을 모든 배지에 사용하세요.
+VS Code를 이미 실행 중이면 GUI Upload가 새 환경 변수를 받지 못할 수 있으므로,
+프로덕션 업로드는 위 터미널의 `pio` 명령을 권장합니다.
+
+기존 테스트 보드는 일반 업로드 후에도 NVS의 풀이 상태와 편집한 문제가
+남습니다. 완전한 출하 초기화가 필요하면 보드별로 다음 순서를 사용합니다.
+`erase`는 NVS를 포함한 해당 보드의 flash 전체를 지웁니다.
+
+```bash
+pio run -d firmware -t erase
+pio run -d firmware -t upload
+```
+
+### 3. 브리지 실행과 인증 확인
+
+펌웨어를 빌드한 것과 같은 `BADGE_ADMIN_KEY`가 설정된 터미널에서 브리지를
+실행합니다. 새 터미널이나 재부팅한 부스 PC에서는 위의 키 설정을 다시 해야
+합니다.
+
+```bash
+# macOS
+./admin/start-macos.sh
+
+# Linux
+./admin/start-linux.sh
+```
+
+```powershell
+# Windows PowerShell
+.\admin\start-windows.bat
+```
+
+대시보드에서 모든 장치가 `AUTHENTICATED`로 표시되는지 확인합니다.
+기본 키 경고가 나오거나 인증이 실패하면 배지와 브리지를 동일한 키로
+다시 빌드·실행하세요.
+
+### 4. 출하 체크리스트
+
 - 1~4번 기본 문제 또는 관리자 일괄 편집 내용을 확정합니다.
-- 한 대에 먼저 업로드하고 USB 셸, OLED, 버튼, LED, 부저, Hidden Access,
-  BLE 관리자 기능을 점검합니다.
+- 한 대를 canary로 먼저 업로드하고 USB 셸, OLED, 좌·중·우 버튼, LED,
+  부저·볼륨, C0-C2 Hidden Access, BLE 관리자 기능을 점검합니다.
+- 최종 펌웨어를 올린 두 대로 Morse Link 채널 1 양방향 TX/RX, 동일 채널 이동,
+  기록 초기화와 BLE 브리지 연결 유지를 점검합니다.
 - 전체 배지 업로드 후 관리자 대시보드에서 장비 ID와 인증 상태를 확인합니다.
 - 테스트 중 생성된 풀이 상태는 `RESET ALL ONLINE`으로 초기화합니다.
+- 편집한 문제까지 기본값으로 되돌려야 하면 `erase` 후 재업로드합니다.
 - 부스 PC에서 OS별 관리자 시작 스크립트와 Bluetooth 권한을 사전 점검합니다.
 
 ## 빠른 로직 검사

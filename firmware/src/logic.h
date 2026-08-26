@@ -94,3 +94,12 @@ constexpr uint32_t macSuffix24(const uint8_t mac[6]) {
   return (static_cast<uint32_t>(mac[3]) << 16) |
          (static_cast<uint32_t>(mac[4]) << 8) | mac[5];
 }
+
+constexpr uint8_t MORSE_CHANNEL_MIN = 1;
+constexpr uint8_t MORSE_CHANNEL_MAX = 13;
+
+constexpr uint8_t stepMorseChannel(uint8_t channel, int8_t direction) {
+  return direction < 0
+             ? (channel <= MORSE_CHANNEL_MIN ? MORSE_CHANNEL_MAX : channel - 1)
+             : (channel >= MORSE_CHANNEL_MAX ? MORSE_CHANNEL_MIN : channel + 1);
+}

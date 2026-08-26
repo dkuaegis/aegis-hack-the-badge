@@ -53,7 +53,7 @@ constexpr uint8_t OLED_NORMAL_CONTRAST = 0xcf;
 constexpr uint8_t BOOT_FADE_STEP_MS = 52;
 constexpr uint8_t BOOT_TERMINAL_CHAR_MS = 22;
 constexpr uint8_t BUZZER_CHANNEL = 7;
-constexpr uint8_t MORSE_CHANNEL = 1;
+constexpr uint8_t MORSE_DEFAULT_CHANNEL = 1;
 constexpr uint16_t MORSE_FREQUENCY = 720;
 constexpr uint16_t MORSE_UNIT_MS = 100;
 constexpr uint16_t MORSE_DIT_MS = 100;
@@ -74,7 +74,7 @@ constexpr char BLE_RX_UUID[] = "6f8d0002-6a4b-4c52-9f2a-8f0f5d9b0001";
 constexpr char BLE_TX_UUID[] = "6f8d0003-6a4b-4c52-9f2a-8f0f5d9b0001";
 constexpr const char *BOOT_TERMINAL_LINES[] = {
     "root@aegis:~# ./boot", "[OK] Aegis", "[OK] Hack The Badge ver.3",
-    "[HW] - Hacking Box R3:V1V3 -", "dev: developed by.@Z3r0c0k3",
+    "[HW] - Hacking Box RE:B0RN -", "dev: developed by.@Z3r0c0k3",
 };
 constexpr uint8_t BOOT_LED_SEQUENCE[] = {2, 1, 3, 0, 4, 1, 3, 0, 4};
 #ifndef BADGE_ADMIN_KEY
@@ -157,8 +157,8 @@ void playerPrintf(PlayerTarget target, const char *format, ...) {
 }
 
 enum class Screen : uint8_t {
-  Home, Problems, Hint, Status, Game, FirewallGame, MorseLink, HiddenGranted,
-  Complete
+  Home, Problems, Hint, Status, Game, FirewallGame, MorseLink, MorseChannel,
+  HiddenGranted, Complete
 };
 enum class GamePhase : uint8_t { Intro, Running, Over };
 enum class FirewallPhase : uint8_t { Intro, Running, Over, Clear };
@@ -215,6 +215,8 @@ struct MorseState {
   MorseLine rx;
   MorseLine tx;
   uint32_t ownId = 0;
+  uint8_t channel = MORSE_DEFAULT_CHANNEL;
+  uint8_t selectedChannel = MORSE_DEFAULT_CHANNEL;
   bool ready = false;
   bool ditPending = false;
   bool dahPending = false;
@@ -1466,6 +1468,7 @@ void appendMorseSymbol(MorseLine &line, char symbol, uint32_t startedAt,
 }
 
 void drawMorseLinkFrame() {
+  char title[24];
   char sender[16];
   char current[16];
   const char txState = !morse.ready ? '!' :
@@ -1476,17 +1479,38 @@ void drawMorseLinkFrame() {
            txState);
   snprintf(current, sizeof(current), "NOW %s",
            morse.rx.length && !morse.rx.letterDone ? morse.rx.symbols : "-");
-  header("MORSE LINK // CH1");
+  snprintf(title, sizeof(title), "MORSE LINK // CH%02u", morse.channel);
+  header(title);
   oled.setFont(u8g2_font_5x7_tf);
   oled.drawStr(2, 19, sender);
   oled.drawStr(2, 29, morse.rx.textLength ? morse.rx.text : "> WAITING SIGNAL");
   oled.drawStr(2, 39, current);
   oled.drawStr(2, 50, "TX>");
   oled.drawStr(20, 50, morse.tx.textLength ? morse.tx.text : morse.tx.symbols);
-  footer("L:. M:KEY R:- L+R:EXIT");
+  footer("L:. M:KEY R:- LR:CH");
 }
 
 void drawMorseLink() { render(drawMorseLinkFrame); }
+
+void drawMorseChannelFrame() {
+  char channel[8];
+  snprintf(channel, sizeof(channel), "CH %02u", morse.selectedChannel);
+  header("MORSE CHANNEL");
+  oled.setFont(u8g2_font_5x7_tf);
+  centered(20, "CH01 = LOBBY");
+  oled.setFont(u8g2_font_9x15B_tf);
+  centered(41, channel);
+  oled.setFont(u8g2_font_5x7_tf);
+  centered(52, "L/R SELECT  OK JOIN");
+  footer("HOLD L+R: HOME");
+}
+
+void drawMorseChannel() { render(drawMorseChannelFrame); }
+
+void clearMorseHistory() {
+  morse.rx = MorseLine{};
+  morse.tx = MorseLine{};
+}
 
 void enterMorseLink() {
   morse.ditPending = false;
@@ -1496,6 +1520,19 @@ void enterMorseLink() {
   initMorseRadio();
   screen = Screen::MorseLink;
   drawMorseLink();
+}
+
+void enterMorseChannel(uint32_t now) {
+  morse.ditPending = false;
+  morse.dahPending = false;
+  morse.straightActive = false;
+  buzzerStop();
+  stopMorseRadio();
+  morse.selectedChannel = morse.channel;
+  morse.exitChordActive = true;
+  morse.exitChordStartedAt = now;
+  screen = Screen::MorseChannel;
+  drawMorseChannel();
 }
 
 void receiveMorsePacket(const uint8_t *senderMac, const uint8_t *data,
@@ -1531,7 +1568,7 @@ void initMorseRadio() {
   }
   WiFi.mode(WIFI_STA);
   const esp_err_t channelResult =
-      esp_wifi_set_channel(MORSE_CHANNEL, WIFI_SECOND_CHAN_NONE);
+      esp_wifi_set_channel(morse.channel, WIFI_SECOND_CHAN_NONE);
   const esp_err_t initResult = esp_now_init();
   if (channelResult != ESP_OK || initResult != ESP_OK) {
     Serial.printf("Morse P2P failed: channel=%d init=%d\n",
@@ -1559,7 +1596,7 @@ void initMorseRadio() {
   }
   Serial.printf("Morse P2P %s: %06lX / channel %u\n",
                 "ready",
-                static_cast<unsigned long>(morse.ownId), MORSE_CHANNEL);
+                static_cast<unsigned long>(morse.ownId), morse.channel);
 }
 
 void stopMorseRadio() {
@@ -1578,7 +1615,7 @@ void stopMorseRadio() {
 
 void broadcastMorse(char symbol, uint16_t durationMs = 0) {
   if (!morse.ready) return;
-  if (esp_wifi_set_channel(MORSE_CHANNEL, WIFI_SECOND_CHAN_NONE) != ESP_OK) {
+  if (esp_wifi_set_channel(morse.channel, WIFI_SECOND_CHAN_NONE) != ESP_OK) {
     morse.lastSendStatus = -1;
     morse.sendStatusDirty = true;
     return;
@@ -1651,7 +1688,7 @@ void updateMorseRadio(uint32_t now) {
 }
 
 void updateMorseLink(uint32_t now) {
-  if (left.stable && right.stable) {
+  if (left.raw && right.raw) {
     if (!morse.exitChordActive) {
       morse.exitChordActive = true;
       morse.exitChordStartedAt = now;
@@ -1665,11 +1702,7 @@ void updateMorseLink(uint32_t now) {
     morse.dahPending = false;
     morse.straightActive = false;
     buzzerStop();
-    stopMorseRadio();
-    morse.rx = MorseLine{};
-    morse.tx = MorseLine{};
-    screen = Screen::Home;
-    drawHome();
+    enterMorseChannel(now);
     return;
   }
   morse.exitChordActive = false;
@@ -1720,6 +1753,34 @@ void updateMorseLink(uint32_t now) {
   }
 }
 
+void updateMorseChannel(uint32_t now) {
+  if (left.raw && right.raw) {
+    if (!morse.exitChordActive) {
+      morse.exitChordActive = true;
+      morse.exitChordStartedAt = now;
+    }
+    if (now - morse.exitChordStartedAt < LONG_PRESS_MS) return;
+    clearMorseHistory();
+    morse.exitChordActive = false;
+    screen = Screen::Home;
+    drawHome();
+    return;
+  }
+  morse.exitChordActive = false;
+
+  if (left.pressed) {
+    morse.selectedChannel = stepMorseChannel(morse.selectedChannel, -1);
+    drawMorseChannel();
+  } else if (right.pressed) {
+    morse.selectedChannel = stepMorseChannel(morse.selectedChannel, 1);
+    drawMorseChannel();
+  } else if (ok.pressed) {
+    morse.channel = morse.selectedChannel;
+    clearMorseHistory();
+    enterMorseLink();
+  }
+}
+
 void updateUi(uint32_t now) {
   left.update(now);
   ok.update(now);
@@ -1735,6 +1796,10 @@ void updateUi(uint32_t now) {
   }
   if (screen == Screen::MorseLink) {
     updateMorseLink(now);
+    return;
+  }
+  if (screen == Screen::MorseChannel) {
+    updateMorseChannel(now);
     return;
   }
 
@@ -1754,6 +1819,8 @@ void updateUi(uint32_t now) {
       } else if (menuItem == 2) {
         enterFirewallGame();
       } else if (menuItem == 3) {
+        morse.channel = MORSE_DEFAULT_CHANNEL;
+        clearMorseHistory();
         enterMorseLink();
       } else {
         screen = Screen::Status;
@@ -1814,6 +1881,7 @@ const char *screenName() {
     case Screen::Game: return "game";
     case Screen::FirewallGame: return "firewall-game";
     case Screen::MorseLink: return "morse-link";
+    case Screen::MorseChannel: return "morse-channel";
     case Screen::HiddenGranted: return "hidden-granted";
     case Screen::Complete: return "complete";
   }
