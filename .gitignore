@@ -2,6 +2,7 @@
 __pycache__/
 *.py[cod]
 .venv/
+admin/scores.db
 
 # KiCad local state and transient backups
 *.kicad_prl

@@ -55,6 +55,26 @@ constexpr bool rectsOverlap(float ax, float ay, float aw, float ah,
   return ax < bx + bw && ax + aw > bx && ay < by + bh && ay + ah > by;
 }
 
+inline char stepLeaderboardChar(char current, int8_t direction) {
+  static constexpr char characters[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+  uint8_t index = 0;
+  while (characters[index] != '\0' && characters[index] != current) ++index;
+  if (characters[index] == '\0') index = 0;
+  return characters[(index + (direction < 0 ? 35 : 1)) % 36];
+}
+
+inline bool validLeaderboardName(const char *name, uint8_t maxLength) {
+  if (name == nullptr || maxLength == 0) return false;
+  uint8_t length = 0;
+  while (length <= maxLength && name[length] != '\0') ++length;
+  if (length == 0 || length > maxLength) return false;
+  for (uint8_t i = 0; i < length; ++i) {
+    if (!((name[i] >= 'A' && name[i] <= 'Z') ||
+          (name[i] >= '0' && name[i] <= '9'))) return false;
+  }
+  return true;
+}
+
 inline char decodeMorse(uint8_t bits, uint8_t length) {
   static const char one[] = "ET";
   static const char two[] = "IANM";
