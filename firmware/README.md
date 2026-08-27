@@ -55,11 +55,21 @@ Mission 04의 응답은 `challenge XOR device-key`이며, 과거 인증 기록�
 
 ## 보너스 게임과 Trophy Mode
 
-Home의 `FIREWALL BREAKER`는 3×8 벽돌을 패들과 공으로 제거하는
-Breakout 보너스 게임입니다. `LEFT`/`RIGHT`를 누르는 동안 패들이
-이동하며, Intro/Running/Game Over/Clear 어느 상태에서나 `LEFT`를 길게
-누르면 Home으로 돌아갑니다. 게임 완료는 FLAG, `solvedMask`, 상태 LED에
-영향을 주지 않습니다.
+`FLAPPY HACKER`는 파이프를 통과할 때마다 1 px/s씩 빨라집니다.
+Home의 `FIREWALL BREAKER`는 3×8 블록 행이 위로 스크롤되고 맨 아래에
+새 행이 계속 생성되는 무한 Breakout 보너스 게임입니다. 파괴한 블록
+수가 점수가 되며, 공을 놓칠 때까지 진행됩니다. `LEFT`/`RIGHT`를 누르는
+동안 패들이 이동합니다. 인트로 또는 게임오버 화면에서만 `LEFT`를 길게
+누르면 Home으로 돌아갑니다.
+
+게임 종료 점수는 BLE 브리지로 전송되며, 서버 SQLite DB에 저장된 해당
+배지·게임의 최고점보다 높을 때만 1~10글자 닉네임 입력 화면이 나옵니다.
+`LEFT`/`RIGHT`로 `A-Z`, `0-9`를 순환하고 `OK`를 짧게 눌러 다음 글자로
+이동합니다. 10글자 전에 입력을 끝내려면 `OK`를 길게 누릅니다.
+확정된 이름과 최고점은 브리지의 `admin/scores.db`에 저장되고
+`/leaderboard` 전용 화면에 배지 ID와 함께 표시됩니다. 브리지에 인증된
+BLE 연결이 없으면 점수 판정과 닉네임 입력은 생략됩니다. 게임 점수는 FLAG,
+`solvedMask`, 상태 LED와 배지 NVS에 영향을 주지 않습니다.
 
 Serial Mission 4개와 Hidden Access를 모두 풀면 Trophy OLED가 즉시 표시되고,
 비차단 fanfare 후 5개 LED가 좌우로 왕복합니다. 5/5 상태로

@@ -32,6 +32,8 @@ constexpr uint32_t BUTTON_DEBOUNCE_MS = 30;
 constexpr uint32_t HIDDEN_HOLD_MS = 1200;
 constexpr uint8_t FLAPPY_REWARD_SCORE = 5;
 constexpr uint32_t FLAPPY_FRAME_MS = 40;
+constexpr float FLAPPY_PIPE_SPEED = 31.0f;
+constexpr float FLAPPY_SPEED_STEP = 1.0f;
 constexpr uint8_t HOME_MENU_COUNT = 5;
 constexpr uint32_t FIREWALL_FRAME_MS = 30;
 constexpr uint8_t FIREWALL_COLS = 8;
@@ -47,6 +49,8 @@ constexpr int16_t FIREWALL_PADDLE_W = 24;
 constexpr int16_t FIREWALL_PADDLE_H = 3;
 constexpr int16_t FIREWALL_BALL_SIZE = 3;
 constexpr float FIREWALL_PADDLE_SPEED = 85.0f;
+constexpr float FIREWALL_SCROLL_SPEED = 3.5f;
+constexpr uint8_t LEADERBOARD_NAME_LENGTH = 10;
 constexpr uint32_t TROPHY_LED_STEP_MS = 120;
 constexpr uint32_t LONG_PRESS_MS = 700;
 constexpr uint8_t OLED_NORMAL_CONTRAST = 0xcf;
@@ -160,8 +164,9 @@ enum class Screen : uint8_t {
   Home, Problems, Hint, Status, Game, FirewallGame, MorseLink, MorseChannel,
   HiddenGranted, Complete
 };
-enum class GamePhase : uint8_t { Intro, Running, Over };
-enum class FirewallPhase : uint8_t { Intro, Running, Over, Clear };
+enum class GamePhase : uint8_t { Intro, Running, NameEntry, Over };
+enum class FirewallPhase : uint8_t { Intro, Running, NameEntry, Over };
+enum class ScoreGame : uint8_t { Flappy, Firewall };
 enum class VictoryPhase : uint8_t {
   Idle, FlashOn1, FlashOff1, FlashOn2, Fanfare, TrophyIdle
 };
@@ -185,10 +190,25 @@ struct FirewallState {
   float ballVX = 42;
   float ballVY = -46;
   float paddleX = 52;
-  bool bricks[FIREWALL_ROWS][FIREWALL_COLS] = {};
-  uint8_t remaining = 0;
+  uint8_t bricks[FIREWALL_ROWS] = {};
+  float brickOffsetY = FIREWALL_BRICK_Y;
+  uint16_t score = 0;
   uint32_t lastFrame = 0;
 } firewall;
+
+struct ScoreRecord {
+  uint16_t score = 0;
+  char name[LEADERBOARD_NAME_LENGTH + 1] = {'-', '-', '-', '\0'};
+};
+
+struct NameEntryState {
+  ScoreGame game = ScoreGame::Flappy;
+  uint16_t score = 0;
+  char name[LEADERBOARD_NAME_LENGTH + 1] = {'A', '\0'};
+  uint8_t cursor = 0;
+} nameEntry;
+
+ScoreRecord highScores[2];
 
 struct __attribute__((packed)) MorsePacket {
   uint16_t magic;
@@ -275,6 +295,7 @@ struct Button {
   bool stable = false;
   bool raw = false;
   bool pressed = false;
+  bool released = false;
   bool longPressed = false;
   bool longFired = false;
   uint32_t changedAt = 0;
@@ -289,6 +310,7 @@ struct Button {
 
   void update(uint32_t now) {
     pressed = false;
+    released = false;
     longPressed = false;
     const bool next = digitalRead(pin) == LOW;
     if (next != raw) {
@@ -298,6 +320,7 @@ struct Button {
     if (raw != stable && now - changedAt >= BUTTON_DEBOUNCE_MS) {
       stable = raw;
       pressed = stable;
+      released = !stable;
       if (stable) {
         heldAt = now;
         longFired = false;
@@ -1189,6 +1212,78 @@ void drawGameOverFrame() {
 
 void drawGameOver() { render(drawGameOverFrame); }
 
+void drawNameEntryFrame() {
+  char score[16];
+  snprintf(score, sizeof(score), "SCORE %u",
+           static_cast<unsigned>(nameEntry.score));
+  header(nameEntry.game == ScoreGame::Flappy ? "FLAPPY HIGH SCORE"
+                                             : "FIREWALL HIGH SCORE");
+  oled.setFont(u8g2_font_6x10_tf);
+  centered(22, score);
+  oled.setFont(u8g2_font_9x15B_tf);
+  const uint8_t width = oled.getStrWidth(nameEntry.name);
+  const uint8_t x = (128 - width) / 2;
+  oled.drawStr(x, 42, nameEntry.name);
+  oled.drawHLine(x + nameEntry.cursor * 9, 45, 8);
+  footer("OK:NEXT  HOLD:SAVE");
+}
+
+void drawNameEntry() { render(drawNameEntryFrame); }
+
+void beginNameEntry(ScoreGame gameId, uint16_t score) {
+  nameEntry = NameEntryState{};
+  nameEntry.game = gameId;
+  nameEntry.score = score;
+  drawNameEntry();
+}
+
+bool finishNameEntry() {
+  ScoreRecord &record = highScores[static_cast<uint8_t>(nameEntry.game)];
+  record.score = nameEntry.score;
+  memcpy(record.name, nameEntry.name, sizeof(record.name));
+  char line[64];
+  snprintf(line, sizeof(line), "SCORE_SUBMIT %s %u %s",
+           nameEntry.game == ScoreGame::Flappy ? "flappy" : "firewall",
+           static_cast<unsigned>(nameEntry.score), nameEntry.name);
+  bleSendLine(line);
+  bleStatusDirty = true;
+  beep(1200, 40);
+  return true;
+}
+
+void reportScore(ScoreGame gameId, uint16_t score) {
+  if (!bleConnected || !bleAuthenticated || score == 0) return;
+  char line[32];
+  snprintf(line, sizeof(line), "SCORE %s %u",
+           gameId == ScoreGame::Flappy ? "flappy" : "firewall",
+           static_cast<unsigned>(score));
+  bleSendLine(line);
+}
+
+bool updateNameEntry() {
+  if (left.pressed) {
+    nameEntry.name[nameEntry.cursor] =
+        stepLeaderboardChar(nameEntry.name[nameEntry.cursor], -1);
+    drawNameEntry();
+  } else if (right.pressed) {
+    nameEntry.name[nameEntry.cursor] =
+        stepLeaderboardChar(nameEntry.name[nameEntry.cursor], 1);
+    drawNameEntry();
+  } else if (ok.longPressed) {
+    return finishNameEntry();
+  } else if (ok.released && !ok.longFired) {
+    beep(1000, 25);
+    if (++nameEntry.cursor < LEADERBOARD_NAME_LENGTH) {
+      nameEntry.name[nameEntry.cursor] = 'A';
+      nameEntry.name[nameEntry.cursor + 1] = '\0';
+      drawNameEntry();
+    } else {
+      return finishNameEntry();
+    }
+  }
+  return false;
+}
+
 void enterGame() {
   screen = Screen::Game;
   gamePhase = GamePhase::Intro;
@@ -1208,6 +1303,13 @@ void startGame(uint32_t now) {
 }
 
 void updateGame(uint32_t now) {
+  if (gamePhase == GamePhase::NameEntry) {
+    if (updateNameEntry()) {
+      gamePhase = GamePhase::Over;
+      drawGameOver();
+    }
+    return;
+  }
   if (left.pressed) {
     screen = Screen::Home;
     drawHome();
@@ -1228,7 +1330,7 @@ void updateGame(uint32_t now) {
   game.lastFrame = now;
   game.velocity += 122 * dt;
   game.birdY += game.velocity * dt;
-  game.pipeX -= 31 * dt;
+  game.pipeX -= (FLAPPY_PIPE_SPEED + game.score * FLAPPY_SPEED_STEP) * dt;
 
   if (!game.passed && game.pipeX + 11 < 28) {
     game.passed = true;
@@ -1245,18 +1347,16 @@ void updateGame(uint32_t now) {
     gamePhase = GamePhase::Over;
     beep(180, 180);
     drawGameOver();
+    reportScore(ScoreGame::Flappy, game.score);
     return;
   }
   drawGameRunning();
 }
 
 void resetFirewallBricks() {
-  for (uint8_t row = 0; row < FIREWALL_ROWS; ++row) {
-    for (uint8_t col = 0; col < FIREWALL_COLS; ++col) {
-      firewall.bricks[row][col] = true;
-    }
-  }
-  firewall.remaining = FIREWALL_ROWS * FIREWALL_COLS;
+  for (uint8_t &row : firewall.bricks) row = 0xff;
+  firewall.brickOffsetY = FIREWALL_BRICK_Y;
+  firewall.score = 0;
 }
 
 void drawFirewallIntroFrame() {
@@ -1264,7 +1364,7 @@ void drawFirewallIntroFrame() {
   oled.setFont(u8g2_font_6x10_tf);
   centered(31, "PRESS OK");
   oled.setFont(u8g2_font_5x7_tf);
-  centered(45, "DESTROY THE WALL");
+  centered(45, "ENDLESS FIREWALL");
   footer("HOLD LEFT: EXIT");
 }
 
@@ -1273,10 +1373,10 @@ void drawFirewallIntro() { render(drawFirewallIntroFrame); }
 void drawFirewallRunningFrame() {
   for (uint8_t row = 0; row < FIREWALL_ROWS; ++row) {
     for (uint8_t col = 0; col < FIREWALL_COLS; ++col) {
-      if (!firewall.bricks[row][col]) continue;
+      if ((firewall.bricks[row] & (1U << col)) == 0) continue;
       const int16_t x = FIREWALL_BRICK_X +
                         col * (FIREWALL_BRICK_W + FIREWALL_BRICK_GAP_X);
-      const int16_t y = FIREWALL_BRICK_Y +
+      const int16_t y = static_cast<int16_t>(firewall.brickOffsetY) +
                         row * (FIREWALL_BRICK_H + FIREWALL_BRICK_GAP_Y);
       oled.drawBox(x, y, FIREWALL_BRICK_W, FIREWALL_BRICK_H);
     }
@@ -1286,31 +1386,36 @@ void drawFirewallRunningFrame() {
                FIREWALL_BALL_SIZE, FIREWALL_BALL_SIZE);
   oled.drawBox(static_cast<uint8_t>(firewall.paddleX), FIREWALL_PADDLE_Y,
                FIREWALL_PADDLE_W, FIREWALL_PADDLE_H);
+  char score[12];
+  snprintf(score, sizeof(score), "SCORE %u",
+           static_cast<unsigned>(firewall.score));
+  oled.setDrawColor(0);
+  oled.drawBox(0, 0, 48, 8);
+  oled.setDrawColor(1);
+  oled.setFont(u8g2_font_5x7_tf);
+  oled.drawStr(1, 7, score);
 }
 
 void drawFirewallRunning() { render(drawFirewallRunningFrame); }
 
 void drawFirewallOverFrame() {
-  header("FIREWALL ACTIVE");
+  char score[16];
+  char best[20];
+  const ScoreRecord &record =
+      highScores[static_cast<uint8_t>(ScoreGame::Firewall)];
+  snprintf(score, sizeof(score), "SCORE %u",
+           static_cast<unsigned>(firewall.score));
+  snprintf(best, sizeof(best), "BEST %s %u", record.name,
+           static_cast<unsigned>(record.score));
+  header("FIREWALL DOWN");
   oled.setFont(u8g2_font_9x15B_tf);
-  centered(34, "ACCESS DENIED");
+  centered(29, score);
   oled.setFont(u8g2_font_5x7_tf);
-  centered(49, "OK: RETRY");
-  footer("HOLD LEFT: EXIT");
+  centered(43, best);
+  footer("OK:RETRY L:HOLD EXIT");
 }
 
 void drawFirewallOver() { render(drawFirewallOverFrame); }
-
-void drawFirewallClearFrame() {
-  header("FIREWALL BREACHED");
-  oled.setFont(u8g2_font_9x15B_tf);
-  centered(34, "ACCESS OPEN");
-  oled.setFont(u8g2_font_5x7_tf);
-  centered(49, "OK: RETRY");
-  footer("HOLD LEFT: EXIT");
-}
-
-void drawFirewallClear() { render(drawFirewallClearFrame); }
 
 void enterFirewallGame() {
   screen = Screen::FirewallGame;
@@ -1331,7 +1436,14 @@ void startFirewallGame(uint32_t now) {
 }
 
 void updateFirewallGame(uint32_t now) {
-  if (left.longPressed) {
+  if (firewall.phase == FirewallPhase::NameEntry) {
+    if (updateNameEntry()) {
+      firewall.phase = FirewallPhase::Over;
+      drawFirewallOver();
+    }
+    return;
+  }
+  if (firewall.phase != FirewallPhase::Running && left.longPressed) {
     screen = Screen::Home;
     drawHome();
     return;
@@ -1348,6 +1460,15 @@ void updateFirewallGame(uint32_t now) {
   if (right.stable) firewall.paddleX += FIREWALL_PADDLE_SPEED * dt;
   firewall.paddleX = max<float>(0, min<float>(128 - FIREWALL_PADDLE_W,
                                               firewall.paddleX));
+  constexpr float brickPitch = FIREWALL_BRICK_H + FIREWALL_BRICK_GAP_Y;
+  firewall.brickOffsetY -= FIREWALL_SCROLL_SPEED * dt;
+  if (firewall.brickOffsetY <= FIREWALL_BRICK_Y - brickPitch) {
+    firewall.brickOffsetY += brickPitch;
+    for (uint8_t row = 0; row + 1 < FIREWALL_ROWS; ++row) {
+      firewall.bricks[row] = firewall.bricks[row + 1];
+    }
+    firewall.bricks[FIREWALL_ROWS - 1] = 0xff;
+  }
 
   const float previousY = firewall.ballY;
   firewall.ballX += firewall.ballVX * dt;
@@ -1381,16 +1502,16 @@ void updateFirewallGame(uint32_t now) {
   bool brickHit = false;
   for (uint8_t row = 0; row < FIREWALL_ROWS && !brickHit; ++row) {
     for (uint8_t col = 0; col < FIREWALL_COLS; ++col) {
-      if (!firewall.bricks[row][col]) continue;
+      if ((firewall.bricks[row] & (1U << col)) == 0) continue;
       const float x = FIREWALL_BRICK_X +
                       col * (FIREWALL_BRICK_W + FIREWALL_BRICK_GAP_X);
-      const float y = FIREWALL_BRICK_Y +
+      const float y = firewall.brickOffsetY +
                       row * (FIREWALL_BRICK_H + FIREWALL_BRICK_GAP_Y);
       if (!rectsOverlap(firewall.ballX, firewall.ballY,
                         FIREWALL_BALL_SIZE, FIREWALL_BALL_SIZE,
                         x, y, FIREWALL_BRICK_W, FIREWALL_BRICK_H)) continue;
-      firewall.bricks[row][col] = false;
-      --firewall.remaining;
+      firewall.bricks[row] &= static_cast<uint8_t>(~(1U << col));
+      ++firewall.score;
       firewall.ballY = previousY;
       firewall.ballVY = -firewall.ballVY;
       brickHit = true;
@@ -1399,14 +1520,11 @@ void updateFirewallGame(uint32_t now) {
     }
   }
 
-  if (firewall.remaining == 0) {
-    firewall.phase = FirewallPhase::Clear;
-    beep(1500, 180);
-    drawFirewallClear();
-  } else if (firewall.ballY >= 64) {
+  if (firewall.ballY >= 64) {
     firewall.phase = FirewallPhase::Over;
     beep(200, 160);
     drawFirewallOver();
+    reportScore(ScoreGame::Firewall, firewall.score);
   } else {
     drawFirewallRunning();
   }
@@ -1906,17 +2024,25 @@ void bleSendLine(const char *line) {
 }
 
 void sendBleStatus() {
-  char line[224];
+  char line[320];
+  const ScoreRecord &flappy =
+      highScores[static_cast<uint8_t>(ScoreGame::Flappy)];
+  const ScoreRecord &firewall =
+      highScores[static_cast<uint8_t>(ScoreGame::Firewall)];
   snprintf(line, sizeof(line),
            "STATUS {\"id\":\"%s\",\"solvedMask\":%u,\"solved\":%u,"
            "\"total\":%u,\"serialSolved\":%u,\"serialProblems\":%u,"
            "\"hiddenSolved\":%s,\"volume\":%u,\"screen\":\"%s\","
+           "\"flappyHigh\":%u,\"flappyName\":\"%s\","
+           "\"firewallHigh\":%u,\"firewallName\":\"%s\","
            "\"uptimeMs\":%lu}",
            badgeId, solvedMask, solvedCount(),
            static_cast<unsigned>(TOTAL_CHALLENGE_COUNT), serialSolvedCount(),
            static_cast<unsigned>(SERIAL_PROBLEM_COUNT),
            isSolved(solvedMask, HIDDEN_ACCESS_INDEX) ? "true" : "false",
-           buzzerVolume, screenName(), static_cast<unsigned long>(millis()));
+           buzzerVolume, screenName(), static_cast<unsigned>(flappy.score),
+           flappy.name, static_cast<unsigned>(firewall.score), firewall.name,
+           static_cast<unsigned long>(millis()));
   bleSendLine(line);
   bleStatusDirty = false;
 }
@@ -2130,6 +2256,72 @@ void handleBleShell(char *command) {
   }
 }
 
+bool parseScoreGame(const char *text, ScoreGame &gameId) {
+  if (strcmp(text, "flappy") == 0) {
+    gameId = ScoreGame::Flappy;
+    return true;
+  }
+  if (strcmp(text, "firewall") == 0) {
+    gameId = ScoreGame::Firewall;
+    return true;
+  }
+  return false;
+}
+
+void handleScoreCommand(char *command) {
+  char *save = nullptr;
+  strtok_r(command, " ", &save);
+  char *action = strtok_r(nullptr, " ", &save);
+  char *gameText = strtok_r(nullptr, " ", &save);
+  char *scoreText = strtok_r(nullptr, " ", &save);
+  char *name = strtok_r(nullptr, " ", &save);
+  if (!action || !gameText || !scoreText) {
+    bleSendLine("ERR score invalid fields");
+    return;
+  }
+
+  ScoreGame gameId;
+  char *end = nullptr;
+  const unsigned long value = strtoul(scoreText, &end, 10);
+  if (!parseScoreGame(gameText, gameId) || end == scoreText || *end != '\0' ||
+      value > UINT16_MAX) {
+    bleSendLine("ERR score invalid values");
+    return;
+  }
+  const uint16_t score = static_cast<uint16_t>(value);
+
+  if (strcmp(action, "name") == 0 && name == nullptr) {
+    const bool flappyCurrent = gameId == ScoreGame::Flappy &&
+        screen == Screen::Game && gamePhase == GamePhase::Over &&
+        game.score == score;
+    const bool firewallCurrent = gameId == ScoreGame::Firewall &&
+        screen == Screen::FirewallGame &&
+        firewall.phase == FirewallPhase::Over && firewall.score == score;
+    if (!flappyCurrent && !firewallCurrent) {
+      bleSendLine("ERR score no longer current");
+      return;
+    }
+    if (flappyCurrent) gamePhase = GamePhase::NameEntry;
+    else firewall.phase = FirewallPhase::NameEntry;
+    beginNameEntry(gameId, score);
+    bleSendLine("OK score name");
+    return;
+  }
+
+  if (strcmp(action, "sync") == 0 && name != nullptr &&
+      strtok_r(nullptr, " ", &save) == nullptr && score > 0 &&
+      validLeaderboardName(name, LEADERBOARD_NAME_LENGTH)) {
+    ScoreRecord &record = highScores[static_cast<uint8_t>(gameId)];
+    record.score = score;
+    strncpy(record.name, name, sizeof(record.name) - 1);
+    record.name[sizeof(record.name) - 1] = '\0';
+    bleStatusDirty = true;
+    return;
+  }
+
+  bleSendLine("ERR score invalid command");
+}
+
 void handleBleCommand(char *command) {
   if (strcmp(command, "hello") == 0) {
     sendBleHello();
@@ -2163,6 +2355,8 @@ void handleBleCommand(char *command) {
     }
   } else if (strncmp(command, "problem set\t", 12) == 0) {
     setProblem(command + 12);
+  } else if (strncmp(command, "score ", 6) == 0) {
+    handleScoreCommand(command);
   } else if (strcmp(command, "solve all") == 0) {
     solveAllForAdmin(millis());
     bleSendLine("OK solve all");
