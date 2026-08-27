@@ -8,7 +8,9 @@ import hashlib
 import hmac
 import json
 import os
+import sqlite3
 import sys
+import tempfile
 import time
 import unicodedata
 from collections import deque
@@ -22,7 +24,72 @@ ADMIN_KEY = os.environ.get("BADGE_ADMIN_KEY", DEFAULT_ADMIN_KEY)
 BLE_COMMAND_MAX = 767
 PROBLEM_LIMITS = {"title": 23, "prompt": 255, "answer": 79, "option": 23}
 DASHBOARD_PATH = Path(__file__).with_name("dashboard") / "index.html"
+LEADERBOARD_PATH = DASHBOARD_PATH.with_name("leaderboard.html")
 FAVICON_PATH = DASHBOARD_PATH.with_name("favicon.svg")
+SCORE_DB_PATH = Path(os.environ.get(
+    "AEGIS_SCORE_DB", Path(__file__).with_name("scores.db")
+))
+SCORE_GAMES = {"flappy", "firewall"}
+
+
+def score_db(path=SCORE_DB_PATH):
+    connection = sqlite3.connect(path)
+    connection.row_factory = sqlite3.Row
+    return connection
+
+
+def init_score_db(path=SCORE_DB_PATH):
+    with score_db(path) as connection:
+        connection.execute("""
+            CREATE TABLE IF NOT EXISTS scores (
+                badge_id TEXT NOT NULL,
+                game TEXT NOT NULL,
+                score INTEGER NOT NULL,
+                nickname TEXT NOT NULL,
+                updated_at INTEGER NOT NULL,
+                PRIMARY KEY (badge_id, game)
+            )
+        """)
+
+
+def valid_nickname(nickname):
+    return 1 <= len(nickname) <= 10 and all(
+        "A" <= char <= "Z" or "0" <= char <= "9" for char in nickname
+    )
+
+
+def best_score(badge_id, game, path=SCORE_DB_PATH):
+    with score_db(path) as connection:
+        row = connection.execute(
+            "SELECT score FROM scores WHERE badge_id = ? AND game = ?",
+            (badge_id, game),
+        ).fetchone()
+    return row["score"] if row else 0
+
+
+def store_score(badge_id, game, score, nickname, path=SCORE_DB_PATH):
+    if game not in SCORE_GAMES or not 0 < score <= 65535 or not valid_nickname(nickname):
+        raise ValueError("invalid score submission")
+    with score_db(path) as connection:
+        cursor = connection.execute("""
+            INSERT INTO scores (badge_id, game, score, nickname, updated_at)
+            VALUES (?, ?, ?, ?, ?)
+            ON CONFLICT (badge_id, game) DO UPDATE SET
+                score = excluded.score,
+                nickname = excluded.nickname,
+                updated_at = excluded.updated_at
+            WHERE excluded.score > scores.score
+        """, (badge_id, game, score, nickname, int(time.time())))
+    return cursor.rowcount == 1
+
+
+def score_rows(path=SCORE_DB_PATH):
+    with score_db(path) as connection:
+        rows = connection.execute("""
+            SELECT badge_id, game, score, nickname, updated_at
+            FROM scores ORDER BY game, score DESC, updated_at ASC
+        """).fetchall()
+    return [dict(row) for row in rows]
 
 
 def auth_tag(key, badge_id, challenge):
@@ -119,6 +186,7 @@ def command_chunks(command):
 
 
 def self_test():
+    assert LEADERBOARD_PATH.is_file()
     assert auth_tag("test-key", "AEGIS-112233445566", "89ABCDEF") == "22D55E4B05C38F"
     sample = {"type": "choice", "title": "Q", "prompt": "Pick", "answer": "2", "options": ["A", "B"]}
     command = problem_command(1, sample)
@@ -144,6 +212,14 @@ def self_test():
         pass
     else:
         raise AssertionError("non-ASCII OLED title accepted")
+    with tempfile.TemporaryDirectory() as directory:
+        database = Path(directory) / "scores.db"
+        init_score_db(database)
+        assert best_score("AEGIS-TEST", "flappy", database) == 0
+        assert store_score("AEGIS-TEST", "flappy", 7, "ZERO", database)
+        assert not store_score("AEGIS-TEST", "flappy", 6, "LOW", database)
+        assert best_score("AEGIS-TEST", "flappy", database) == 7
+        assert score_rows(database)[0]["nickname"] == "ZERO"
     print("bridge protocol self-test: OK")
 
 
@@ -210,6 +286,9 @@ class BadgeSession:
             except json.JSONDecodeError:
                 self.log("ERR invalid status JSON")
             return
+        if line.startswith("SCORE ") or line.startswith("SCORE_SUBMIT "):
+            asyncio.create_task(self.handle_score(line))
+            return
 
         self.log(line)
         if line.startswith("HELLO "):
@@ -220,6 +299,35 @@ class BadgeSession:
                 asyncio.create_task(self.send_raw(f"a {tag}"))
         elif line == "AUTH OK":
             self.authenticated = True
+            asyncio.create_task(self.sync_scores())
+
+    async def handle_score(self, line):
+        if not self.authenticated:
+            return
+        parts = line.split()
+        try:
+            if len(parts) == 3 and parts[0] == "SCORE":
+                game, score = parts[1], int(parts[2])
+                if game not in SCORE_GAMES or not 0 < score <= 65535:
+                    raise ValueError("invalid score report")
+                if score > best_score(self.id, game):
+                    await self.send_raw(f"score name {game} {score}")
+                return
+            if len(parts) == 4 and parts[0] == "SCORE_SUBMIT":
+                game, score, nickname = parts[1], int(parts[2]), parts[3]
+                if store_score(self.id, game, score, nickname):
+                    self.log(f"[score saved] {game} {score} {nickname}")
+                return
+            raise ValueError("invalid score event")
+        except (ValueError, RuntimeError) as error:
+            self.log(f"ERR score: {error}")
+
+    async def sync_scores(self):
+        for row in score_rows():
+            if row["badge_id"] == self.id:
+                await self.send_raw(
+                    f'score sync {row["game"]} {row["score"]} {row["nickname"]}'
+                )
 
     def disconnected(self, _client):
         self.online = False
@@ -350,6 +458,12 @@ async def dashboard_page(_request):
     return response
 
 
+async def leaderboard_page(_request):
+    response = web.FileResponse(LEADERBOARD_PATH)
+    response.headers["Cache-Control"] = "no-store"
+    return response
+
+
 async def favicon(_request):
     return web.FileResponse(FAVICON_PATH)
 
@@ -367,6 +481,22 @@ async def badges_api(_request):
             "status": badge.status,
         })
     return web.json_response(badges)
+
+
+async def leaderboard_api(_request):
+    online_ids = {
+        badge.id for badge in sessions.values()
+        if badge.online and badge.authenticated
+    }
+    games = {game: [] for game in SCORE_GAMES}
+    for row in score_rows():
+        games[row["game"]].append({
+            "badgeId": row["badge_id"],
+            "score": row["score"],
+            "nickname": row["nickname"],
+            "online": row["badge_id"] in online_ids,
+        })
+    return web.json_response({"onlineBadges": len(online_ids), "games": games})
 
 
 async def command_api(request):
@@ -441,8 +571,10 @@ async def bulk_problem_api(request):
 def create_app():
     app = web.Application()
     app.router.add_get("/", dashboard_page)
+    app.router.add_get("/leaderboard", leaderboard_page)
     app.router.add_get("/favicon.svg", favicon)
     app.router.add_get("/api/badges", badges_api)
+    app.router.add_get("/api/leaderboard", leaderboard_api)
     app.router.add_post("/api/badges/command", bulk_command_api)
     app.router.add_put("/api/badges/problems/{index}", bulk_problem_api)
     app.router.add_post("/api/badges/{badge_id}/command", command_api)
@@ -455,12 +587,15 @@ def create_app():
 async def main():
     if ADMIN_KEY == DEFAULT_ADMIN_KEY:
         print("WARNING: using development BLE admin key", file=sys.stderr)
+    init_score_db()
     app = create_app()
     runner = web.AppRunner(app)
     await runner.setup()
     site = web.TCPSite(runner, "127.0.0.1", 8080)
     await site.start()
     print("AEGIS dashboard: http://127.0.0.1:8080")
+    print("AEGIS leaderboard: http://127.0.0.1:8080/leaderboard")
+    print(f"AEGIS score database: {SCORE_DB_PATH}")
     scanner = asyncio.create_task(scan_loop())
     try:
         await asyncio.Event().wait()
