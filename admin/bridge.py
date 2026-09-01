@@ -8,6 +8,7 @@ import hashlib
 import hmac
 import json
 import os
+import secrets
 import sqlite3
 import sys
 import tempfile
@@ -29,7 +30,12 @@ FAVICON_PATH = DASHBOARD_PATH.with_name("favicon.svg")
 SCORE_DB_PATH = Path(os.environ.get(
     "AEGIS_SCORE_DB", Path(__file__).with_name("scores.db")
 ))
-SCORE_GAMES = {"flappy", "firewall"}
+SCORE_GAMES = {"flappy", "firewall", "tetris"}
+STATUS_SCREENS = {
+    "home", "missions", "hint", "status", "game", "firewall-game",
+    "morse-link", "morse-channel", "hidden-granted", "complete",
+}
+LOCAL_HOSTS = {"127.0.0.1:8080", "localhost:8080"}
 
 
 def score_db(path=SCORE_DB_PATH):
@@ -92,9 +98,58 @@ def score_rows(path=SCORE_DB_PATH):
     return [dict(row) for row in rows]
 
 
-def auth_tag(key, badge_id, challenge):
-    message = f"{badge_id}:{challenge}".encode("ascii")
-    return hmac.new(key.encode("utf-8"), message, hashlib.sha256).hexdigest()[:14].upper()
+def valid_badge_id(value):
+    return (isinstance(value, str) and len(value) == 18 and
+            value.startswith("AEGIS-") and
+            all(char in "0123456789ABCDEF" for char in value[6:]))
+
+
+def auth_tag(key, role, badge_id, badge_challenge, bridge_challenge):
+    message = f"{role}:{badge_id}:{badge_challenge}:{bridge_challenge}".encode("ascii")
+    return hmac.new(key.encode("utf-8"), message, hashlib.sha256).hexdigest()[:32].upper()
+
+
+def normalize_status(data, expected_id):
+    if not isinstance(data, dict) or data.get("id") != expected_id or not valid_badge_id(expected_id):
+        raise ValueError("invalid badge id")
+
+    def integer(name, minimum, maximum):
+        value = data.get(name)
+        if type(value) is not int or not minimum <= value <= maximum:
+            raise ValueError(f"invalid {name}")
+        return value
+
+    status = {
+        "id": expected_id,
+        "solvedMask": integer("solvedMask", 0, 0x1f),
+        "solved": integer("solved", 0, 5),
+        "total": integer("total", 5, 5),
+        "serialSolved": integer("serialSolved", 0, 4),
+        "serialProblems": integer("serialProblems", 4, 4),
+        "volume": integer("volume", 1, 10),
+        "flappyHigh": integer("flappyHigh", 0, 65535),
+        "firewallHigh": integer("firewallHigh", 0, 65535),
+        "uptimeMs": integer("uptimeMs", 0, 0xffffffff),
+    }
+    hidden = data.get("hiddenSolved")
+    screen = data.get("screen")
+    names = (data.get("flappyName"), data.get("firewallName"))
+    if type(hidden) is not bool or not isinstance(screen, str) or screen not in STATUS_SCREENS:
+        raise ValueError("invalid badge status")
+    if any(not isinstance(name, str) or
+           (name != "---" and not valid_nickname(name)) for name in names):
+        raise ValueError("invalid leaderboard name")
+    if (status["solved"] != status["solvedMask"].bit_count() or
+            status["serialSolved"] != (status["solvedMask"] & 0x0f).bit_count() or
+            hidden != bool(status["solvedMask"] & 0x10)):
+        raise ValueError("inconsistent solved status")
+    status.update({
+        "hiddenSolved": hidden,
+        "screen": screen,
+        "flappyName": names[0],
+        "firewallName": names[1],
+    })
+    return status
 
 
 def normalize_problem(data):
@@ -163,6 +218,8 @@ def parse_problem_line(line):
         raise ValueError("invalid problem field count")
     index = int(parts[1])
     option_count = int(parts[3])
+    if not 1 <= index <= 4 or parts[2] not in {"C", "F"} or not 0 <= option_count <= 4:
+        raise ValueError("invalid problem metadata")
 
     def decode(value):
         return "" if value == "-" else base64.b64decode(value, validate=True).decode("utf-8")
@@ -187,7 +244,12 @@ def command_chunks(command):
 
 def self_test():
     assert LEADERBOARD_PATH.is_file()
-    assert auth_tag("test-key", "AEGIS-112233445566", "89ABCDEF") == "22D55E4B05C38F"
+    assert valid_badge_id("AEGIS-112233445566")
+    assert not valid_badge_id("AEGIS-11223344556G")
+    admin_tag = auth_tag("test-key", "admin", "AEGIS-112233445566", "89ABCDEF", "0123456789ABCDEF")
+    badge_tag = auth_tag("test-key", "badge", "AEGIS-112233445566", "89ABCDEF", "0123456789ABCDEF")
+    assert admin_tag == "F8DEA3CAA109A7F06C67B6AF0D458976"
+    assert badge_tag == "B80B9C6F0230BB1CB65892F269548D7C" and badge_tag != admin_tag
     sample = {"type": "choice", "title": "Q", "prompt": "Pick", "answer": "2", "options": ["A", "B"]}
     command = problem_command(1, sample)
     assert command.startswith("problem set\t1\tC\t2\t")
@@ -212,6 +274,26 @@ def self_test():
         pass
     else:
         raise AssertionError("non-ASCII OLED title accepted")
+    status = {
+        "id": "AEGIS-112233445566", "solvedMask": 0x11, "solved": 2,
+        "total": 5, "serialSolved": 1, "serialProblems": 4,
+        "hiddenSolved": True, "volume": 10, "screen": "home",
+        "flappyHigh": 0, "flappyName": "---", "firewallHigh": 12,
+        "firewallName": "PLAYER1", "uptimeMs": 123,
+    }
+    assert normalize_status(status, status["id"]) == status
+    try:
+        normalize_status({**status, "screen": "<img src=x onerror=alert(1)>"}, status["id"])
+    except ValueError:
+        pass
+    else:
+        raise AssertionError("unsafe status accepted")
+    try:
+        normalize_status({**status, "flappyName": None}, status["id"])
+    except ValueError:
+        pass
+    else:
+        raise AssertionError("invalid status type accepted")
     with tempfile.TemporaryDirectory() as directory:
         database = Path(directory) / "scores.db"
         init_score_db(database)
@@ -219,6 +301,7 @@ def self_test():
         assert store_score("AEGIS-TEST", "flappy", 7, "ZERO", database)
         assert not store_score("AEGIS-TEST", "flappy", 6, "LOW", database)
         assert best_score("AEGIS-TEST", "flappy", database) == 7
+        assert store_score("AEGIS-TEST", "tetris", 1200, "STACK", database)
         assert score_rows(database)[0]["nickname"] == "ZERO"
     print("bridge protocol self-test: OK")
 
@@ -247,6 +330,7 @@ class BadgeSession:
         self.sequence = 0
         self.write_lock = asyncio.Lock()
         self.problem_waiters = {}
+        self.expected_badge_tag = None
         self.task = None
 
     def log(self, text):
@@ -263,6 +347,9 @@ class BadgeSession:
             raw, _, rest = self.buffer.partition(b"\n")
             self.buffer = bytearray(rest)
             self.handle_line(raw.decode("utf-8", "replace").strip())
+        if len(self.buffer) > BLE_COMMAND_MAX:
+            self.buffer.clear()
+            self.log("ERR oversized BLE line")
 
     def handle_line(self, line):
         if not line:
@@ -272,6 +359,8 @@ class BadgeSession:
             return
         if line.startswith("PROBLEM\t"):
             try:
+                if not self.authenticated:
+                    raise ValueError("problem data before authentication")
                 index, problem = parse_problem_line(line)
                 waiter = self.problem_waiters.pop(index, None)
                 if waiter and not waiter.done():
@@ -281,10 +370,11 @@ class BadgeSession:
             return
         if line.startswith("STATUS "):
             try:
-                self.status = json.loads(line[7:])
-                self.id = self.status.get("id", self.id)
-            except json.JSONDecodeError:
-                self.log("ERR invalid status JSON")
+                if not self.authenticated:
+                    raise ValueError("status before authentication")
+                self.status = normalize_status(json.loads(line[7:]), self.id)
+            except (json.JSONDecodeError, ValueError) as error:
+                self.log(f"ERR invalid status: {error}")
             return
         if line.startswith("SCORE ") or line.startswith("SCORE_SUBMIT "):
             asyncio.create_task(self.handle_score(line))
@@ -292,14 +382,29 @@ class BadgeSession:
 
         self.log(line)
         if line.startswith("HELLO "):
+            self.authenticated = False
             parts = line.split()
-            if len(parts) == 3:
+            if (len(parts) == 3 and valid_badge_id(parts[1]) and
+                    len(parts[2]) == 8 and all(char in "0123456789ABCDEF" for char in parts[2])):
                 self.id = parts[1]
-                tag = auth_tag(ADMIN_KEY, parts[1], parts[2])
-                asyncio.create_task(self.send_raw(f"a {tag}"))
-        elif line == "AUTH OK":
-            self.authenticated = True
-            asyncio.create_task(self.sync_scores())
+                bridge_challenge = secrets.token_hex(8).upper()
+                tag = auth_tag(ADMIN_KEY, "admin", self.id, parts[2], bridge_challenge)
+                self.expected_badge_tag = auth_tag(
+                    ADMIN_KEY, "badge", self.id, parts[2], bridge_challenge
+                )
+                asyncio.create_task(self.send_raw(f"a {tag} {bridge_challenge}"))
+            else:
+                self.expected_badge_tag = None
+                self.log("ERR invalid hello")
+        elif line.startswith("AUTH OK "):
+            provided = line.removeprefix("AUTH OK ")
+            if self.expected_badge_tag and hmac.compare_digest(provided, self.expected_badge_tag):
+                self.expected_badge_tag = None
+                self.authenticated = True
+                asyncio.create_task(self.sync_scores())
+            else:
+                self.authenticated = False
+                self.log("ERR invalid badge proof")
 
     async def handle_score(self, line):
         if not self.authenticated:
@@ -332,6 +437,7 @@ class BadgeSession:
     def disconnected(self, _client):
         self.online = False
         self.authenticated = False
+        self.expected_badge_tag = None
         self.client = None
         self.log("[disconnected]")
 
@@ -366,6 +472,7 @@ class BadgeSession:
                     self.client = client
                     self.online = True
                     self.authenticated = False
+                    self.expected_badge_tag = None
                     self.last_seen = time.time()
                     self.log("[connected]")
                     await client.start_notify(TX_UUID, self.notification)
@@ -428,7 +535,10 @@ async def request_command(request):
     command = data.get("command")
     if not isinstance(command, str) or not command.strip():
         raise ValueError("command must be a non-empty string")
-    return command.strip()
+    command = command.strip()
+    if any(char in command for char in "\r\n\0") or len(command.encode("utf-8")) > BLE_COMMAND_MAX:
+        raise ValueError(f"command must be one line up to {BLE_COMMAND_MAX} UTF-8 bytes")
+    return command
 
 
 async def bulk_result(operation, completed_key):
@@ -568,8 +678,29 @@ async def bulk_problem_api(request):
     )
 
 
+@web.middleware
+async def security_middleware(request, handler):
+    host = request.headers.get("Host", "").lower()
+    if host not in LOCAL_HOSTS:
+        raise web.HTTPMisdirectedRequest(text="invalid local host")
+    if request.method in {"POST", "PUT", "PATCH", "DELETE"}:
+        origin = request.headers.get("Origin")
+        if origin and origin.lower() != f"http://{host}":
+            raise web.HTTPForbidden(text="cross-origin request blocked")
+        if request.content_type != "application/json":
+            raise web.HTTPUnsupportedMediaType(text="application/json required")
+    response = await handler(request)
+    response.headers.update({
+        "Content-Security-Policy": "default-src 'self'; base-uri 'none'; connect-src 'self'; frame-ancestors 'none'; form-action 'self'; img-src 'self'; object-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'",
+        "Referrer-Policy": "no-referrer",
+        "X-Content-Type-Options": "nosniff",
+        "X-Frame-Options": "DENY",
+    })
+    return response
+
+
 def create_app():
-    app = web.Application()
+    app = web.Application(client_max_size=4096, middlewares=[security_middleware])
     app.router.add_get("/", dashboard_page)
     app.router.add_get("/leaderboard", leaderboard_page)
     app.router.add_get("/favicon.svg", favicon)
@@ -586,7 +717,14 @@ def create_app():
 
 async def main():
     if ADMIN_KEY == DEFAULT_ADMIN_KEY:
-        print("WARNING: using development BLE admin key", file=sys.stderr)
+        if "--allow-dev-key" not in sys.argv:
+            raise SystemExit(
+                "Refusing the public development key. Set BADGE_ADMIN_KEY to "
+                "at least 32 UTF-8 bytes, or pass --allow-dev-key for local testing."
+            )
+        print("WARNING: using public development BLE admin key", file=sys.stderr)
+    elif len(ADMIN_KEY.encode("utf-8")) < 32:
+        raise SystemExit("BADGE_ADMIN_KEY must be at least 32 UTF-8 bytes")
     init_score_db()
     app = create_app()
     runner = web.AppRunner(app)
