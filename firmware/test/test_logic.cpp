@@ -41,6 +41,13 @@ int main() {
   assert(!validLeaderboardName("", 10));
   assert(!validLeaderboardName("TOO-LONG-NAME", 10));
   assert(!validLeaderboardName("lower", 10));
+  uint16_t rows[] = {0x001, 0x3ff, 0x002, 0x3ff};
+  assert(clearFullRows(rows, 4, 0x3ff) == 2);
+  assert(rows[0] == 0 && rows[1] == 0 && rows[2] == 0x001 && rows[3] == 0x002);
+  uint16_t tSpinRows[] = {0b0101, 0, 0b0001, 0};
+  assert(tetrisTSpinCorners(tSpinRows, 4, 4, 1, 1));
+  tSpinRows[0] = 0b0001;
+  assert(!tetrisTSpinCorners(tSpinRows, 4, 4, 1, 1));
   assert(decodeMorse(0b01, 2) == 'A');
   assert(decodeMorse(0b1000, 4) == 'B');
   assert(decodeMorse(0b000, 3) == 'S');

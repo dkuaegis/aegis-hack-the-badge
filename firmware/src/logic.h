@@ -75,6 +75,38 @@ inline bool validLeaderboardName(const char *name, uint8_t maxLength) {
   return true;
 }
 
+inline uint8_t clearFullRows(uint16_t *rows, uint8_t height,
+                             uint16_t fullMask) {
+  if (rows == nullptr || height == 0) return 0;
+  uint8_t cleared = 0;
+  for (int16_t read = height - 1, write = height - 1; read >= 0; --read) {
+    if (rows[read] == fullMask) {
+      ++cleared;
+    } else {
+      rows[write--] = rows[read];
+    }
+  }
+  for (uint8_t row = 0; row < cleared; ++row) rows[row] = 0;
+  return cleared;
+}
+
+inline bool tetrisTSpinCorners(const uint16_t *rows, uint8_t width,
+                               uint8_t height, int8_t pivotX,
+                               int8_t pivotY) {
+  if (rows == nullptr || width == 0 || height == 0) return false;
+  uint8_t occupied = 0;
+  static constexpr int8_t offsets[] = {-1, 1};
+  for (const int8_t dy : offsets) {
+    for (const int8_t dx : offsets) {
+      const int8_t x = pivotX + dx;
+      const int8_t y = pivotY + dy;
+      occupied += x < 0 || x >= width || y < 0 || y >= height ||
+                  (rows[y] & (1U << x));
+    }
+  }
+  return occupied >= 3;
+}
+
 inline char decodeMorse(uint8_t bits, uint8_t length) {
   static const char one[] = "ET";
   static const char two[] = "IANM";

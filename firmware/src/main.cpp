@@ -34,7 +34,7 @@ constexpr uint8_t FLAPPY_REWARD_SCORE = 5;
 constexpr uint32_t FLAPPY_FRAME_MS = 40;
 constexpr float FLAPPY_PIPE_SPEED = 31.0f;
 constexpr float FLAPPY_SPEED_STEP = 1.0f;
-constexpr uint8_t HOME_MENU_COUNT = 5;
+constexpr uint8_t HOME_MENU_COUNT = 6;
 constexpr uint32_t FIREWALL_FRAME_MS = 30;
 constexpr uint8_t FIREWALL_COLS = 8;
 constexpr uint8_t FIREWALL_ROWS = 3;
@@ -50,6 +50,13 @@ constexpr int16_t FIREWALL_PADDLE_H = 3;
 constexpr int16_t FIREWALL_BALL_SIZE = 3;
 constexpr float FIREWALL_PADDLE_SPEED = 85.0f;
 constexpr float FIREWALL_SCROLL_SPEED = 3.5f;
+constexpr uint8_t TETRIS_WIDTH = 10;
+constexpr uint8_t TETRIS_HEIGHT = 20;
+constexpr uint8_t TETRIS_CELL = 3;
+constexpr uint16_t TETRIS_DROP_MS = 650;
+constexpr uint16_t TETRIS_FAST_DROP_MS = 40;
+constexpr uint16_t TETRIS_MOVE_DELAY_MS = 180;
+constexpr uint16_t TETRIS_MOVE_REPEAT_MS = 65;
 constexpr uint8_t LEADERBOARD_NAME_LENGTH = 10;
 constexpr uint32_t TROPHY_LED_STEP_MS = 120;
 constexpr uint32_t LONG_PRESS_MS = 700;
@@ -161,12 +168,13 @@ void playerPrintf(PlayerTarget target, const char *format, ...) {
 }
 
 enum class Screen : uint8_t {
-  Home, Problems, Hint, Status, Game, FirewallGame, MorseLink, MorseChannel,
-  HiddenGranted, Complete
+  Home, Problems, Hint, Status, Game, FirewallGame, TetrisGame, MorseLink,
+  MorseChannel, HiddenGranted, Complete
 };
 enum class GamePhase : uint8_t { Intro, Running, NameEntry, Over };
 enum class FirewallPhase : uint8_t { Intro, Running, NameEntry, Over };
-enum class ScoreGame : uint8_t { Flappy, Firewall };
+enum class TetrisPhase : uint8_t { Intro, Running, NameEntry, Over };
+enum class ScoreGame : uint8_t { Flappy, Firewall, Tetris };
 enum class VictoryPhase : uint8_t {
   Idle, FlashOn1, FlashOff1, FlashOn2, Fanfare, TrophyIdle
 };
@@ -208,7 +216,41 @@ struct NameEntryState {
   uint8_t cursor = 0;
 } nameEntry;
 
-ScoreRecord highScores[2];
+ScoreRecord highScores[3];
+
+constexpr uint16_t TETROMINOES[7][4] = {
+    {0x00f0, 0x4444, 0x00f0, 0x4444}, // I
+    {0x0066, 0x0066, 0x0066, 0x0066}, // O
+    {0x0027, 0x0232, 0x0072, 0x0131}, // T
+    {0x0036, 0x0231, 0x0036, 0x0231}, // S
+    {0x0063, 0x0132, 0x0063, 0x0132}, // Z
+    {0x0071, 0x0113, 0x0047, 0x0322}, // J
+    {0x0074, 0x0311, 0x0017, 0x0223}, // L
+};
+
+struct TetrisState {
+  TetrisPhase phase = TetrisPhase::Intro;
+  uint16_t rows[TETRIS_HEIGHT] = {};
+  uint16_t score = 0;
+  uint16_t lines = 0;
+  uint8_t piece = 0;
+  uint8_t next = 0;
+  uint8_t rotation = 0;
+  int8_t x = 3;
+  int8_t y = 0;
+  bool rotatedLast = false;
+  bool exitChord = false;
+  uint8_t toneCount = 0;
+  uint8_t toneIndex = 0;
+  char event[12] = {};
+  uint32_t exitStartedAt = 0;
+  uint32_t moveRepeatAt = 0;
+  uint32_t lastDropAt = 0;
+  uint32_t nextToneAt = 0;
+  uint32_t impactUntil = 0;
+  uint32_t eventUntil = 0;
+  uint32_t lastImpactFrameAt = 0;
+} tetris;
 
 struct __attribute__((packed)) MorsePacket {
   uint16_t magic;
@@ -623,8 +665,8 @@ void playBootAnimation() {
 
 void drawHomeFrame() {
   static const char *const items[HOME_MENU_COUNT] = {
-      "MISSIONS", "FLAPPY HACKER", "FIREWALL BREAKER", "MORSE LINK",
-      "STATUS"};
+      "MISSIONS", "FLAPPY HACKER", "FIREWALL BREAKER", "TETRIS STACK",
+      "MORSE LINK", "STATUS"};
   char progress[8];
   snprintf(progress, sizeof(progress), "%02u / %02u", serialSolvedCount(),
            static_cast<unsigned>(SERIAL_PROBLEM_COUNT));
@@ -1212,12 +1254,23 @@ void drawGameOverFrame() {
 
 void drawGameOver() { render(drawGameOverFrame); }
 
+const char *scoreGameName(ScoreGame gameId) {
+  if (gameId == ScoreGame::Flappy) return "flappy";
+  if (gameId == ScoreGame::Firewall) return "firewall";
+  return "tetris";
+}
+
+const char *scoreGameTitle(ScoreGame gameId) {
+  if (gameId == ScoreGame::Flappy) return "FLAPPY HIGH SCORE";
+  if (gameId == ScoreGame::Firewall) return "FIREWALL HIGH SCORE";
+  return "TETRIS HIGH SCORE";
+}
+
 void drawNameEntryFrame() {
   char score[16];
   snprintf(score, sizeof(score), "SCORE %u",
            static_cast<unsigned>(nameEntry.score));
-  header(nameEntry.game == ScoreGame::Flappy ? "FLAPPY HIGH SCORE"
-                                             : "FIREWALL HIGH SCORE");
+  header(scoreGameTitle(nameEntry.game));
   oled.setFont(u8g2_font_6x10_tf);
   centered(22, score);
   oled.setFont(u8g2_font_9x15B_tf);
@@ -1243,7 +1296,7 @@ bool finishNameEntry() {
   memcpy(record.name, nameEntry.name, sizeof(record.name));
   char line[64];
   snprintf(line, sizeof(line), "SCORE_SUBMIT %s %u %s",
-           nameEntry.game == ScoreGame::Flappy ? "flappy" : "firewall",
+           scoreGameName(nameEntry.game),
            static_cast<unsigned>(nameEntry.score), nameEntry.name);
   bleSendLine(line);
   bleStatusDirty = true;
@@ -1255,7 +1308,7 @@ void reportScore(ScoreGame gameId, uint16_t score) {
   if (!bleConnected || !bleAuthenticated || score == 0) return;
   char line[32];
   snprintf(line, sizeof(line), "SCORE %s %u",
-           gameId == ScoreGame::Flappy ? "flappy" : "firewall",
+           scoreGameName(gameId),
            static_cast<unsigned>(score));
   bleSendLine(line);
 }
@@ -1528,6 +1581,334 @@ void updateFirewallGame(uint32_t now) {
   } else {
     drawFirewallRunning();
   }
+}
+
+bool tetrisFits(uint8_t piece, uint8_t rotation, int8_t originX,
+                 int8_t originY) {
+  const uint16_t shape = TETROMINOES[piece][rotation & 3];
+  for (uint8_t y = 0; y < 4; ++y) {
+    for (uint8_t x = 0; x < 4; ++x) {
+      if ((shape & (1U << (y * 4 + x))) == 0) continue;
+      const int8_t boardX = originX + x;
+      const int8_t boardY = originY + y;
+      if (boardX < 0 || boardX >= TETRIS_WIDTH || boardY >= TETRIS_HEIGHT ||
+          (boardY >= 0 && (tetris.rows[boardY] & (1U << boardX)))) return false;
+    }
+  }
+  return true;
+}
+
+void drawTetrisShape(uint8_t piece, uint8_t rotation, int8_t originX,
+                      int8_t originY, uint8_t cellSize) {
+  const uint16_t shape = TETROMINOES[piece][rotation & 3];
+  for (uint8_t y = 0; y < 4; ++y) {
+    for (uint8_t x = 0; x < 4; ++x) {
+      if (shape & (1U << (y * 4 + x))) {
+        oled.drawBox(originX + x * cellSize, originY + y * cellSize,
+                     cellSize - 1, cellSize - 1);
+      }
+    }
+  }
+}
+
+void drawTetrisGhost(uint8_t piece, uint8_t rotation, int8_t originX,
+                      int8_t originY) {
+  const uint16_t shape = TETROMINOES[piece][rotation & 3];
+  for (uint8_t y = 0; y < 4; ++y) {
+    for (uint8_t x = 0; x < 4; ++x) {
+      if (shape & (1U << (y * 4 + x))) {
+        oled.drawPixel(originX + x * TETRIS_CELL,
+                       originY + y * TETRIS_CELL);
+      }
+    }
+  }
+}
+
+void drawTetrisRunningFrame() {
+  const uint32_t now = millis();
+  const int8_t boardX = now < tetris.impactUntil && ((now / 24) & 1) ? 1 : 0;
+  oled.drawFrame(boardX, 1, TETRIS_WIDTH * TETRIS_CELL + 2,
+                 TETRIS_HEIGHT * TETRIS_CELL + 2);
+  for (uint8_t y = 0; y < TETRIS_HEIGHT; ++y) {
+    for (uint8_t x = 0; x < TETRIS_WIDTH; ++x) {
+      if (tetris.rows[y] & (1U << x)) {
+        oled.drawBox(boardX + 1 + x * TETRIS_CELL, 2 + y * TETRIS_CELL,
+                     TETRIS_CELL - 1, TETRIS_CELL - 1);
+      }
+    }
+  }
+  int8_t ghostY = tetris.y;
+  while (tetrisFits(tetris.piece, tetris.rotation, tetris.x, ghostY + 1)) {
+    ++ghostY;
+  }
+  if (ghostY != tetris.y) {
+    drawTetrisGhost(tetris.piece, tetris.rotation,
+                     boardX + 2 + tetris.x * TETRIS_CELL,
+                     3 + ghostY * TETRIS_CELL);
+  }
+  drawTetrisShape(tetris.piece, tetris.rotation,
+                   boardX + 1 + tetris.x * TETRIS_CELL,
+                   2 + tetris.y * TETRIS_CELL,
+                   TETRIS_CELL);
+
+  char value[18];
+  oled.setFont(u8g2_font_5x7_tf);
+  oled.drawStr(36, 7, "TETRIS STACK");
+  snprintf(value, sizeof(value), "SCORE %u", static_cast<unsigned>(tetris.score));
+  oled.drawStr(36, 18, value);
+  snprintf(value, sizeof(value), "LINES %u", static_cast<unsigned>(tetris.lines));
+  oled.drawStr(36, 28, value);
+  snprintf(value, sizeof(value), "LEVEL %u",
+           static_cast<unsigned>(tetris.lines / 10 + 1));
+  oled.drawStr(36, 38, value);
+  oled.drawStr(91, 38, "NEXT");
+  drawTetrisShape(tetris.next, 0, 96, 42, 3);
+  oled.setFont(u8g2_font_4x6_tf);
+  if (tetris.eventUntil > now && tetris.event[0] != '\0') {
+    oled.drawBox(34, 43, 94, 11);
+    oled.setDrawColor(0);
+    oled.setFont(u8g2_font_5x7_tf);
+    const uint8_t width = oled.getStrWidth(tetris.event);
+    oled.drawStr(34 + (94 - min<uint8_t>(width, 94)) / 2, 51, tetris.event);
+    oled.setDrawColor(1);
+    oled.setFont(u8g2_font_4x6_tf);
+    oled.drawStr(36, 57, "HOLD OK FAST");
+    oled.drawStr(36, 63, "L+R EXIT");
+  } else {
+    oled.drawStr(36, 49, "L/R MOVE");
+    oled.drawStr(36, 56, "TAP OK ROT");
+    oled.drawStr(36, 63, "HOLD OK FAST");
+  }
+}
+
+void drawTetrisRunning() { render(drawTetrisRunningFrame); }
+
+void drawTetrisIntroFrame() {
+  header("TETRIS STACK");
+  oled.setFont(u8g2_font_6x10_tf);
+  centered(25, "10 x 20 GRID");
+  oled.setFont(u8g2_font_5x7_tf);
+  centered(38, "L/R MOVE");
+  centered(48, "TAP OK: ROTATE");
+  footer("OK:START HOLD L+R");
+}
+
+void drawTetrisIntro() { render(drawTetrisIntroFrame); }
+
+void drawTetrisOverFrame() {
+  char score[18];
+  char best[24];
+  const ScoreRecord &record = highScores[static_cast<uint8_t>(ScoreGame::Tetris)];
+  snprintf(score, sizeof(score), "SCORE %u", static_cast<unsigned>(tetris.score));
+  snprintf(best, sizeof(best), "BEST %s %u", record.name,
+           static_cast<unsigned>(record.score));
+  header("STACK OVERFLOW");
+  oled.setFont(u8g2_font_9x15B_tf);
+  centered(29, score);
+  oled.setFont(u8g2_font_5x7_tf);
+  centered(43, best);
+  footer("OK:RETRY HOLD L+R");
+}
+
+void drawTetrisOver() { render(drawTetrisOverFrame); }
+
+void startTetrisImpact(uint8_t cleared, bool tSpin, uint32_t now) {
+  static constexpr const char *clearNames[] = {
+      "", "SINGLE", "DOUBLE", "TRIPLE", "TETRIS"};
+  if (tSpin) {
+    if (cleared) snprintf(tetris.event, sizeof(tetris.event),
+                          "T-SPIN %u", cleared);
+    else strncpy(tetris.event, "T-SPIN", sizeof(tetris.event));
+  } else {
+    strncpy(tetris.event, clearNames[cleared], sizeof(tetris.event));
+  }
+  tetris.event[sizeof(tetris.event) - 1] = '\0';
+  tetris.impactUntil = now + 140;
+  tetris.eventUntil = now + 700;
+  tetris.lastImpactFrameAt = 0;
+  tetris.toneCount = tSpin ? max<uint8_t>(2, cleared + 1) : cleared;
+  tetris.toneIndex = 1;
+  tetris.nextToneAt = now + 75;
+  buzzerTone((tSpin ? 850 : 650), 55);
+}
+
+void updateTetrisImpact(uint32_t now) {
+  if (tetris.toneIndex < tetris.toneCount &&
+      static_cast<int32_t>(now - tetris.nextToneAt) >= 0) {
+    const bool tSpin = strncmp(tetris.event, "T-SPIN", 6) == 0;
+    buzzerTone((tSpin ? 850 : 650) + tetris.toneIndex * 220, 55);
+    ++tetris.toneIndex;
+    tetris.nextToneAt = now + 75;
+  }
+  bool redraw = false;
+  if (now < tetris.impactUntil && now - tetris.lastImpactFrameAt >= 24) {
+    tetris.lastImpactFrameAt = now;
+    redraw = true;
+  }
+  if (tetris.eventUntil != 0 &&
+      static_cast<int32_t>(now - tetris.eventUntil) >= 0) {
+    tetris.eventUntil = 0;
+    redraw = true;
+  }
+  if (redraw && tetris.phase == TetrisPhase::Running) drawTetrisRunning();
+}
+
+void finishTetrisGame() {
+  tetris.phase = TetrisPhase::Over;
+  beep(180, 180);
+  drawTetrisOver();
+  reportScore(ScoreGame::Tetris, tetris.score);
+}
+
+bool spawnTetrisPiece() {
+  tetris.piece = tetris.next;
+  tetris.next = random(0, 7);
+  tetris.rotation = 0;
+  tetris.x = 3;
+  tetris.y = 0;
+  tetris.rotatedLast = false;
+  return tetrisFits(tetris.piece, tetris.rotation, tetris.x, tetris.y);
+}
+
+void lockTetrisPiece(uint32_t now) {
+  const uint16_t shape = TETROMINOES[tetris.piece][tetris.rotation & 3];
+  for (uint8_t y = 0; y < 4; ++y) {
+    for (uint8_t x = 0; x < 4; ++x) {
+      if ((shape & (1U << (y * 4 + x))) == 0) continue;
+      const uint8_t boardX = tetris.x + x;
+      const uint8_t boardY = tetris.y + y;
+      if (boardY < TETRIS_HEIGHT) tetris.rows[boardY] |= 1U << boardX;
+    }
+  }
+  const bool tSpin = tetris.piece == 2 && tetris.rotatedLast &&
+      tetrisTSpinCorners(tetris.rows, TETRIS_WIDTH, TETRIS_HEIGHT,
+                         tetris.x + 1, tetris.y + 1);
+  const uint8_t cleared = clearFullRows(
+      tetris.rows, TETRIS_HEIGHT, (1U << TETRIS_WIDTH) - 1U);
+  if (cleared || tSpin) {
+    static constexpr uint16_t clearPoints[] = {0, 100, 300, 500, 800};
+    static constexpr uint16_t tSpinPoints[] = {400, 800, 1200, 1600};
+    const uint16_t points = tSpin
+        ? tSpinPoints[min<uint8_t>(cleared, 3)] : clearPoints[cleared];
+    const uint32_t nextScore = tetris.score +
+        static_cast<uint32_t>(points) * (tetris.lines / 10 + 1);
+    tetris.score = min<uint32_t>(nextScore, UINT16_MAX);
+    tetris.lines += cleared;
+    startTetrisImpact(cleared, tSpin, now);
+  } else {
+    tetris.impactUntil = now + 60;
+    tetris.lastImpactFrameAt = 0;
+    beep(320, 25);
+  }
+  if (!spawnTetrisPiece()) finishTetrisGame();
+}
+
+void enterTetris() {
+  screen = Screen::TetrisGame;
+  tetris.phase = TetrisPhase::Intro;
+  tetris.exitChord = false;
+  drawTetrisIntro();
+}
+
+void startTetris(uint32_t now) {
+  tetris = TetrisState{};
+  tetris.phase = TetrisPhase::Running;
+  tetris.next = random(0, 7);
+  spawnTetrisPiece();
+  tetris.lastDropAt = now;
+  drawTetrisRunning();
+}
+
+void updateTetris(uint32_t now) {
+  updateTetrisImpact(now);
+  if (tetris.phase == TetrisPhase::NameEntry) {
+    if (updateNameEntry()) {
+      tetris.phase = TetrisPhase::Over;
+      drawTetrisOver();
+    }
+    return;
+  }
+
+  if (left.raw && right.raw) {
+    if (!tetris.exitChord) {
+      tetris.exitChord = true;
+      tetris.exitStartedAt = now;
+    } else if (now - tetris.exitStartedAt >= LONG_PRESS_MS) {
+      screen = Screen::Home;
+      tetris.exitChord = false;
+      drawHome();
+    }
+    return;
+  }
+  tetris.exitChord = false;
+
+  if (tetris.phase != TetrisPhase::Running) {
+    if (ok.pressed) startTetris(now);
+    return;
+  }
+
+  bool changed = false;
+  int8_t move = 0;
+  if (left.pressed) {
+    move = -1;
+    tetris.moveRepeatAt = now + TETRIS_MOVE_DELAY_MS;
+  } else if (right.pressed) {
+    move = 1;
+    tetris.moveRepeatAt = now + TETRIS_MOVE_DELAY_MS;
+  } else if (left.stable && !right.stable &&
+             static_cast<int32_t>(now - tetris.moveRepeatAt) >= 0) {
+    move = -1;
+    tetris.moveRepeatAt = now + TETRIS_MOVE_REPEAT_MS;
+  } else if (right.stable && !left.stable &&
+             static_cast<int32_t>(now - tetris.moveRepeatAt) >= 0) {
+    move = 1;
+    tetris.moveRepeatAt = now + TETRIS_MOVE_REPEAT_MS;
+  } else if (!left.stable && !right.stable) {
+    tetris.moveRepeatAt = 0;
+  }
+
+  if (move != 0) {
+    if (tetrisFits(tetris.piece, tetris.rotation,
+                   tetris.x + move, tetris.y)) {
+      tetris.x += move;
+      tetris.rotatedLast = false;
+      changed = true;
+    }
+  } else if (ok.released && !ok.longFired) {
+    const uint8_t nextRotation = (tetris.rotation + 1) & 3;
+    static constexpr int8_t kicks[][2] = {
+        {0, 0}, {-1, 0}, {1, 0}, {-2, 0}, {2, 0},
+        {0, -1}, {-1, -1}, {1, -1}, {0, -2}};
+    for (const auto &kick : kicks) {
+      if (tetrisFits(tetris.piece, nextRotation,
+                      tetris.x + kick[0], tetris.y + kick[1])) {
+        tetris.rotation = nextRotation;
+        tetris.x += kick[0];
+        tetris.y += kick[1];
+        tetris.rotatedLast = true;
+        changed = true;
+        break;
+      }
+    }
+  }
+
+  const uint16_t levelDrop = max<int16_t>(
+      100, TETRIS_DROP_MS - min<uint16_t>(tetris.lines / 10, 11) * 50);
+  const uint16_t dropInterval = ok.stable && ok.longFired
+      ? TETRIS_FAST_DROP_MS : levelDrop;
+  if (now - tetris.lastDropAt >= dropInterval) {
+    tetris.lastDropAt = now;
+    if (tetrisFits(tetris.piece, tetris.rotation, tetris.x, tetris.y + 1)) {
+      ++tetris.y;
+      tetris.rotatedLast = false;
+      changed = true;
+    } else {
+      lockTetrisPiece(now);
+      if (tetris.phase == TetrisPhase::Over) return;
+      changed = true;
+    }
+  }
+  if (changed) drawTetrisRunning();
 }
 
 void appendMorseText(MorseLine &line, char value) {
@@ -1912,6 +2293,10 @@ void updateUi(uint32_t now) {
     updateFirewallGame(now);
     return;
   }
+  if (screen == Screen::TetrisGame) {
+    updateTetris(now);
+    return;
+  }
   if (screen == Screen::MorseLink) {
     updateMorseLink(now);
     return;
@@ -1937,6 +2322,8 @@ void updateUi(uint32_t now) {
       } else if (menuItem == 2) {
         enterFirewallGame();
       } else if (menuItem == 3) {
+        enterTetris();
+      } else if (menuItem == 4) {
         morse.channel = MORSE_DEFAULT_CHANNEL;
         clearMorseHistory();
         enterMorseLink();
@@ -1998,6 +2385,7 @@ const char *screenName() {
     case Screen::Status: return "status";
     case Screen::Game: return "game";
     case Screen::FirewallGame: return "firewall-game";
+    case Screen::TetrisGame: return "tetris-game";
     case Screen::MorseLink: return "morse-link";
     case Screen::MorseChannel: return "morse-channel";
     case Screen::HiddenGranted: return "hidden-granted";
@@ -2047,25 +2435,46 @@ void sendBleStatus() {
   bleStatusDirty = false;
 }
 
-bool validAdminTag(const char *provided) {
-  if (bleChallenge == 0 || strlen(provided) != 14) return false;
-  char material[40];
-  snprintf(material, sizeof(material), "%s:%08lX", badgeId,
-           static_cast<unsigned long>(bleChallenge));
+bool validHex(const char *value, size_t length) {
+  if (strlen(value) != length) return false;
+  for (size_t i = 0; i < length; ++i) {
+    if (!isxdigit(static_cast<unsigned char>(value[i]))) return false;
+  }
+  return true;
+}
+
+bool makeAuthTag(const char *role, const char *bridgeChallenge, char output[33]) {
+  if (bleChallenge == 0 || !validHex(bridgeChallenge, 16)) return false;
+  char material[64];
+  const int length = snprintf(material, sizeof(material), "%s:%s:%08lX:%s",
+                              role, badgeId,
+                              static_cast<unsigned long>(bleChallenge),
+                              bridgeChallenge);
+  if (length < 0 || static_cast<size_t>(length) >= sizeof(material)) return false;
   uint8_t digest[32];
   const mbedtls_md_info_t *sha = mbedtls_md_info_from_type(MBEDTLS_MD_SHA256);
   if (sha == nullptr || mbedtls_md_hmac(
           sha, reinterpret_cast<const uint8_t *>(BLE_ADMIN_KEY),
           strlen(BLE_ADMIN_KEY), reinterpret_cast<const uint8_t *>(material),
-          strlen(material), digest) != 0) return false;
+          length, digest) != 0) return false;
 
   constexpr char hex[] = "0123456789ABCDEF";
+  for (uint8_t i = 0; i < 16; ++i) {
+    output[i * 2] = hex[digest[i] >> 4];
+    output[i * 2 + 1] = hex[digest[i] & 0x0f];
+  }
+  output[32] = '\0';
+  return true;
+}
+
+bool validAdminTag(const char *provided, const char *bridgeChallenge) {
+  if (strlen(provided) != 32) return false;
+  char expected[33];
+  if (!makeAuthTag("admin", bridgeChallenge, expected)) return false;
   uint8_t different = 0;
-  for (uint8_t i = 0; i < 7; ++i) {
-    const char high = hex[digest[i] >> 4];
-    const char low = hex[digest[i] & 0x0f];
-    different |= static_cast<uint8_t>(toupper(provided[i * 2]) ^ high);
-    different |= static_cast<uint8_t>(toupper(provided[i * 2 + 1]) ^ low);
+  for (uint8_t i = 0; i < 32; ++i) {
+    different |= static_cast<uint8_t>(
+        toupper(static_cast<unsigned char>(provided[i])) ^ expected[i]);
   }
   return different == 0;
 }
@@ -2265,6 +2674,10 @@ bool parseScoreGame(const char *text, ScoreGame &gameId) {
     gameId = ScoreGame::Firewall;
     return true;
   }
+  if (strcmp(text, "tetris") == 0) {
+    gameId = ScoreGame::Tetris;
+    return true;
+  }
   return false;
 }
 
@@ -2297,12 +2710,16 @@ void handleScoreCommand(char *command) {
     const bool firewallCurrent = gameId == ScoreGame::Firewall &&
         screen == Screen::FirewallGame &&
         firewall.phase == FirewallPhase::Over && firewall.score == score;
-    if (!flappyCurrent && !firewallCurrent) {
+    const bool tetrisCurrent = gameId == ScoreGame::Tetris &&
+        screen == Screen::TetrisGame && tetris.phase == TetrisPhase::Over &&
+        tetris.score == score;
+    if (!flappyCurrent && !firewallCurrent && !tetrisCurrent) {
       bleSendLine("ERR score no longer current");
       return;
     }
     if (flappyCurrent) gamePhase = GamePhase::NameEntry;
-    else firewall.phase = FirewallPhase::NameEntry;
+    else if (firewallCurrent) firewall.phase = FirewallPhase::NameEntry;
+    else tetris.phase = TetrisPhase::NameEntry;
     beginNameEntry(gameId, score);
     bleSendLine("OK score name");
     return;
@@ -2328,12 +2745,23 @@ void handleBleCommand(char *command) {
     return;
   }
   if (strncmp(command, "a ", 2) == 0) {
-    if (validAdminTag(command + 2)) {
+    char *save = nullptr;
+    strtok_r(command, " ", &save);
+    char *provided = strtok_r(nullptr, " ", &save);
+    char *bridgeChallenge = strtok_r(nullptr, " ", &save);
+    char *extra = strtok_r(nullptr, " ", &save);
+    char proof[33];
+    if (provided && bridgeChallenge && !extra &&
+        validAdminTag(provided, bridgeChallenge) &&
+        makeAuthTag("badge", bridgeChallenge, proof)) {
       bleChallenge = 0;
       bleAuthenticated = true;
-      bleSendLine("AUTH OK");
+      char response[48];
+      snprintf(response, sizeof(response), "AUTH OK %s", proof);
+      bleSendLine(response);
       sendBleStatus();
     } else {
+      bleChallenge = 0;
       bleAuthenticated = false;
       bleSendLine("ERR auth");
     }
