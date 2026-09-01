@@ -1,7 +1,9 @@
 #!/usr/bin/env python3
 """Create the local venv, install changed requirements, and run the bridge."""
 
+import argparse
 import hashlib
+import os
 import subprocess
 import sys
 import venv
@@ -45,14 +47,30 @@ def prepare():
     return python
 
 
+def parse_args(argv):
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--check", action="store_true")
+    key = parser.add_mutually_exclusive_group()
+    key.add_argument("--allow-dev-key", action="store_true")
+    key.add_argument("--admin-key")
+    return parser.parse_args(argv)
+
+
 def main():
+    options = parse_args(sys.argv[1:])
     python = prepare()
     bridge = str(ROOT / "bridge.py")
-    subprocess.check_call([python, bridge, "--self-test"])
-    if "--check" in sys.argv[1:]:
+    environment = os.environ.copy()
+    if options.admin_key:
+        if len(options.admin_key.encode("utf-8")) < 32:
+            raise SystemExit("--admin-key must be at least 32 UTF-8 bytes")
+        environment["BADGE_ADMIN_KEY"] = options.admin_key
+    subprocess.check_call([python, bridge, "--self-test"], env=environment)
+    if options.check:
         print("[setup] ready")
         return
-    raise SystemExit(subprocess.call([python, bridge]))
+    bridge_args = ["--allow-dev-key"] if options.allow_dev_key else []
+    os.execve(python, [python, bridge, *bridge_args], environment)
 
 
 if __name__ == "__main__":

@@ -24,7 +24,8 @@ sudo apt install python3 python3-venv bluez
 스크립트는 첫 실행 시 `admin/.venv`를 생성하고,
 `requirements.txt`의 `aiohttp`와 `bleak`가 없거나 목록이 바뀌었을 때만
 pip로 설치합니다. 그 다음 프로토콜 자가 검사를 통과하면 서버를
-시작합니다.
+시작합니다. 운영 키는 환경변수 또는 `--admin-key` 인자로 전달하고, 공개
+개발 키로 로컬 테스트할 때만 `--allow-dev-key`를 붙입니다.
 
 macOS:
 
@@ -87,7 +88,7 @@ http://127.0.0.1:8080
 http://127.0.0.1:8080/leaderboard
 ```
 
-Flappy Hacker와 Firewall Breaker Top 10을 나란히 표시하며 1초마다
+Flappy Hacker, Firewall Breaker, Tetris Stack Top 10을 표시하며 1초마다
 SQLite DB의 최신 상태를 가져와 페이지 새로고침 없이 갱신합니다.
 1~10글자 닉네임은 굵게, 배지는 `AEGIS-`를 제외한 고유값만 표시됩니다.
 
@@ -143,6 +144,9 @@ macOS/Linux:
 ```bash
 export BADGE_ADMIN_KEY='replace-with-a-long-random-event-key'
 ./start-macos.sh # Linux는 ./start-linux.sh
+
+# 또는 실행 인자로 전달
+./start-macos.sh --admin-key 'replace-with-a-long-random-event-key'
 ```
 
 Windows Command Prompt:
@@ -150,6 +154,8 @@ Windows Command Prompt:
 ```bat
 set BADGE_ADMIN_KEY=replace-with-a-long-random-event-key
 start-windows.bat
+
+start-windows.bat --admin-key "replace-with-a-long-random-event-key"
 ```
 
 Windows PowerShell:
@@ -157,11 +163,23 @@ Windows PowerShell:
 ```powershell
 $env:BADGE_ADMIN_KEY='replace-with-a-long-random-event-key'
 .\start-windows.bat
+
+.\start-windows.bat --admin-key 'replace-with-a-long-random-event-key'
 ```
 
 키 원문은 BLE로 전송되지 않고, 연결마다 새 challenge를 사용한
-HMAC-SHA256 응답에만 사용됩니다. 현재 구성은 모든 배지가 하나의
-fleet key를 공유합니다.
+상호 HMAC-SHA256 증명에만 사용됩니다. 공개 개발 키로 브리지를 실행하려면
+로컬 테스트임을 명시하는 `--allow-dev-key`가 필요하며, 운영 키는 최소
+32 UTF-8 bytes여야 합니다. 현재 구성은 모든 배지가 하나의 fleet key를
+공유합니다. `--admin-key` 값은 브리지 프로세스의 인자에는 남지 않지만
+쉘 명령 기록에는 남을 수 있으므로 공용 PC에서는 환경변수를 권장합니다.
+
+```bash
+./start-macos.sh --allow-dev-key # 개발용 배지에만 사용
+```
+
+인증 프로토콜이 변경되었으므로 펌웨어와 브리지는 같은 버전으로
+업데이트해야 합니다.
 
 ## 종료와 문제 해결
 

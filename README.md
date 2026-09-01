@@ -163,14 +163,16 @@ OLED 하단의 `LEFT`, `OK`, `RIGHT` 버튼으로 메뉴 이동과 Flappy Hacker
 
 Python 3.10 이상과 Bluetooth LE가 가능한 PC에서 해당 OS의 스크립트를
 실행합니다. 첫 실행 시 `admin/.venv`를 만들고 필요한 pip 패키지를
-자동 설치한 뒤 브리지를 시작합니다.
+자동 설치한 뒤 브리지를 시작합니다. 운영 키는 환경변수 또는
+`--admin-key '32바이트 이상의 키'`로 전달할 수 있으며, 공개 개발 키는
+명령에 `--allow-dev-key`를 붙인 로컬 테스트에서만 허용됩니다.
 
 ```bash
 # macOS
-./admin/start-macos.sh
+./admin/start-macos.sh --admin-key 'replace-with-a-long-random-event-key'
 
 # Linux
-./admin/start-linux.sh
+./admin/start-linux.sh --admin-key 'replace-with-a-long-random-event-key'
 ```
 
 Windows에서는 터미널에서 `admin\start-windows.bat`을 실행하거나 파일을
