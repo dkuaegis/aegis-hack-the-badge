@@ -34,7 +34,7 @@ def prepare():
 
     digest = requirement_hash()
     imports_ok = subprocess.run(
-        [python, "-c", "import aiohttp, bleak"], capture_output=True
+        [python, "-c", "import aiohttp, bleak, serial"], capture_output=True
     ).returncode == 0
     if (not imports_ok or not MARKER.exists()
             or MARKER.read_text(encoding="utf-8").strip() != digest):
@@ -50,6 +50,8 @@ def prepare():
 def parse_args(argv):
     parser = argparse.ArgumentParser()
     parser.add_argument("--check", action="store_true")
+    parser.add_argument("--morse-port", help="DevkitC-1 USB CDC port (COM5, /dev/cu.usbmodem..., /dev/ttyACM0)")
+    parser.add_argument("--morse-channel", type=int, choices=range(1, 14))
     key = parser.add_mutually_exclusive_group()
     key.add_argument("--allow-dev-key", action="store_true")
     key.add_argument("--admin-key")
@@ -61,6 +63,10 @@ def main():
     python = prepare()
     bridge = str(ROOT / "bridge.py")
     environment = os.environ.copy()
+    if options.morse_port:
+        environment["AEGIS_MORSE_PORT"] = options.morse_port
+    if options.morse_channel:
+        environment["AEGIS_MORSE_CHANNEL"] = str(options.morse_channel)
     if options.admin_key:
         if len(options.admin_key.encode("utf-8")) < 32:
             raise SystemExit("--admin-key must be at least 32 UTF-8 bytes")

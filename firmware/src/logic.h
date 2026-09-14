@@ -56,11 +56,12 @@ constexpr bool rectsOverlap(float ax, float ay, float aw, float ah,
 }
 
 inline char stepLeaderboardChar(char current, int8_t direction) {
-  static constexpr char characters[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+  static constexpr char characters[] = " ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+  constexpr uint8_t count = sizeof(characters) - 1;
   uint8_t index = 0;
   while (characters[index] != '\0' && characters[index] != current) ++index;
   if (characters[index] == '\0') index = 0;
-  return characters[(index + (direction < 0 ? 35 : 1)) % 36];
+  return characters[(index + (direction < 0 ? count - 1 : 1)) % count];
 }
 
 inline bool validLeaderboardName(const char *name, uint8_t maxLength) {
@@ -68,11 +69,28 @@ inline bool validLeaderboardName(const char *name, uint8_t maxLength) {
   uint8_t length = 0;
   while (length <= maxLength && name[length] != '\0') ++length;
   if (length == 0 || length > maxLength) return false;
+  bool hasLetterOrDigit = false;
   for (uint8_t i = 0; i < length; ++i) {
+    if (name[i] == ' ') continue;
     if (!((name[i] >= 'A' && name[i] <= 'Z') ||
           (name[i] >= '0' && name[i] <= '9'))) return false;
+    hasLetterOrDigit = true;
   }
-  return true;
+  return hasLetterOrDigit;
+}
+
+inline void advanceLeaderboardCursor(char *name, uint8_t &cursor,
+                                      uint8_t maxLength) {
+  if (cursor >= maxLength) return;
+  ++cursor;
+  if (cursor < maxLength) name[cursor] = ' ';
+  name[cursor < maxLength ? cursor + 1 : cursor] = '\0';
+}
+
+inline void editLeaderboardChar(char *name, uint8_t cursor,
+                                uint8_t maxLength, int8_t direction) {
+  if (cursor >= maxLength) return; // The final slot is SAVE, never a character.
+  name[cursor] = stepLeaderboardChar(name[cursor], direction);
 }
 
 inline uint8_t clearFullRows(uint16_t *rows, uint8_t height,

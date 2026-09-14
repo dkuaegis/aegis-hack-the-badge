@@ -1,6 +1,8 @@
 #include <assert.h>
+#include <string.h>
 
 #include "logic.h"
+#include "morse_protocol.h"
 
 int main() {
   uint8_t mask = 0;
@@ -33,14 +35,37 @@ int main() {
   assert(rectsOverlap(10, 10, 3, 3, 12, 12, 5, 5));
   assert(!rectsOverlap(10, 10, 3, 3, 13, 10, 5, 5));
   assert(!rectsOverlap(10, 10, 3, 3, 10, 13, 5, 5));
-  assert(stepLeaderboardChar('A', -1) == '9');
+  assert(stepLeaderboardChar(' ', 1) == 'A');
+  assert(stepLeaderboardChar(' ', -1) == '9');
+  assert(stepLeaderboardChar('A', -1) == ' ');
   assert(stepLeaderboardChar('Z', 1) == '0');
-  assert(stepLeaderboardChar('9', 1) == 'A');
+  assert(stepLeaderboardChar('9', 1) == ' ');
   assert(validLeaderboardName("A", 10));
   assert(validLeaderboardName("ZERO0COKE", 10));
+  assert(validLeaderboardName(" A  B ", 10));
+  assert(!validLeaderboardName("   ", 10));
+  assert(!validLeaderboardName("A\tB", 10));
+  assert(!validLeaderboardName("ABCDEFGHIJK", 10));
   assert(!validLeaderboardName("", 10));
   assert(!validLeaderboardName("TOO-LONG-NAME", 10));
   assert(!validLeaderboardName("lower", 10));
+  char name[11] = "ZERO";
+  uint8_t cursor = 3;
+  advanceLeaderboardCursor(name, cursor, 10);
+  assert(cursor == 4 && strcmp(name, "ZERO ") == 0);
+  advanceLeaderboardCursor(name, cursor, 10);
+  assert(cursor == 5 && strcmp(name, "ZERO  ") == 0); // Short OK confirms a space.
+  editLeaderboardChar(name, cursor, 10, 1);
+  assert(strcmp(name, "ZERO A") == 0);
+  strcpy(name, "0123456789");
+  cursor = 9;
+  advanceLeaderboardCursor(name, cursor, 10);
+  editLeaderboardChar(name, cursor, 10, 1);
+  advanceLeaderboardCursor(name, cursor, 10);
+  assert(cursor == 10 && strcmp(name, "0123456789") == 0);
+  strcpy(name, " ");
+  editLeaderboardChar(name, 0, 10, -1);
+  assert(strcmp(name, "9") == 0);
   uint16_t rows[] = {0x001, 0x3ff, 0x002, 0x3ff};
   assert(clearFullRows(rows, 4, 0x3ff) == 2);
   assert(rows[0] == 0 && rows[1] == 0 && rows[2] == 0x001 && rows[3] == 0x002);
@@ -74,4 +99,14 @@ int main() {
   static_assert(stepMorseChannel(13, 1) == 1, "channel wraps right");
   static_assert(stepMorseChannel(6, -1) == 5, "channel steps left");
   static_assert(stepMorseChannel(6, 1) == 7, "channel steps right");
+  MorsePacket packet{MORSE_PACKET_MAGIC, MORSE_PACKET_VERSION, '.', 100, 0, 0};
+  assert(validMorsePacket(packet));
+  packet.durationMs = 0;
+  assert(!validMorsePacket(packet));
+  packet.symbol = '/';
+  assert(validMorsePacket(packet));
+  packet.symbol = ' ';
+  assert(validMorsePacket(packet));
+  packet.version = 2;
+  assert(!validMorsePacket(packet));
 }

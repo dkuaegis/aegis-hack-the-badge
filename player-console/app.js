@@ -2,7 +2,6 @@ const BAUD_RATE = 115200;
 const MAX_COMMAND_BYTES = 191;
 const MAX_OUTPUT_CHARS = 250000;
 const encoder = new TextEncoder();
-const decoder = new TextDecoder();
 
 const $ = (id) => document.getElementById(id);
 const connectButton = $('connect');
@@ -12,15 +11,24 @@ const output = $('output');
 
 let port = null;
 let reader = null;
+let writer = null;
 let readTask = null;
 let closing = false;
-let sending = false;
 let rxBytes = 0;
 let txBytes = 0;
+let pendingOutput = '';
+let outputFrame = null;
 
 function appendOutput(text) {
-  output.textContent = (output.textContent + text).slice(-MAX_OUTPUT_CHARS);
-  output.scrollTop = output.scrollHeight;
+  pendingOutput = (pendingOutput + text).slice(-MAX_OUTPUT_CHARS);
+  if (outputFrame !== null) return;
+  outputFrame = requestAnimationFrame(() => {
+    output.textContent = (output.textContent + pendingOutput).slice(-MAX_OUTPUT_CHARS);
+    pendingOutput = '';
+    outputFrame = null;
+    output.scrollTop = output.scrollHeight;
+    updateTraffic();
+  });
 }
 
 function appendSystem(text) {
@@ -58,31 +66,40 @@ function showConnected(activePort) {
 
 async function readSerial(activePort) {
   try {
-    while (activePort.readable) {
+    while (!closing && port === activePort && activePort.readable) {
+      const decoder = new TextDecoder();
       const activeReader = activePort.readable.getReader();
       reader = activeReader;
       try {
-        while (true) {
+        while (!closing && port === activePort) {
           const { value, done } = await activeReader.read();
-          if (done) break;
+          // A cancelled/closed stream may remain readable until port.close().
+          // Exit both loops so it cannot spin on immediately resolved reads.
+          if (done) {
+            appendOutput(decoder.decode());
+            return;
+          }
+          if (closing || port !== activePort) return;
           rxBytes += value.byteLength;
           appendOutput(decoder.decode(value, { stream: true }));
-          updateTraffic();
         }
       } catch (error) {
-        if (!closing) appendSystem(`READ ERROR: ${error.message}`);
+        if (!closing) {
+          appendSystem(`READ ERROR: ${error.message}`);
+          // Give UI events time to run even if replacement streams keep failing.
+          await new Promise((resolve) => setTimeout(resolve, 100));
+        }
       } finally {
         activeReader.releaseLock();
         if (reader === activeReader) reader = null;
       }
     }
+  } catch (error) {
+    if (!closing) appendSystem(`READ ERROR: ${error.message}`);
   } finally {
     if (!closing && port === activePort) {
-      port = null;
-      readTask = null;
-      try { await activePort.close(); } catch {}
-      showDisconnected('Serial 연결이 종료되었습니다.');
-      appendSystem('USB DISCONNECTED');
+      // disconnect() waits for this task, so do not await it from this task.
+      void disconnect('Serial 연결이 종료되었습니다.');
     }
   }
 }
@@ -104,7 +121,7 @@ async function connect() {
       appendSystem(`CONNECT ERROR: ${error.message}`);
     }
   } finally {
-    connectButton.disabled = false;
+    connectButton.disabled = closing;
   }
 }
 
@@ -112,17 +129,26 @@ async function disconnect(message = '사용자가 연결을 종료했습니다.'
   if (!port || closing) return;
   closing = true;
   connectButton.disabled = true;
+  connectButton.textContent = 'DISCONNECTING…';
+  commandInput.disabled = true;
+  sendButton.disabled = true;
   const activePort = port;
   const activeTask = readTask;
+  const activeWriter = writer;
   port = null;
   try {
-    if (reader) await reader.cancel();
+    const results = await Promise.allSettled([reader?.cancel(), activeWriter?.abort()]);
+    for (const result of results) {
+      if (result.status === 'rejected') appendSystem(`DISCONNECT WARNING: ${result.reason}`);
+    }
     if (activeTask) await activeTask;
+    activeWriter?.releaseLock();
     await activePort.close();
   } catch (error) {
     appendSystem(`DISCONNECT WARNING: ${error.message}`);
   } finally {
     reader = null;
+    writer = null;
     readTask = null;
     closing = false;
     connectButton.disabled = false;
@@ -134,6 +160,7 @@ async function disconnect(message = '사용자가 연결을 종료했습니다.'
 connectButton.addEventListener('click', () => port ? disconnect() : connect());
 
 $('clear').addEventListener('click', () => {
+  pendingOutput = '';
   output.textContent = '';
   commandInput.focus();
 });
@@ -141,29 +168,38 @@ $('clear').addEventListener('click', () => {
 $('shell').addEventListener('submit', async (event) => {
   event.preventDefault();
   const command = commandInput.value.trim();
-  if (!port || !command || sending) return;
+  if (!port || closing || !command || writer) return;
   const payload = encoder.encode(`${command}\n`);
   if (encoder.encode(command).byteLength > MAX_COMMAND_BYTES) {
     appendSystem(`INPUT ERROR: 최대 ${MAX_COMMAND_BYTES} UTF-8 bytes`);
     return;
   }
 
-  sending = true;
+  const activePort = port;
   sendButton.disabled = true;
   appendOutput(`> ${command}\n`);
   commandInput.value = '';
   try {
-    const writer = port.writable.getWriter();
-    try { await writer.write(payload); } finally { writer.releaseLock(); }
-    txBytes += payload.byteLength;
-    updateTraffic();
+    const activeWriter = activePort.writable.getWriter();
+    writer = activeWriter;
+    try { await activeWriter.write(payload); } finally {
+      activeWriter.releaseLock();
+      if (writer === activeWriter) writer = null;
+    }
+    if (port === activePort) {
+      txBytes += payload.byteLength;
+      updateTraffic();
+    }
   } catch (error) {
-    appendSystem(`WRITE ERROR: ${error.message}`);
-    await disconnect('쓰기 오류로 연결이 종료되었습니다.');
+    if (port === activePort && !closing) {
+      appendSystem(`WRITE ERROR: ${error.message}`);
+      await disconnect('쓰기 오류로 연결이 종료되었습니다.');
+    }
   } finally {
-    sending = false;
-    sendButton.disabled = !port;
-    commandInput.focus();
+    if (port === activePort && !closing) {
+      sendButton.disabled = false;
+      commandInput.focus();
+    }
   }
 });
 
@@ -178,3 +214,5 @@ if ('serial' in navigator && window.isSecureContext) {
   connectButton.disabled = true;
   showDisconnected('현재 브라우저 환경에서는 연결할 수 없습니다.');
 }
+
+window.addEventListener('pagehide', () => { void disconnect(); });

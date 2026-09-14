@@ -33,7 +33,7 @@ SCORE_DB_PATH = Path(os.environ.get(
 SCORE_GAMES = {"flappy", "firewall", "tetris"}
 STATUS_SCREENS = {
     "home", "missions", "hint", "status", "game", "firewall-game",
-    "morse-link", "morse-channel", "hidden-granted", "complete",
+    "tetris-game", "morse-link", "morse-channel", "hidden-granted", "complete",
 }
 LOCAL_HOSTS = {"127.0.0.1:8080", "localhost:8080"}
 
@@ -59,18 +59,18 @@ def init_score_db(path=SCORE_DB_PATH):
 
 
 def valid_nickname(nickname):
-    return 1 <= len(nickname) <= 10 and all(
-        "A" <= char <= "Z" or "0" <= char <= "9" for char in nickname
-    )
+    return (isinstance(nickname, str) and 1 <= len(nickname) <= 10
+            and bool(nickname.strip(" ")) and all(
+        "A" <= char <= "Z" or "0" <= char <= "9" or char == " " for char in nickname
+    ))
 
 
-def best_score(badge_id, game, path=SCORE_DB_PATH):
-    with score_db(path) as connection:
-        row = connection.execute(
-            "SELECT score FROM scores WHERE badge_id = ? AND game = ?",
-            (badge_id, game),
-        ).fetchone()
-    return row["score"] if row else 0
+def best_scores(path=SCORE_DB_PATH):
+    best = {game: {"score": 0, "nickname": "---"} for game in SCORE_GAMES}
+    for row in score_rows(path):
+        if row["score"] > best[row["game"]]["score"]:
+            best[row["game"]] = row
+    return best
 
 
 def store_score(badge_id, game, score, nickname, path=SCORE_DB_PATH):
@@ -279,7 +279,7 @@ def self_test():
         "total": 5, "serialSolved": 1, "serialProblems": 4,
         "hiddenSolved": True, "volume": 10, "screen": "home",
         "flappyHigh": 0, "flappyName": "---", "firewallHigh": 12,
-        "firewallName": "PLAYER1", "uptimeMs": 123,
+        "firewallName": " A  B ", "uptimeMs": 123,
     }
     assert normalize_status(status, status["id"]) == status
     try:
@@ -297,10 +297,10 @@ def self_test():
     with tempfile.TemporaryDirectory() as directory:
         database = Path(directory) / "scores.db"
         init_score_db(database)
-        assert best_score("AEGIS-TEST", "flappy", database) == 0
+        assert best_scores(database)["flappy"]["score"] == 0
         assert store_score("AEGIS-TEST", "flappy", 7, "ZERO", database)
         assert not store_score("AEGIS-TEST", "flappy", 6, "LOW", database)
-        assert best_score("AEGIS-TEST", "flappy", database) == 7
+        assert best_scores(database)["flappy"]["score"] == 7
         assert store_score("AEGIS-TEST", "tetris", 1200, "STACK", database)
         assert score_rows(database)[0]["nickname"] == "ZERO"
     print("bridge protocol self-test: OK")
@@ -312,8 +312,11 @@ if __name__ == "__main__" and "--self-test" in sys.argv:
 
 from aiohttp import web
 from bleak import BleakClient, BleakScanner
+from morse import MorseBridge, serial_ports
 
 sessions = {}
+morse = MorseBridge(os.environ.get("AEGIS_MORSE_PORT"),
+                    int(os.environ.get("AEGIS_MORSE_CHANNEL", "1")))
 
 
 class BadgeSession:
@@ -329,6 +332,7 @@ class BadgeSession:
         self.lines = deque(maxlen=400)
         self.sequence = 0
         self.write_lock = asyncio.Lock()
+        self.score_sync_lock = asyncio.Lock()
         self.problem_waiters = {}
         self.expected_badge_tag = None
         self.task = None
@@ -346,7 +350,7 @@ class BadgeSession:
         while b"\n" in self.buffer:
             raw, _, rest = self.buffer.partition(b"\n")
             self.buffer = bytearray(rest)
-            self.handle_line(raw.decode("utf-8", "replace").strip())
+            self.handle_line(raw.decode("utf-8", "replace").rstrip("\r"))
         if len(self.buffer) > BLE_COMMAND_MAX:
             self.buffer.clear()
             self.log("ERR oversized BLE line")
@@ -409,30 +413,36 @@ class BadgeSession:
     async def handle_score(self, line):
         if not self.authenticated:
             return
-        parts = line.split()
+        parts = line.split(" ", 3)  # The last field is the entire nickname.
         try:
             if len(parts) == 3 and parts[0] == "SCORE":
                 game, score = parts[1], int(parts[2])
                 if game not in SCORE_GAMES or not 0 < score <= 65535:
                     raise ValueError("invalid score report")
-                if score > best_score(self.id, game):
+                if score > best_scores()[game]["score"]:
                     await self.send_raw(f"score name {game} {score}")
                 return
             if len(parts) == 4 and parts[0] == "SCORE_SUBMIT":
                 game, score, nickname = parts[1], int(parts[2]), parts[3]
                 if store_score(self.id, game, score, nickname):
                     self.log(f"[score saved] {game} {score} {nickname}")
+                # Read the committed DB for every badge, including the submitter.
+                await asyncio.gather(*(badge.sync_scores() for badge in sessions.values()
+                                       if badge.online and badge.authenticated))
                 return
             raise ValueError("invalid score event")
         except (ValueError, RuntimeError) as error:
             self.log(f"ERR score: {error}")
 
     async def sync_scores(self):
-        for row in score_rows():
-            if row["badge_id"] == self.id:
-                await self.send_raw(
-                    f'score sync {row["game"]} {row["score"]} {row["nickname"]}'
-                )
+        async with self.score_sync_lock:
+            try:
+                for game, row in best_scores().items():
+                    await self.send_raw(
+                        f'score sync {game} {row["score"]} {row["nickname"]}'
+                    )
+            except Exception as error:
+                self.log(f"ERR score sync: {error}")
 
     def disconnected(self, _client):
         self.online = False
@@ -574,6 +584,36 @@ async def leaderboard_page(_request):
     return response
 
 
+async def morse_page(_request):
+    return web.FileResponse(DASHBOARD_PATH.with_name("morse.html"))
+
+
+async def morse_ports_api(_request):
+    return web.json_response(await asyncio.to_thread(serial_ports))
+
+
+async def morse_api(request):
+    if request.method == "GET":
+        return web.json_response(morse.snapshot())
+    try:
+        data = await request.json()
+        if not isinstance(data, dict):
+            raise ValueError("request body must be an object")
+        if set(data) == {"port"}:
+            await morse.set_port(data["port"])
+        elif set(data) == {"channel"}:
+            await morse.set_channel(data["channel"])
+        elif set(data) == {"text"}:
+            await morse.send_text(data["text"])
+        else:
+            raise ValueError("provide either port, channel or text")
+    except (TypeError, ValueError) as error:
+        raise web.HTTPBadRequest(text=str(error)) from error
+    except RuntimeError as error:
+        raise web.HTTPConflict(text=str(error)) from error
+    return web.json_response({"ok": True})
+
+
 async def favicon(_request):
     return web.FileResponse(FAVICON_PATH)
 
@@ -703,6 +743,10 @@ def create_app():
     app = web.Application(client_max_size=4096, middlewares=[security_middleware])
     app.router.add_get("/", dashboard_page)
     app.router.add_get("/leaderboard", leaderboard_page)
+    app.router.add_get("/morse", morse_page)
+    app.router.add_get("/api/morse", morse_api)
+    app.router.add_post("/api/morse", morse_api)
+    app.router.add_get("/api/morse/ports", morse_ports_api)
     app.router.add_get("/favicon.svg", favicon)
     app.router.add_get("/api/badges", badges_api)
     app.router.add_get("/api/leaderboard", leaderboard_api)
@@ -734,11 +778,13 @@ async def main():
     print("AEGIS dashboard: http://127.0.0.1:8080")
     print("AEGIS leaderboard: http://127.0.0.1:8080/leaderboard")
     print(f"AEGIS score database: {SCORE_DB_PATH}")
+    print("AEGIS Morse Link: http://127.0.0.1:8080/morse")
     scanner = asyncio.create_task(scan_loop())
+    morse_task = asyncio.create_task(morse.run())
     try:
         await asyncio.Event().wait()
     finally:
-        tasks = [scanner, *(badge.task for badge in sessions.values()
+        tasks = [scanner, morse_task, *(badge.task for badge in sessions.values()
                             if badge.task)]
         for task in tasks:
             task.cancel()

@@ -22,7 +22,7 @@ sudo apt install python3 python3-venv bluez
 ## OS별 자동 실행
 
 스크립트는 첫 실행 시 `admin/.venv`를 생성하고,
-`requirements.txt`의 `aiohttp`와 `bleak`가 없거나 목록이 바뀌었을 때만
+`requirements.txt`의 `aiohttp`, `bleak`, `pyserial`이 없거나 목록이 바뀌었을 때만
 pip로 설치합니다. 그 다음 프로토콜 자가 검사를 통과하면 서버를
 시작합니다. 운영 키는 환경변수 또는 `--admin-key` 인자로 전달하고, 공개
 개발 키로 로컬 테스트할 때만 `--allow-dev-key`를 붙입니다.
@@ -92,11 +92,112 @@ Flappy Hacker, Firewall Breaker, Tetris Stack Top 10을 표시하며 1초마다
 SQLite DB의 최신 상태를 가져와 페이지 새로고침 없이 갱신합니다.
 1~10글자 닉네임은 굵게, 배지는 `AEGIS-`를 제외한 고유값만 표시됩니다.
 
-게임 종료 시 배지가 점수를 보고하면 브리지가 해당 배지·게임의 기존
-최고점과 비교합니다. 새 최고점일 때만 배지 OLED에서 닉네임 입력을
+게임 종료 시 배지가 점수를 보고하면 브리지가 **전체 배지의 해당 게임
+최고점**과 비교합니다. 새 최고점일 때만 배지 OLED에서 닉네임 입력을
 요청하고, 입력 완료 후 `admin/scores.db`에 저장합니다. DB는 브리지와
 함께 재시작하거나 배지가 오프라인이어도 유지되며 `.gitignore` 대상입니다.
 다른 경로를 사용하려면 실행 전에 `AEGIS_SCORE_DB` 환경변수를 지정합니다.
+
+세 게임의 OLED `BEST`도 서버의 게임별 1위 이름·점수입니다. 인증 시와
+점수 저장 후 연결된 배지에 동기화하며, DB에 기록이 없으면 `0 / ---`로
+초기화합니다. 보드는 이름 제출만으로 최고점을 변경하지 않습니다.
+기존 배지별 개인 최고점 행은 보관하며 동점은 갱신하지 않습니다.
+서버 연결이 없으면 새 점수 등록을 생략하고 마지막으로 동기화한 BEST를
+표시합니다(재부팅 시에는 `0 / ---`).
+
+닉네임 입력은 **공백부터 시작**하며 방향키로 `공백 → A-Z → 0-9`를
+순환합니다. `OK`를 짧게 누르면 현재 글자(공백 포함)를 확정하고 다음
+공백 칸으로 이동합니다. `OK`를 700ms 길게 누르면 **커서 앞까지 확정한
+글자만** 제출하고 현재 커서의 글자는 제외합니다. 10글자 뒤 빈 칸은 저장
+전용입니다. 확정한 공백은 그대로 보존하며 공백만 있는 이름은 제출할 수 없습니다.
+`LEFT`+`RIGHT`를 동시에 700ms 누른 뒤 손을 떼면 저장 없이
+**메인화면(Home)**으로 돌아갑니다. 입력 중 BLE 연결이 끊겨도
+등록을 취소하고 Home으로 돌아갑니다.
+
+## HG-ESP32-S3 DevkitC-1 Morse Link
+
+DevkitC-1 한 대를 PC의 USB ↔ ESP-NOW 어댑터로 사용합니다.
+배지의 Morse Link v3와 같은 무선 패킷을 사용하며 OLED나 추가 배선,
+공유기는 필요하지 않습니다. 기존 배지 BLE 관리 기능과 함께 동작합니다.
+
+보드의 GPIO38 RGB LED는 모스 부호를 **송신할 때 빨강**, **수신할 때
+파랑**으로 부호 길이만큼 켜집니다(기본 점 100ms / 선 300ms).
+대기·문자/단어 간격에는 꺼지고, 송수신이 겹치면 마지막 부호의 색을
+표시합니다. `firmware/src/morse_adapter.cpp`의 `MORSE_LED_BRIGHTNESS`
+(기본 32, 범위 0~255)로 밝기를 조절할 수 있습니다.
+[DevKitC-1 v1.1은 GPIO38, 초기 버전은 GPIO48](https://docs.espressif.com/projects/esp-dev-kits/en/latest/esp32s3/esp32-s3-devkitc-1/user_guide_v1.1.html)을
+사용하므로 보드가 GPIO48 버전이면 `MORSE_LED_PIN`을 48로 바꾸세요.
+
+1. 저장소 루트에서 어댑터 전용 펌웨어를 빌드·업로드합니다.
+
+   ```bash
+   pio run -d firmware -e morse-bridge-s3
+   pio run -d firmware -e morse-bridge-s3 -t upload --upload-port /dev/cu.usbmodemXXXX
+   ```
+
+2. PC에는 보드의 **ESP32-S3 native USB 포트**를 연결합니다. USB-UART
+   포트와 구분하세요. 이 환경의 실행 중 통신은 native USB CDC입니다.
+   포트 구성은 [Espressif DevkitC-1 안내](https://docs.espressif.com/projects/esp-dev-kits/en/latest/esp32s3/esp32-s3-devkitc-1/user_guide_v1.0.html)를 참고하세요.
+3. 브리지를 시작합니다. USB 포트는 웹에서 선택할 수 있으며 관리자 키는
+   기존 방식대로 전달합니다. 시작부터 연결하려면 `--morse-port`를 지정합니다.
+
+   ```bash
+   cd admin
+   ./start-macos.sh
+   # Linux: ./start-linux.sh
+   # Windows: start-windows.bat
+   # 시작 시 자동 연결: ./start-macos.sh --morse-port /dev/cu.usbmodemXXXX --morse-channel 1
+   ```
+
+4. 대시보드의 `MORSE LINK` 또는 `http://127.0.0.1:8080/morse`를 엽니다.
+   `REFRESH`로 서버 PC의 시리얼 장치 목록을 불러오고 `DEVICE`에서 Morse
+   어댑터를 선택한 뒤 `CONNECT`를 누릅니다. 포트명·설명·USB 시리얼 번호가
+   표시되므로 배지와 어댑터의 USB 설명이 같아도 구분할 수 있습니다.
+   `ONLINE` 확인 후 배지와 같은 채널(1~13)을 선택하고 `APPLY`합니다.
+   영문·숫자·공백 최대 40자를 입력하고 `SEND`하면 모스로 송신합니다.
+   수신 화면에는 발신 배지 고유값별 번역과 현재 모스 부호가 표시됩니다.
+
+포트는 `AEGIS_MORSE_PORT`, 시작 채널은 `AEGIS_MORSE_CHANNEL` 환경변수로도
+지정할 수 있습니다. 미지정 시 웹에서 장치를 선택할 때까지 USB 포트를
+열지 않습니다. 목록 조회도 장치를 열거나 자동 연결하지 않습니다.
+선택한 장치가 Morse 어댑터의 `READY 3` 응답을 보내야 `ONLINE`이 되며,
+일반 배지를 선택하면 어댑터 확인 오류를 표시하고 모스 송신을 막습니다.
+포트 연결 실패나
+USB 분리 시 화면에 오류를 표시하고 2초 간격으로 같은 포트에 재연결합니다.
+포트 이름이 달라지면 웹에서 `REFRESH` 후 새 포트를 선택하세요.
+`DISCONNECT`는 포트를 닫고 자동 재연결도 중지합니다. 웹에서 선택한 포트는
+현재 서버 실행 동안 유지되고 재시작 시에는 시작 옵션/환경변수를 사용합니다.
+
+송신 중에는 장치 변경·연결 해제·채널 변경과 추가 송신을 막습니다. `TX COMPLETE`는 무선
+송신 완료이며 상대 배지의 수신 확인은 아닙니다. 중간 실패 시 일부 문자만
+전송되었을 수 있습니다. 어댑터는 선택한 한 채널만 수신하며 배지처럼
+100ms dit / 300ms dah / 300ms 문자 간격 / 700ms 단어 간격을 사용합니다.
+
+USB 줄 프로토콜(115200 baud): `HELLO`, `CHANNEL 1`~`13`,
+`TX <ASCII code> <duration ms>`; 응답은 `READY 3 <channel> <id>`,
+`OK TX`, `ERR ...`, 수신은 `RX <sender> <ASCII code> <duration ms>`입니다.
+ASCII code는 dit 46, dah 45, 문자 경계 47, 단어 경계 32입니다.
+경계의 duration은 0이고 부호는 30~2000ms만 허용합니다.
+
+하드웨어 없이 점수 동기화·HTTP API·가상 USB 어댑터의 송수신/재연결을
+검증하려면 저장소 루트에서 실행합니다(운영 DB는 사용하지 않습니다).
+
+```bash
+admin/.venv/bin/python admin/test_bridge.py
+python3 firmware/test/test_morse_led.py
+```
+
+업로드 시 `device reports readiness to read but returned no data`가 발생하면
+먼저 웹에서 `DISCONNECT`를 누르거나 브리지 터미널을 `Ctrl+C`로 종료하고
+Serial Monitor도 닫습니다. 브리지가 자동 재연결 중인 상태에서는 포트가
+잠시 닫혀 있어도 다시 점유할 수 있습니다. macOS에서는
+`lsof /dev/cu.usbmodemXXXX`로 다른 프로세스가 포트를 열고 있는지 확인한 뒤
+`--upload-port`에 해당 포트를 지정해 업로드하세요.
+[Espressif도 시리얼 예외 원인으로 다른 프로그램의 포트 점유를 안내합니다.](https://docs.espressif.com/projects/esptool/en/latest/esp32s3/troubleshooting.html#a-serial-exception-error-occurred)
+점유를 해제해도 `Connecting...`에서 실패하면 `BOOT`를 누른 채 `RESET/EN`을
+눌렀다 떼고 `BOOT`도 뗀 뒤 포트 목록을 다시 확인해 업로드합니다.
+[ESP32-S3 수동 다운로드 모드 안내](https://docs.espressif.com/projects/esptool/en/latest/esp32s3/advanced-topics/boot-mode-selection.html#manual-bootloader).
+업로드 후 필요하면 `RESET`을 한 번 누르고 웹에서 `REFRESH → CONNECT`합니다.
 
 ## 관리자 셸
 
