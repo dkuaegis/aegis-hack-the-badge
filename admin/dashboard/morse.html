@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="ko">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>AEGIS // Morse Link</title>
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<style>
+:root{color-scheme:dark}*{box-sizing:border-box}body{margin:0;background:#050806;color:#7dff9e;font:14px ui-monospace,SFMono-Regular,Consolas,monospace;padding:24px}main{max-width:900px;margin:auto}a{color:inherit}header{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px}h1{font-size:24px}section{border:1px solid #234b30;background:#09110c;padding:18px;margin:18px 0}h2{font-size:16px;margin-top:0}form{display:flex;flex-wrap:wrap;align-items:center;gap:10px}input,select,button{font:inherit;padding:10px;background:#020403;border:1px solid #234b30;color:inherit}input{flex:1;min-width:120px}button{cursor:pointer}button:disabled{opacity:.4;cursor:default}pre{white-space:pre-wrap;overflow-wrap:anywhere;line-height:1.6;max-height:320px;overflow:auto}.note{color:#7aa485;line-height:1.7}.error{color:#ff6b7a}#notice{min-height:1.5em}label{white-space:nowrap}
+#device{max-width:100%;min-width:0}
+</style>
+<main>
+  <header><h1>AEGIS // MORSE LINK</h1><a href="/">BADGE CONTROL</a></header>
+  <p class="note">같은 채널의 배지와 모스로 통신합니다. 한 번에 한 명씩 송신하세요.</p>
+  <section>
+    <h2 id="status">ADAPTER: CHECKING</h2>
+    <p id="connection" class="note"></p>
+    <form id="device-form">
+      <label for="device">DEVICE</label><select id="device"><option value="">장치를 선택하세요</option></select>
+      <button id="refresh" type="button">REFRESH</button><button id="connect">CONNECT</button>
+      <button id="disconnect" type="button">DISCONNECT</button>
+    </form>
+    <p id="devices-note" class="note">브릿지 서버 PC에 연결된 Morse 어댑터를 선택하세요. 배지와 이름이 같으면 포트·시리얼 번호로 구분하세요.</p>
+    <form id="channel-form"><label for="channel">CHANNEL</label><select id="channel"></select><button id="change">APPLY</button></form>
+    <p id="notice" role="status" aria-live="polite"></p>
+  </section>
+  <section>
+    <h2>TRANSMIT</h2>
+    <form id="send-form"><label for="text">MESSAGE</label><input id="text" maxlength="40" pattern="[A-Za-z0-9 ]+" placeholder="CQ AEGIS" required autocomplete="off"><button id="send">SEND</button></form>
+    <p class="note">영문·숫자·공백, 최대 40자. 송신이 끝날 때까지 장치·채널 변경은 잠깁니다.</p>
+  </section>
+  <section><h2>RECEIVE</h2><pre id="received">WAITING SIGNAL</pre></section>
+  <section><h2>RADIO LOG</h2><pre id="log"></pre><p class="note">TX COMPLETE는 무선 송신 완료를 뜻하며 상대 배지의 수신 확인은 아닙니다.</p></section>
+</main>
+<script>
+const $=id=>document.getElementById(id);
+for(let i=1;i<=13;i++)$('channel').add(new Option(`CH ${String(i).padStart(2,'0')}`,i));
+let pending=false,online=false,busy=false,initialized=false,port=null,refreshing=false;
+let availablePorts=new Set();
+function buttons(){
+  for(const id of ['send','change'])$(id).disabled=pending||!online||busy;
+  $('device').disabled=pending||busy;
+  $('connect').disabled=pending||busy||!availablePorts.has($('device').value);
+  $('disconnect').disabled=pending||busy||!port;
+  $('refresh').disabled=refreshing;
+}
+async function refreshPorts(){
+  if(refreshing)return;
+  refreshing=true;buttons();
+  try{
+    const response=await fetch('/api/morse/ports',{cache:'no-store'});
+    if(!response.ok)throw new Error(await response.text());
+    const devices=await response.json(),selected=$('device').value||port||'';
+    availablePorts=new Set(devices.map(device=>device.port));
+    $('device').replaceChildren(new Option('장치를 선택하세요',''));
+    for(const device of devices){
+      const label=[device.port,device.description,device.serialNumber?`S/N ${device.serialNumber}`:''].filter(Boolean).join(' — ');
+      $('device').add(new Option(label,device.port));
+    }
+    if(selected&&!availablePorts.has(selected))$('device').add(new Option(`${selected} (목록에 없음)`,selected));
+    $('device').value=selected;
+    $('devices-note').textContent=devices.length?'Morse 어댑터를 선택하세요. 배지와 이름이 같으면 포트·시리얼 번호로 구분하세요.':'장치가 없습니다. 서버 PC에 USB를 연결한 뒤 REFRESH를 누르세요.';
+  }catch(error){availablePorts.clear();$('devices-note').textContent=`장치 목록을 가져오지 못했습니다: ${error.message}`}
+  finally{refreshing=false;buttons()}
+}
+async function post(body){
+  if(pending)return;
+  const deviceChange='port' in body;
+  pending=true;buttons();$('notice').className='';
+  $('notice').textContent=deviceChange?(body.port?'CONNECTING ADAPTER…':'DISCONNECTING…'):body.text?'TRANSMITTING…':'CHANGING CHANNEL…';
+  try{
+    const response=await fetch('/api/morse',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
+    if(!response.ok)throw new Error(await response.text());
+    if(deviceChange){port=body.port;online=false}
+    $('notice').textContent=deviceChange?(body.port?'DEVICE SELECTED — CHECK ADAPTER STATUS':'DEVICE DISCONNECTED'):body.text?'TX COMPLETE':'CHANNEL UPDATED';
+  }catch(error){$('notice').className='error';$('notice').textContent=error.message}
+  finally{pending=false;buttons()}
+}
+$('send-form').onsubmit=event=>{event.preventDefault();post({text:$('text').value})};
+$('channel-form').onsubmit=event=>{event.preventDefault();post({channel:Number($('channel').value)})};
+$('device-form').onsubmit=event=>{event.preventDefault();if(availablePorts.has($('device').value))post({port:$('device').value})};
+$('disconnect').onclick=()=>post({port:null});
+$('refresh').onclick=refreshPorts;
+$('device').onchange=buttons;
+async function poll(){
+  try{
+    const response=await fetch('/api/morse',{cache:'no-store'});
+    if(!response.ok)throw new Error(await response.text());
+    const data=await response.json();online=data.online;busy=data.busy;port=data.port;
+    $('status').textContent=`ADAPTER: ${online?'ONLINE':'OFFLINE'} // CH ${data.channel}${busy?' // BUSY':''}`;
+    $('connection').textContent=[port,data.error].filter(Boolean).join(' — ');
+    if(!initialized){$('channel').value=data.channel;initialized=true;await refreshPorts()}
+    $('received').textContent=data.received.map(row=>`${row.sender} > ${row.text}${row.symbols?' ['+row.symbols+']':''}`).join('\n')||'WAITING SIGNAL';
+    const log=data.events.map(row=>row.text).join('\n');
+    if($('log').textContent!==log){$('log').textContent=log;$('log').scrollTop=$('log').scrollHeight}
+  }catch(error){online=false;$('status').textContent='BRIDGE OFFLINE';$('connection').textContent=error.message}
+  buttons();setTimeout(poll,300);
+}
+buttons();poll();
+</script>
+</html>

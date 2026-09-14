@@ -71,14 +71,24 @@ Home의 `FIREWALL BREAKER`는 3×8 블록 행이 위로 스크롤되고 맨 아�
 블록 고정 시 짧은 화면 충격과 타격음이 나며, 여러 줄을 동시에 지우면
 줄 수에 따라 음이 차례로 상승합니다.
 
-세 게임의 종료 점수는 BLE 브리지로 전송되며, 서버 SQLite DB에 저장된 해당
-배지·게임의 최고점보다 높을 때만 1~10글자 닉네임 입력 화면이 나옵니다.
-`LEFT`/`RIGHT`로 `A-Z`, `0-9`를 순환하고 `OK`를 짧게 눌러 다음 글자로
-이동합니다. 10글자 전에 입력을 끝내려면 `OK`를 길게 누릅니다.
+세 게임의 종료 점수는 BLE 브리지로 전송되며, 서버 SQLite DB에 저장된
+전체 배지의 해당 게임 최고점보다 높을 때만 1~10글자 닉네임 입력 화면이 나옵니다.
+각 칸은 공백에서 시작하고 `LEFT`/`RIGHT`로 `공백`, `A-Z`, `0-9`를
+순환합니다. `OK`를 짧게 누르면 현재 글자(공백 포함)를 확정하고 다음 공백
+칸으로 이동합니다. `OK`를 700ms 길게 누르면 현재 커서 글자를 제외하고
+앞에서 확정한 글자만 저장합니다. 10글자 뒤에는 저장 전용 빈 칸이 표시됩니다.
+확정한 공백은 보존하며 공백만 있는 이름은 제출할 수 없습니다.
+`LEFT`+`RIGHT`를 동시에 700ms 길게 누른 뒤 손을 떼면 입력을 포기하고
+저장 없이 메인화면(Home)으로 돌아갑니다. 입력 중 BLE 연결이 끊겨도
+등록을 취소하고 Home으로 돌아갑니다.
 확정된 이름과 최고점은 브리지의 `admin/scores.db`에 저장되고
 `/leaderboard` 전용 화면에 배지 ID와 함께 표시됩니다. 브리지에 인증된
 BLE 연결이 없으면 점수 판정과 닉네임 입력은 생략됩니다. 게임 점수는 FLAG,
 `solvedMask`, 상태 LED와 배지 NVS에 영향을 주지 않습니다.
+모든 게임의 게임오버 `BEST`는 서버에서 동기화한 1위 기록입니다.
+이름 제출 시에는 보드가 최고점을 임의로 갱신하지 않고 서버 저장 이후
+동기화된 기록만 반영합니다. 오프라인에는 마지막 동기화 값을 유지하며
+재부팅하면 서버에 다시 연결될 때까지 `0 / ---`를 표시합니다.
 
 Serial Mission 4개와 Hidden Access를 모두 풀면 Trophy OLED가 즉시 표시되고,
 비차단 fanfare 후 5개 LED가 좌우로 왕복합니다. 5/5 상태로
@@ -87,6 +97,10 @@ Trophy fanfare 종료 후 `LEFT`를 누르면 Status를 볼 수 있으며, 관�
 멜로디와 LED 애니메이션까지 모두 종료합니다.
 
 ## Morse Link 배지 간 통신
+
+PC 브리지도 HG-ESP32-S3 DevkitC-1에 `morse-bridge-s3` 전용 펌웨어를
+올려 이 통신에 참여할 수 있습니다. USB 연결·브리지 실행·송수신 화면은
+[`admin/README.md`](../admin/README.md#hg-esp32-s3-devkitc-1-morse-link)를 참고하세요.
 
 Home의 `MORSE LINK`는 ESP-NOW broadcast를 사용하므로 공유기,
 핫스팟이나 페어링 없이 같은 펌웨어를 올린 여러 배지가 직접 통신합니다.
@@ -517,6 +531,7 @@ Legacy Auth XOR, 4자리 HEX parser와 Morse decoder를 검사할 수 있습니�
 ```bash
 clang++ -std=c++17 -Ifirmware/src firmware/test/test_logic.cpp -o /tmp/badge-logic-test
 /tmp/badge-logic-test
+python3 firmware/test/test_name_entry.py
 ```
 
 ## Wokwi 통합 시뮬레이션

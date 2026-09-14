@@ -17,6 +17,7 @@
 #include <stdarg.h>
 
 #include "logic.h"
+#include "morse_protocol.h"
 #include "logo.h"
 #include "msg_ctf_logo.h"
 #include "pins.h"
@@ -72,8 +73,6 @@ constexpr uint16_t MORSE_DAH_MS = 300;
 constexpr uint16_t MORSE_STRAIGHT_DAH_MS = MORSE_UNIT_MS * 2;
 constexpr uint32_t MORSE_LETTER_GAP_MS = MORSE_UNIT_MS * 3;
 constexpr uint32_t MORSE_WORD_GAP_MS = MORSE_UNIT_MS * 7;
-constexpr uint16_t MORSE_PACKET_MAGIC = 0xae63;
-constexpr uint8_t MORSE_PACKET_VERSION = 3;
 constexpr uint8_t MORSE_QUEUE_DEPTH = 16;
 constexpr uint16_t BUZZER_DUTY[] = {4,  8,  16,  32,  64,
                                     96, 144, 216, 324, 511};
@@ -212,8 +211,11 @@ struct ScoreRecord {
 struct NameEntryState {
   ScoreGame game = ScoreGame::Flappy;
   uint16_t score = 0;
-  char name[LEADERBOARD_NAME_LENGTH + 1] = {'A', '\0'};
+  char name[LEADERBOARD_NAME_LENGTH + 1] = {' ', '\0'};
   uint8_t cursor = 0;
+  bool cancelChord = false;
+  bool cancelled = false;
+  uint32_t cancelStartedAt = 0;
 } nameEntry;
 
 ScoreRecord highScores[3];
@@ -251,15 +253,6 @@ struct TetrisState {
   uint32_t eventUntil = 0;
   uint32_t lastImpactFrameAt = 0;
 } tetris;
-
-struct __attribute__((packed)) MorsePacket {
-  uint16_t magic;
-  uint8_t version;
-  char symbol;
-  uint16_t durationMs;
-  uint32_t sender;
-  uint32_t receivedAt;
-};
 
 struct MorseLine {
   uint32_t sender = 0;
@@ -1238,13 +1231,16 @@ void drawGameRunning() { render(drawGameRunningFrame); }
 
 void drawGameOverFrame() {
   char score[16];
+  char best[24];
+  const ScoreRecord &record = highScores[static_cast<uint8_t>(ScoreGame::Flappy)];
+  snprintf(best, sizeof(best), "BEST %s %u", record.name, record.score);
   snprintf(score, sizeof(score), "SCORE %u", game.score);
   oled.setFont(u8g2_font_6x10_tf);
   centered(14, "SYSTEM CRASHED");
   oled.setFont(u8g2_font_9x15B_tf);
   centered(33, score);
-  oled.setFont(u8g2_font_6x10_tf);
-  centered(46, game.score >= FLAPPY_REWARD_SCORE ? "HINT UNLOCKED" : "TARGET SCORE 5");
+  oled.setFont(u8g2_font_5x7_tf);
+  centered(44, best);
   if (game.score >= FLAPPY_REWARD_SCORE) {
     oled.setFont(u8g2_font_4x6_tf);
     centered(54, MINIGAME_REWARD_LINE_1);
@@ -1274,11 +1270,14 @@ void drawNameEntryFrame() {
   oled.setFont(u8g2_font_6x10_tf);
   centered(22, score);
   oled.setFont(u8g2_font_9x15B_tf);
-  const uint8_t width = oled.getStrWidth(nameEntry.name);
+  const uint8_t width = (nameEntry.cursor + 1) * 9;
   const uint8_t x = (128 - width) / 2;
   oled.drawStr(x, 42, nameEntry.name);
   oled.drawHLine(x + nameEntry.cursor * 9, 45, 8);
-  footer("OK:NEXT  HOLD:SAVE");
+  oled.setFont(u8g2_font_4x6_tf);
+  centered(53, "HOLD OK:SAVE  L+R:HOME");
+  footer(nameEntry.name[nameEntry.cursor] == '\0'
+             ? "HOLD OK: SAVE" : "L/R:CHAR OK:NEXT");
 }
 
 void drawNameEntry() { render(drawNameEntryFrame); }
@@ -1291,13 +1290,18 @@ void beginNameEntry(ScoreGame gameId, uint16_t score) {
 }
 
 bool finishNameEntry() {
-  ScoreRecord &record = highScores[static_cast<uint8_t>(nameEntry.game)];
-  record.score = nameEntry.score;
-  memcpy(record.name, nameEntry.name, sizeof(record.name));
+  if (!bleConnected || !bleAuthenticated) return true;
+  char name[LEADERBOARD_NAME_LENGTH + 1];
+  // Only characters confirmed with a short OK press belong to the name.
+  snprintf(name, sizeof(name), "%.*s", nameEntry.cursor, nameEntry.name);
+  if (!validLeaderboardName(name, LEADERBOARD_NAME_LENGTH)) {
+    beep(300, 60);
+    return false;
+  }
   char line[64];
   snprintf(line, sizeof(line), "SCORE_SUBMIT %s %u %s",
            scoreGameName(nameEntry.game),
-           static_cast<unsigned>(nameEntry.score), nameEntry.name);
+           static_cast<unsigned>(nameEntry.score), name);
   bleSendLine(line);
   bleStatusDirty = true;
   beep(1200, 40);
@@ -1314,25 +1318,48 @@ void reportScore(ScoreGame gameId, uint16_t score) {
 }
 
 bool updateNameEntry() {
+  const uint32_t now = millis();
+  if (nameEntry.cancelled) {
+    if (!left.raw && !right.raw && !ok.raw &&
+        !left.stable && !right.stable && !ok.stable) {
+      screen = Screen::Home;
+      bleStatusDirty = true;
+      drawHome();
+    }
+    return false; // All game callers must leave the Home screen intact.
+  }
+  if (!bleConnected || !bleAuthenticated) {
+    nameEntry.cancelled = true;
+    return false;
+  }
+  if (left.stable && right.stable) {
+    if (!nameEntry.cancelChord) {
+      nameEntry.cancelChord = true;
+      nameEntry.cancelStartedAt = now;
+    }
+    if (now - nameEntry.cancelStartedAt >= LONG_PRESS_MS) {
+      nameEntry.cancelled = true;
+      beep(300, 60);
+    }
+    return false;
+  }
+  nameEntry.cancelChord = false;
+  if (left.raw && right.raw) return false;
   if (left.pressed) {
-    nameEntry.name[nameEntry.cursor] =
-        stepLeaderboardChar(nameEntry.name[nameEntry.cursor], -1);
+    editLeaderboardChar(nameEntry.name, nameEntry.cursor,
+                        LEADERBOARD_NAME_LENGTH, -1);
     drawNameEntry();
   } else if (right.pressed) {
-    nameEntry.name[nameEntry.cursor] =
-        stepLeaderboardChar(nameEntry.name[nameEntry.cursor], 1);
+    editLeaderboardChar(nameEntry.name, nameEntry.cursor,
+                        LEADERBOARD_NAME_LENGTH, 1);
     drawNameEntry();
   } else if (ok.longPressed) {
     return finishNameEntry();
   } else if (ok.released && !ok.longFired) {
     beep(1000, 25);
-    if (++nameEntry.cursor < LEADERBOARD_NAME_LENGTH) {
-      nameEntry.name[nameEntry.cursor] = 'A';
-      nameEntry.name[nameEntry.cursor + 1] = '\0';
-      drawNameEntry();
-    } else {
-      return finishNameEntry();
-    }
+    advanceLeaderboardCursor(nameEntry.name, nameEntry.cursor,
+                             LEADERBOARD_NAME_LENGTH);
+    drawNameEntry();
   }
   return false;
 }
@@ -1453,7 +1480,7 @@ void drawFirewallRunning() { render(drawFirewallRunningFrame); }
 
 void drawFirewallOverFrame() {
   char score[16];
-  char best[20];
+  char best[24];
   const ScoreRecord &record =
       highScores[static_cast<uint8_t>(ScoreGame::Firewall)];
   snprintf(score, sizeof(score), "SCORE %u",
@@ -2040,13 +2067,7 @@ void receiveMorsePacket(const uint8_t *senderMac, const uint8_t *data,
       length != sizeof(MorsePacket)) return;
   MorsePacket packet{};
   memcpy(&packet, data, sizeof(packet));
-  const bool element = packet.symbol == '.' || packet.symbol == '-';
-  const bool boundary = packet.symbol == '/' || packet.symbol == ' ';
-  if (packet.magic != MORSE_PACKET_MAGIC ||
-      packet.version != MORSE_PACKET_VERSION ||
-      (!element && !boundary) ||
-      (element && (packet.durationMs < 30 || packet.durationMs > 2000)) ||
-      (boundary && packet.durationMs != 0)) return;
+  if (!validMorsePacket(packet)) return;
   packet.sender = macSuffix24(senderMac);
   packet.receivedAt = millis();
   xQueueSend(morsePackets, &packet, 0);
@@ -2687,7 +2708,7 @@ void handleScoreCommand(char *command) {
   char *action = strtok_r(nullptr, " ", &save);
   char *gameText = strtok_r(nullptr, " ", &save);
   char *scoreText = strtok_r(nullptr, " ", &save);
-  char *name = strtok_r(nullptr, " ", &save);
+  char *name = save && *save ? save : nullptr; // Preserve spaces in the name.
   if (!action || !gameText || !scoreText) {
     bleSendLine("ERR score invalid fields");
     return;
@@ -2726,13 +2747,18 @@ void handleScoreCommand(char *command) {
   }
 
   if (strcmp(action, "sync") == 0 && name != nullptr &&
-      strtok_r(nullptr, " ", &save) == nullptr && score > 0 &&
-      validLeaderboardName(name, LEADERBOARD_NAME_LENGTH)) {
+      ((score == 0 && strcmp(name, "---") == 0) ||
+       (score > 0 && validLeaderboardName(name, LEADERBOARD_NAME_LENGTH)))) {
     ScoreRecord &record = highScores[static_cast<uint8_t>(gameId)];
     record.score = score;
     strncpy(record.name, name, sizeof(record.name) - 1);
     record.name[sizeof(record.name) - 1] = '\0';
     bleStatusDirty = true;
+    if (screen == Screen::Game && gamePhase == GamePhase::Over) drawGameOver();
+    if (screen == Screen::FirewallGame && firewall.phase == FirewallPhase::Over)
+      drawFirewallOver();
+    if (screen == Screen::TetrisGame && tetris.phase == TetrisPhase::Over)
+      drawTetrisOver();
     return;
   }
 
