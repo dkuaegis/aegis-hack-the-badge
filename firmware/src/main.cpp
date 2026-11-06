@@ -16,6 +16,7 @@
 #include <mbedtls/md.h>
 #include <stdarg.h>
 
+#include "badge_secrets.h"
 #include "logic.h"
 #include "morse_protocol.h"
 #include "logo.h"
@@ -93,9 +94,6 @@ constexpr const char *BOOT_TERMINAL_LINES[] = {
     "[HW] - Hacking Box RE:B0RN -", "dev: developed by.@Z3r0c0k3",
 };
 constexpr uint8_t BOOT_LED_SEQUENCE[] = {2, 1, 3, 0, 4, 1, 3, 0, 4};
-#ifndef BADGE_ADMIN_KEY
-#define BADGE_ADMIN_KEY "AEGIS_DEV_ONLY_CHANGE_ME"
-#endif
 // ponytail: 행사 전 fleet key를 교체하세요. 장비 탈취 위협이 생기면 NVS 장비별 키로 전환합니다.
 constexpr char BLE_ADMIN_KEY[] = BADGE_ADMIN_KEY;
 constexpr size_t BLE_COMMAND_MAX = 768;
@@ -868,7 +866,7 @@ Congratulations!
   Serial.println(F("축하합니다!"));
   Serial.println(F("AEGIS Hack The Badge의 모든 Challenge를 완료했습니다."));
   Serial.println(F("\nAEGIS{PWN3D!}"));
-  Serial.println(F("\nMSGCTF{CONFIGURE_PRIVATE_FLAG}"));
+  Serial.println(F("\n" BADGE_FINAL_FLAG));
 }
 
 void startVictorySequence(uint32_t now) {

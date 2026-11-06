@@ -280,8 +280,8 @@ py -3 firmware/upload_all.py COM5 COM6 COM7
 각 포트에 `pio run -t nobuild -t upload --upload-port PORT`를 실행합니다.
 bootloader와 partition table을 포함하는 기존 PlatformIO 업로드 구성을
 재사용하며, NVS의 풀이 상태·편집한 문제·배지 번호는 기존 업로드처럼 유지됩니다.
-운영 배포에는 아래 [운영 키 설정](#2-운영-키로-펌웨어-빌드업로드)을 마친
-**같은 터미널**에서 실행하세요. `PLATFORMIO_BUILD_FLAGS`도 그대로 전달됩니다.
+운영 배포에는 아래 [비공개 설정](#1-비공개-설정)을 먼저 완료하세요.
+일괄 업로드도 같은 `.env`를 읽으며 명시한 환경변수는 그보다 우선합니다.
 실행 중에는 같은 프로젝트에서 다른 빌드·업로드를 실행하거나 설정을 바꾸지 마세요.
 
 빌드가 실패하면 업로드를 시작하지 않습니다. 개별 업로드 실패 시 나머지 배지는
@@ -426,12 +426,10 @@ USB와 BLE 플레이어 셸은 공통 Challenge Engine을 사용합니다(Option
 BLE 관리 채널은 연결마다 새 challenge를 만들고 fleet key 기반 HMAC 인증 후
 명령을 처리합니다. 기본 개발 키는 실제 행사 전에 반드시 교체하세요.
 
-기본 키는 `src/main.cpp`의 `BADGE_ADMIN_KEY` fallback인
-`AEGIS_DEV_ONLY_CHANGE_ME`입니다. 실제 행사 빌드는 소스를 수정하지 말고
-아래 프로덕션 배포 절차로 운영 키를 주입하세요. 펌웨어와 브리지의
-`BADGE_ADMIN_KEY`가 다르면 장치는
-발견되지만 `AUTHENTICATED` 상태가 되지 않습니다. OS별 설정 예시는
-[`../admin/README.md`](../admin/README.md#관리자-키)를 참고하세요.
+운영 키와 최종 FLAG는 저장소 루트의 비공개 `.env` 또는 환경변수에서 읽습니다.
+펌웨어에는 하드코딩한 운영 기본값이 없으며, 두 값이 없으면 빌드가 실패합니다.
+펌웨어와 브리지의 `BADGE_ADMIN_KEY`가 다르면 장치는 발견되지만
+`AUTHENTICATED` 상태가 되지 않습니다.
 
 | 명령 | 기능 |
 | --- | --- |
@@ -501,49 +499,37 @@ Secure Boot와 Flash Encryption을 활성화하지 않았습니다.
 
 ## 최종 프로덕션 배포
 
-### 1. Fleet 관리자 키 생성
+### 1. 비공개 설정
 
-`BADGE_ADMIN_KEY`는 모든 배지와 브리지가 공유하는 운영 비밀키입니다.
-Mission 04의 문제용 XOR 키와는 관계가 없습니다. 배포용 터미널에서 한 번
-생성한 뒤, 같은 터미널에서 펌웨어 빌드와 브리지 실행을 진행합니다.
+저장소 루트의 `.env.example`을 `.env`로 복사하고 로컬 편집기로 두 값을 채웁니다.
 
-macOS / Linux:
-
-```bash
-export BADGE_ADMIN_KEY="$(python3 -c 'import secrets; print(secrets.token_hex(32))')"
+```dotenv
+BADGE_ADMIN_KEY=
+BADGE_FINAL_FLAG=
 ```
 
-Windows PowerShell:
+`BADGE_ADMIN_KEY`는 32 UTF-8 bytes 이상의 임의 운영 키이며 모든 배지와
+브리지에서 같아야 합니다. `BADGE_FINAL_FLAG`는 최종 완료 때 출력할 FLAG입니다.
+같은 이름의 환경변수가 있으면 `.env`보다 우선합니다. `.env`는 Git에서 제외되며
+값을 로그·README·커밋·공유 스크린샷에 복사하지 마세요.
 
-```powershell
-$env:BADGE_ADMIN_KEY = py -3 -c "import secrets; print(secrets.token_hex(32))"
-```
+키나 FLAG가 공개된 적이 있으면 `.env`로 옮기는 것만으로 회수되지 않습니다.
+해당 값을 교체하고 배지 전체를 재빌드·재업로드해야 합니다. 관리자 키를
+교체하면 브리지도 같은 키로 재시작해야 합니다. 이력 정리 후 기존 checkout에서
+이전 커밋을 merge하거나 다시 push하지 마세요.
 
-키는 Git, README, 스크린샷, 공유 로그에 남기지 말고 따로 보관하세요. 키를
-분실하거나 교체하면 전체 배지를 새 키로 재빌드·재업로드하고 브리지도
-재시작해야 합니다. 키가 포함된 펌웨어 바이너리도 운영 비밀로 다루세요.
-
-### 2. 운영 키로 펌웨어 빌드·업로드
-
-소스의 개발 fallback을 바꾸지 말고 PlatformIO 빌드 플래그로 키를 주입합니다.
-`PLATFORMIO_BUILD_FLAGS`는 [`platformio.ini`](platformio.ini)의 기존 USB/PSRAM 플래그에
-추가로 적용됩니다.
-
-macOS / Linux:
+### 2. 비공개 설정으로 펌웨어 빌드·업로드
 
 ```bash
-export PLATFORMIO_BUILD_FLAGS="-DBADGE_ADMIN_KEY=\\\"$BADGE_ADMIN_KEY\\\""
 pio run -d firmware
 pio run -d firmware -t upload
 ```
 
-Windows PowerShell:
-
-```powershell
-$env:PLATFORMIO_BUILD_FLAGS = '-DBADGE_ADMIN_KEY=\"' + $env:BADGE_ADMIN_KEY + '\"'
-pio run -d firmware
-pio run -d firmware -t upload
-```
+PlatformIO가 `.env`를 읽어 `.pio` 아래에 비공개 헤더를 생성합니다.
+비밀 값은 컴파일러 `-D` 인수에 넣지 않습니다. 생성 헤더와 `.pio` 산출물은
+Git에서 제외되지만 펌웨어 바이너리에는 값이 포함되므로 공개하면 안 됩니다.
+기존 `PLATFORMIO_BUILD_FLAGS`의 `BADGE_ADMIN_KEY` 정의는 제거하세요.
+USB/PSRAM 등 다른 빌드 플래그는 그대로 사용할 수 있습니다.
 
 첫 보드에 빌드한 운영 바이너리와 동일한 commit을 모든 배지에 사용하세요.
 VS Code를 이미 실행 중이면 GUI Upload가 새 환경 변수를 받지 못할 수 있으므로,
@@ -560,9 +546,8 @@ pio run -d firmware -t upload
 
 ### 3. 브리지 실행과 인증 확인
 
-펌웨어를 빌드한 것과 같은 `BADGE_ADMIN_KEY`가 설정된 터미널에서 브리지를
-실행합니다. 새 터미널이나 재부팅한 부스 PC에서는 위의 키 설정을 다시 해야
-합니다.
+브리지는 저장소 루트의 같은 `.env`에서 `BADGE_ADMIN_KEY`를 자동으로 읽습니다.
+다른 PC에서 실행하면 비공개 방법으로 같은 설정을 전달해야 합니다.
 
 ```bash
 # macOS

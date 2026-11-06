@@ -5,6 +5,10 @@ __pycache__/
 admin/scores.db
 config
 zerocoke_sub
+.env
+.env.*
+!.env.example
+.pio/
 
 # KiCad local state and transient backups
 *.kicad_prl

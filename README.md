@@ -77,6 +77,10 @@ player-console/                       플레이어용 Web Serial 콘솔과 Docke
 
 ## 펌웨어 빠른 시작
 
+먼저 루트의 `.env.example`을 `.env`로 복사하고 `BADGE_ADMIN_KEY`와
+`BADGE_FINAL_FLAG`를 비공개로 설정하세요. 펌웨어 빌드와 관리자 브리지가 같은
+파일을 읽습니다. `.env`와 펌웨어 바이너리는 공개하거나 Git에 추가하지 마세요.
+
 펌웨어 대상은 `ESP32-S3-WROOM-1-N8R8`이며 PlatformIO 환경 이름은
 `esp32-s3-rev3`입니다. 데이터 통신이 가능한 USB-C 케이블로 배지를 연결한
 뒤 저장소 루트에서 다음 명령을 실행합니다.

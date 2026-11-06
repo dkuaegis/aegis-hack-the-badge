@@ -19,6 +19,7 @@ harness = r'''
 #include "logic.h"
 #include "problems.h"
 #define F(value) value
+#define BADGE_FINAL_FLAG "TEST_ONLY_FINAL_FLAG"
 std::string output;
 struct { void println(const char *s) { output += s; output += '\n'; } } Serial;
 uint8_t solvedMask = 0;
@@ -70,7 +71,7 @@ void assertVictory() {
   assert(output.find("Congratulations!") != std::string::npos);
   assert(output.find("  ____") != std::string::npos);
   assert(output.find("AEGIS{PWN3D!}") != std::string::npos);
-  assert(output.find("MSGCTF{CONFIGURE_PRIVATE_FLAG}") != std::string::npos);
+  assert(output.find(BADGE_FINAL_FLAG) != std::string::npos);
   assert(screen == Screen::Complete && victory.active && ledsOn && bleStatusDirty);
   assert(completeDraws > 0 && victory.nextAt == now + 250);
 }
