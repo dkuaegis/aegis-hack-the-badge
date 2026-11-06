@@ -61,7 +61,8 @@ function renderList(){
     const button=document.createElement('button');
     const status=badge.status||{}, solved=status.solved??0, total=status.total??5;
     button.className='badge'+(badge.id===selected?' active':'');
-    button.innerHTML=`<div class="badge-top"><b>${escapeHtml(badge.id)}</b><span class="${badge.online?'online':'offline'}">${badge.online?'ONLINE':'OFFLINE'}</span></div><div class="meta">SOLVED ${solved}/${total} // ${badge.authenticated?'AUTH OK':'AUTH WAIT'}</div>`;
+    button.title=badge.id;
+    button.innerHTML=`<div class="badge-top"><b>${escapeHtml(badge.displayName||badge.id)}</b><span class="${badge.online?'online':'offline'}">${badge.online?'ONLINE':'OFFLINE'}</span></div><div class="meta">SOLVED ${solved}/${total} // ${badge.authenticated?'AUTH OK':'AUTH WAIT'}</div>`;
     button.onclick=()=>selectBadge(badge.id); root.append(button);
   }
 }
@@ -72,15 +73,15 @@ function renderDetail(){
   const badge=badges.find(item=>item.id===selected);
   if(!badge){detailFingerprint='';$('detail').innerHTML='<div class="placeholder">SELECT A BADGE</div>';return}
   const status=badge.status||{}, mask=status.solvedMask||0, total=status.total||5, volume=status.volume??10;
-  const fingerprint=JSON.stringify([badge.id,badge.online,badge.authenticated,mask,status.solved,status.serialSolved,status.serialProblems,status.hiddenSolved,status.screen,volume]);
+  const fingerprint=JSON.stringify([badge.id,badge.displayName,badge.online,badge.authenticated,mask,status.solved,status.serialSolved,status.serialProblems,status.hiddenSolved,status.screen,volume]);
   if(fingerprint===detailFingerprint)return;detailFingerprint=fingerprint;
   $('detail').innerHTML=`
-    <div class="identity"><div><h2>${escapeHtml(badge.id)}</h2><p>${escapeHtml(status.screen||'waiting')} // ${badge.authenticated?'AUTHENTICATED':'AUTHENTICATING'}</p></div>
+    <div class="identity"><div><h2 title="${escapeHtml(badge.id)}">${escapeHtml(badge.displayName||badge.id)}</h2><p>${escapeHtml(status.screen||'waiting')} // ${badge.authenticated?'AUTHENTICATED':'AUTHENTICATING'}</p></div>
     <div class="actions"><button id="edit">EDIT PROBLEMS</button><button id="solve">MARK ALL SOLVED</button><button class="danger" id="reset">RESET SOLVED</button><button id="reboot">REBOOT</button></div></div>
     <div class="stats"><div class="stat"><small>SOLVED</small><strong>${status.solved??'-'} / ${total}</strong></div><div class="stat"><small>SERIAL</small><strong>${status.serialSolved??'-'} / ${status.serialProblems??4}</strong></div><div class="stat"><small>HIDDEN</small><strong>${status.hiddenSolved?'CLEAR':'LOCKED'}</strong></div></div>
     <div class="volume"><label for="volume"><span>BUZZER VOLUME</span><output id="volume-value">${volume}</output></label><input id="volume" type="range" min="1" max="10" step="1" value="${volume}"><div class="volume-scale"><span>1 // LOW</span><span>10 // MAX</span></div></div>
     <div class="missions" id="missions"></div>
-    <div class="terminal"><div class="terminal-head">root@${escapeHtml(badge.id)}:~#</div><pre id="console"></pre><form id="shell"><span>&gt;</span><input id="command" autocomplete="off" maxlength="767" placeholder="1-4 | help | solve all | reset | reboot"><button>SEND</button></form></div>`;
+    <div class="terminal"><div class="terminal-head">root@${escapeHtml(badge.displayName||badge.id)}:~#</div><pre id="console"></pre><form id="shell"><span>&gt;</span><input id="command" autocomplete="off" maxlength="767" placeholder="1-4 | help | number 1 | reset | reboot"><button>SEND</button></form></div>`;
   const ready=badge.online&&badge.authenticated;
   $('edit').disabled=$('reset').disabled=$('reboot').disabled=!ready;
   $('solve').disabled=!ready||(status.solved??0)>=total;

@@ -1,4 +1,4 @@
-"""USB CDC adapter for the badge's ESP-NOW Morse v3 protocol."""
+"""USB CDC adapter for the badge's ESP-NOW Morse v4 protocol."""
 
 import asyncio
 import time
@@ -11,6 +11,12 @@ CODES = dict(zip("ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789", (
     "...--", "....-", ".....", "-....", "--...", "---..", "----.",
 )))
 LETTERS = {code: letter for letter, code in CODES.items()}
+
+
+def badge_label(sender, number):
+    if type(number) is not int or not (0 <= number <= 999 or number == 65535):
+        raise ValueError("invalid badge number")
+    return "ADMIN" if number == 65535 else f"BADGE #{number:02d}" if number else sender
 
 
 def serial_ports():
@@ -70,10 +76,12 @@ class MorseBridge:
 
     def receive(self, line):
         parts = line.split()
-        if len(parts) != 4 or len(parts[1]) != 6 or any(
+        if len(parts) != 5 or parts[0] != "RX" or len(parts[1]) != 6 or any(
                 c not in "0123456789ABCDEF" for c in parts[1]):
             raise ValueError("invalid RX sender")
         sender = parts[1]
+        number = int(parts[4])
+        label = badge_label(sender, number)
         symbol, duration = int(parts[2]), int(parts[3])
         if not ((symbol in (46, 45) and 30 <= duration <= 2000) or
                 (symbol in (47, 32) and duration == 0)):
@@ -84,6 +92,7 @@ class MorseBridge:
                 del self.lines[next(iter(self.lines))]
             self.lines[sender] = {"text": "", "symbols": "", "end": 0.0}
         state = self.lines[sender]
+        state["displayName"] = label
         if symbol in (46, 45):
             state["symbols"] = (state["symbols"] + chr(symbol))[-7:]
             state["end"] = time.monotonic() + duration / 1000
@@ -103,8 +112,10 @@ class MorseBridge:
     def snapshot(self):
         self.expire()
         return {"online": self.online, "port": self.port, "channel": self.channel,
+                "displayName": "ADMIN",
                 "busy": self.operation.locked(), "error": self.error,
-                "received": [{"sender": sender, "text": state["text"],
+                "received": [{"sender": sender, "displayName": state["displayName"],
+                              "text": state["text"],
                               "symbols": state["symbols"]}
                              for sender, state in self.lines.items()],
                 "events": list(self.events)}
@@ -148,7 +159,7 @@ class MorseBridge:
         try:
             await asyncio.to_thread(self.serial.write, (command + "\n").encode("ascii"))
             response = await asyncio.wait_for(self.reply, 3)
-            if response != expected and not (expected == "READY 3 " and response.startswith(expected)):
+            if response != expected and not (expected == "READY 4 " and response.startswith(expected)):
                 raise RuntimeError(response)
             return response
         except Exception as error:
@@ -187,7 +198,7 @@ class MorseBridge:
         if not self.online or self.operation.locked():
             raise RuntimeError("Morse adapter is offline or busy")
         async with self.operation:
-            response = await self.request(f"CHANNEL {channel}", "READY 3 ")
+            response = await self.request(f"CHANNEL {channel}", "READY 4 ")
             if response.split()[2] != str(channel):
                 raise RuntimeError("adapter channel mismatch")
             self.channel = channel
@@ -227,8 +238,8 @@ class MorseBridge:
                 self.serial = connection
                 reader = asyncio.create_task(self.read_loop(connection))
                 async with self.operation:
-                    await self.request("HELLO", "READY 3 ")
-                    response = await self.request(f"CHANNEL {self.channel}", "READY 3 ")
+                    await self.request("HELLO", "READY 4 ")
+                    response = await self.request(f"CHANNEL {self.channel}", "READY 4 ")
                     if response.split()[2] != str(self.channel):
                         raise RuntimeError("adapter channel mismatch")
                     self.lines.clear()

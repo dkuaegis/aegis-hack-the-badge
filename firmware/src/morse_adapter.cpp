@@ -56,7 +56,7 @@ void packetSent(const uint8_t *, esp_now_send_status_t status) {
 
 void status() {
   if (!ready) Serial.println("ERR radio unavailable");
-  else Serial.printf("READY 3 %u %06lX\n", channel, (unsigned long)ownId);
+  else Serial.printf("READY 4 %u %06lX\n", channel, (unsigned long)ownId);
 }
 
 void command() {
@@ -77,7 +77,8 @@ void command() {
              symbol <= 127 && duration <= 2000) {
     const MorsePacket packet{MORSE_PACKET_MAGIC, MORSE_PACKET_VERSION,
                              static_cast<char>(symbol),
-                             static_cast<uint16_t>(duration), ownId, 0};
+                             static_cast<uint16_t>(duration), ownId, 0,
+                             BADGE_NUMBER_ADMIN};
     if (!validMorsePacket(packet)) { Serial.println("ERR packet"); return; }
     xQueueReset(sent);
     transmitting = true;
@@ -129,8 +130,8 @@ void loop() {
   MorsePacket packet;
   while (received && xQueueReceive(received, &packet, 0) == pdTRUE) {
     showActivityLed(false, packet.durationMs);
-    Serial.printf("RX %06lX %u %u\n", (unsigned long)packet.sender,
-                  (unsigned char)packet.symbol, packet.durationMs);
+    Serial.printf("RX %06lX %u %u %u\n", (unsigned long)packet.sender,
+                  (unsigned char)packet.symbol, packet.durationMs, packet.badgeNumber);
   }
   while (Serial.available()) {
     const char c = Serial.read();

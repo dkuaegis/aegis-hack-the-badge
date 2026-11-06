@@ -3,6 +3,8 @@ __pycache__/
 *.py[cod]
 .venv/
 admin/scores.db
+config
+zerocoke_sub
 
 # KiCad local state and transient backups
 *.kicad_prl
