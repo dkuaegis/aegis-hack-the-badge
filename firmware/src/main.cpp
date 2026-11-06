@@ -830,9 +830,20 @@ void printVictoryMessage() {
   Serial.println(F("\n================================"));
   Serial.println(F("   모든 문제를 해결했습니다!"));
   Serial.println(F("================================\n"));
+  Serial.println(F(R"VICTORY(
+  ____                            _         _       _   _                 _
+ / ___|___  _ __   __ _ _ __ __ _| |_ _   _| | __ _| |_(_) ___  _ __  ___| |
+| |   / _ \| '_ \ / _` | '__/ _` | __| | | | |/ _` | __| |/ _ \| '_ \/ __| |
+| |__| (_) | | | | (_| | | | (_| | |_| |_| | | (_| | |_| | (_) | | | \__ \_|
+ \____\___/|_| |_|\__, |_|  \__,_|\__|\__,_|_|\__,_|\__|_|\___/|_| |_|___(_)
+                 |___/
+
+Congratulations!
+)VICTORY"));
   Serial.println(F("축하합니다!"));
   Serial.println(F("AEGIS Hack The Badge의 모든 Challenge를 완료했습니다."));
   Serial.println(F("\nAEGIS{PWN3D!}"));
+  Serial.println(F("\nMSGCTF{CONFIGURE_PRIVATE_FLAG}"));
 }
 
 void startVictorySequence(uint32_t now) {

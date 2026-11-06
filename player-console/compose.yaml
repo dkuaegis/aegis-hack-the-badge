@@ -3,4 +3,13 @@ services:
     build: .
     ports:
       - "8081:8080"
+    ulimits:
+      nofile:
+        soft: 65535
+        hard: 65535
+    logging:
+      driver: local
+      options:
+        max-size: "10m"
+        max-file: "3"
     restart: unless-stopped
