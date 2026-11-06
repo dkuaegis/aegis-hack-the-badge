@@ -52,6 +52,39 @@ Web Serial은 보안 컨텍스트에서만 동작합니다. `localhost`는 로�
 지원하지 않는 브라우저나 HTTP 원격 주소에서는 연결 버튼이 비활성화되고
 원인이 화면에 표시됩니다. iframe에 삽입하지 말고 최상위 페이지로 여세요.
 
+### 동시 접속과 Cloudflare Tunnel
+
+nginx는 CPU 수만큼 worker를 실행하고 worker당 연결 4,096개,
+컨테이너 파일 디스크립터 한도 65,535개를 사용합니다. 실제 수용량은
+서버 CPU·메모리·네트워크와 Tunnel 처리량에 따라 달라집니다.
+유휴 연결은 15초 후 정리하며 접근 로그는 버퍼링하고 회전해 디스크 사용을 제한합니다.
+
+HTML은 매번 재검증하며 JS/CSS/SVG는 1시간 캐시합니다. 이미지 빌드 시
+자산 URL에 내용 해시를 붙여 새 배포가 이전 캐시를 사용하지 않도록 합니다.
+모든 파일은 미리 gzip 압축해 요청마다 압축하는 CPU 비용을 줄입니다.
+Cloudflare에서는 기존 Tunnel이 `http://localhost:8081`을 계속 바라보게 하고,
+HTML에 `Cache Everything` 또는 강제 Edge TTL을 적용하지 마세요.
+지원하는 정적 자산은 Cloudflare 기본 캐시 정책으로도 캐시할 수 있습니다.
+
+배포와 HTTP 검증:
+
+```bash
+git pull --ff-only
+docker compose -f player-console/compose.yaml up --build -d --wait
+python3 player-console/test_http.py
+```
+
+테스트 환경에서 부하를 확인하려면 ApacheBench로 실행합니다.
+아래 수치는 보장 용량이 아닌 검증용 요청 수입니다.
+
+```bash
+ab -n 10000 -c 200 -k -H 'Accept-Encoding: gzip' http://127.0.0.1:8081/
+```
+
+정상 결과는 Failed requests와 Non-2xx responses가 모두 0입니다.
+콘솔을 연 뒤의 USB 입출력은 서버 접속 없이 계속 동작합니다.
+긴 ASCII art는 터미널의 가로 스크롤로 원형을 유지합니다.
+
 ## 시리얼 회귀 검증
 
 Node.js 22 이상에서 별도 패키지 설치 없이 실행합니다.

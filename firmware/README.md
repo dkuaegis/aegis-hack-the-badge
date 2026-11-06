@@ -25,7 +25,7 @@ ESP32-S3-WROOM-1-N8R8용 펌웨어입니다. 기존
 - 128x64 OLED: Cyber/Terminal/Badge UI, 문제 보기/예시, Flappy Hacker와 Firewall Breaker 미니게임
 - LED1-LED5: 4개 Serial 문제와 `Hidden Access` 풀이 상태
 - NVS: 전원을 꺼도 풀이 상태 유지
-- Trophy Mode: 5개 Challenge 완료 시 `AEGIS{PWN3D!}`, 승리 fanfare, LED 왕복 애니메이션
+- Trophy Mode: 기본 4문제와 Hidden Access까지 5개 완료 시 기존 OLED `AEGIS{PWN3D!}`, 승리 fanfare, LED 왕복 애니메이션을 유지하고 USB Serial에 대형 `Congratulations!` ASCII art와 최종 `MSGCTF{...}` FLAG 출력
 - `Hidden Access`: 전면 challenge pad의 올바른 두 접점을 1.2초간 쇼트하면 해금
 - BLE 관리자: Windows/macOS/Linux PC와 P2P 연결해 장비별 상태, reset, reboot, 무선 관리자 셸 제공
 - Morse Link: 공유기 없이 배지끼리 모스 신호를 방송하고 A-Z/0-9를 자동 번역
@@ -531,6 +531,7 @@ Legacy Auth XOR, 4자리 HEX parser와 Morse decoder를 검사할 수 있습니�
 ```bash
 clang++ -std=c++17 -Ifirmware/src firmware/test/test_logic.cpp -o /tmp/badge-logic-test
 /tmp/badge-logic-test
+python3 firmware/test/test_victory.py
 python3 firmware/test/test_name_entry.py
 ```
 
