@@ -249,46 +249,27 @@ HEX 표시, 디버그/진단 명령, Legacy Auth 동작이 동일합니다.
 
 ## 관리자 키
 
-기본 개발 키는 `AEGIS_DEV_ONLY_CHANGE_ME`입니다. 실제 행사 전
-소스의 기본값을 직접 바꾸지 말고, 펌웨어 빌드와 브리지에 동일한
-`BADGE_ADMIN_KEY`를 주입합니다. 운영 키 생성부터 펌웨어 업로드까지의
-전체 절차는 [펌웨어 프로덕션 배포](../firmware/README.md#최종-프로덕션-배포)를
-따릅니다.
+저장소 루트의 `.env.example`을 `.env`로 복사한 뒤 `BADGE_ADMIN_KEY`를
+펌웨어와 같은 값으로 설정하세요. 시작 스크립트와 `bridge.py`가 자동으로 읽습니다.
+`.env`는 Git에서 제외됩니다. 환경변수와 `--admin-key`를 명시하면 `.env`보다
+우선하며, `BADGE_FINAL_FLAG`는 펌웨어 빌드에서만 사용합니다.
+운영 키 생성부터 펌웨어 업로드까지는
+[펌웨어 프로덕션 배포](../firmware/README.md#최종-프로덕션-배포)를 따릅니다.
 
-macOS/Linux:
+설정 후에는 키를 명령에 적지 않고 실행합니다.
 
 ```bash
-export BADGE_ADMIN_KEY='AEGIS_DEV_ONLY_CHANGE_ME'
 ./start-macos.sh # Linux는 ./start-linux.sh
-
-# 또는 실행 인자로 전달
-./start-macos.sh --admin-key 'AEGIS_DEV_ONLY_CHANGE_ME'
 ```
 
-Windows Command Prompt:
-
-```bat
-set BADGE_ADMIN_KEY=AEGIS_DEV_ONLY_CHANGE_ME
-start-windows.bat
-
-start-windows.bat --admin-key "AEGIS_DEV_ONLY_CHANGE_ME"
-```
-
-Windows PowerShell:
-
-```powershell
-$env:BADGE_ADMIN_KEY='AEGIS_DEV_ONLY_CHANGE_ME'
-.\start-windows.bat
-
-.\start-windows.bat --admin-key 'AEGIS_DEV_ONLY_CHANGE_ME'
-```
+Windows에서는 `start-windows.bat`을 실행합니다.
 
 키 원문은 BLE로 전송되지 않고, 연결마다 새 challenge를 사용한
 상호 HMAC-SHA256 증명에만 사용됩니다. 공개 개발 키로 브리지를 실행하려면
 로컬 테스트임을 명시하는 `--allow-dev-key`가 필요하며, 운영 키는 최소
 32 UTF-8 bytes여야 합니다. 현재 구성은 모든 배지가 하나의 fleet key를
 공유합니다. `--admin-key` 값은 브리지 프로세스의 인자에는 남지 않지만
-쉘 명령 기록에는 남을 수 있으므로 공용 PC에서는 환경변수를 권장합니다.
+쉘 명령 기록에는 남을 수 있으므로 비공개 `.env` 사용을 권장합니다.
 
 ```bash
 ./start-macos.sh --allow-dev-key # 개발용 배지에만 사용

@@ -17,12 +17,13 @@ import unicodedata
 from collections import deque
 from pathlib import Path
 from morse import MorseBridge, badge_label, serial_ports
+from private_config import load_private_config
 
 SERVICE_UUID = "6f8d0001-6a4b-4c52-9f2a-8f0f5d9b0001"
 RX_UUID = "6f8d0002-6a4b-4c52-9f2a-8f0f5d9b0001"
 TX_UUID = "6f8d0003-6a4b-4c52-9f2a-8f0f5d9b0001"
 DEFAULT_ADMIN_KEY = "AEGIS_DEV_ONLY_CHANGE_ME"
-ADMIN_KEY = os.environ.get("BADGE_ADMIN_KEY", DEFAULT_ADMIN_KEY)
+ADMIN_KEY = load_private_config().get("BADGE_ADMIN_KEY", DEFAULT_ADMIN_KEY)
 BLE_COMMAND_MAX = 767
 PROBLEM_LIMITS = {"title": 23, "prompt": 255, "answer": 79, "option": 23}
 DASHBOARD_PATH = Path(__file__).with_name("dashboard") / "index.html"
