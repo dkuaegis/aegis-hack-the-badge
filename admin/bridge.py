@@ -16,6 +16,7 @@ import time
 import unicodedata
 from collections import deque
 from pathlib import Path
+from morse import MorseBridge, badge_label, serial_ports
 
 SERVICE_UUID = "6f8d0001-6a4b-4c52-9f2a-8f0f5d9b0001"
 RX_UUID = "6f8d0002-6a4b-4c52-9f2a-8f0f5d9b0001"
@@ -56,6 +57,22 @@ def init_score_db(path=SCORE_DB_PATH):
                 PRIMARY KEY (badge_id, game)
             )
         """)
+        connection.execute("""
+            CREATE TABLE IF NOT EXISTS badges (
+                badge_id TEXT PRIMARY KEY,
+                number INTEGER NOT NULL CHECK (number BETWEEN 0 AND 999)
+            )
+        """)
+
+
+def store_badge_number(badge_id, number, path=SCORE_DB_PATH):
+    if not valid_badge_id(badge_id) or type(number) is not int or not 0 <= number <= 999:
+        raise ValueError("invalid badge identity")
+    with score_db(path) as connection:
+        connection.execute("""
+            INSERT INTO badges (badge_id, number) VALUES (?, ?)
+            ON CONFLICT (badge_id) DO UPDATE SET number = excluded.number
+        """, (badge_id, number))
 
 
 def valid_nickname(nickname):
@@ -92,8 +109,10 @@ def store_score(badge_id, game, score, nickname, path=SCORE_DB_PATH):
 def score_rows(path=SCORE_DB_PATH):
     with score_db(path) as connection:
         rows = connection.execute("""
-            SELECT badge_id, game, score, nickname, updated_at
-            FROM scores ORDER BY game, score DESC, updated_at ASC
+            SELECT scores.badge_id, game, score, nickname, updated_at,
+                   COALESCE(badges.number, 0) AS number
+            FROM scores LEFT JOIN badges USING (badge_id)
+            ORDER BY game, score DESC, updated_at ASC
         """).fetchall()
     return [dict(row) for row in rows]
 
@@ -131,6 +150,8 @@ def normalize_status(data, expected_id):
         "firewallHigh": integer("firewallHigh", 0, 65535),
         "uptimeMs": integer("uptimeMs", 0, 0xffffffff),
     }
+    if "number" in data:
+        status["number"] = integer("number", 0, 999)
     hidden = data.get("hiddenSolved")
     screen = data.get("screen")
     names = (data.get("flappyName"), data.get("firewallName"))
@@ -312,7 +333,6 @@ if __name__ == "__main__" and "--self-test" in sys.argv:
 
 from aiohttp import web
 from bleak import BleakClient, BleakScanner
-from morse import MorseBridge, serial_ports
 
 sessions = {}
 morse = MorseBridge(os.environ.get("AEGIS_MORSE_PORT"),
@@ -376,8 +396,11 @@ class BadgeSession:
             try:
                 if not self.authenticated:
                     raise ValueError("status before authentication")
-                self.status = normalize_status(json.loads(line[7:]), self.id)
-            except (json.JSONDecodeError, ValueError) as error:
+                status = normalize_status(json.loads(line[7:]), self.id)
+                if "number" in status and status.get("number") != self.status.get("number"):
+                    store_badge_number(self.id, status["number"])
+                self.status = status
+            except (json.JSONDecodeError, ValueError, sqlite3.Error) as error:
                 self.log(f"ERR invalid status: {error}")
             return
         if line.startswith("SCORE ") or line.startswith("SCORE_SUBMIT "):
@@ -624,6 +647,7 @@ async def badges_api(_request):
     for badge in sorted(sessions.values(), key=lambda item: item.id):
         badges.append({
             "id": badge.id,
+            "displayName": badge_label(badge.id, badge.status.get("number", 0)),
             "online": badge.online,
             "authenticated": badge.authenticated,
             "lastSeenSeconds": round(max(0, now - badge.last_seen), 1)
@@ -642,6 +666,7 @@ async def leaderboard_api(_request):
     for row in score_rows():
         games[row["game"]].append({
             "badgeId": row["badge_id"],
+            "displayName": badge_label(row["badge_id"], row["number"]),
             "score": row["score"],
             "nickname": row["nickname"],
             "online": row["badge_id"] in online_ids,

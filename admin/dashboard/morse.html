@@ -12,7 +12,7 @@
   <header><h1>AEGIS // MORSE LINK</h1><a href="/">BADGE CONTROL</a></header>
   <p class="note">같은 채널의 배지와 모스로 통신합니다. 한 번에 한 명씩 송신하세요.</p>
   <section>
-    <h2 id="status">ADAPTER: CHECKING</h2>
+    <h2 id="status">ADMIN: CHECKING</h2>
     <p id="connection" class="note"></p>
     <form id="device-form">
       <label for="device">DEVICE</label><select id="device"><option value="">장치를 선택하세요</option></select>
@@ -24,7 +24,7 @@
     <p id="notice" role="status" aria-live="polite"></p>
   </section>
   <section>
-    <h2>TRANSMIT</h2>
+    <h2>TRANSMIT // ADMIN</h2>
     <form id="send-form"><label for="text">MESSAGE</label><input id="text" maxlength="40" pattern="[A-Za-z0-9 ]+" placeholder="CQ AEGIS" required autocomplete="off"><button id="send">SEND</button></form>
     <p class="note">영문·숫자·공백, 최대 40자. 송신이 끝날 때까지 장치·채널 변경은 잠깁니다.</p>
   </section>
@@ -86,10 +86,10 @@ async function poll(){
     const response=await fetch('/api/morse',{cache:'no-store'});
     if(!response.ok)throw new Error(await response.text());
     const data=await response.json();online=data.online;busy=data.busy;port=data.port;
-    $('status').textContent=`ADAPTER: ${online?'ONLINE':'OFFLINE'} // CH ${data.channel}${busy?' // BUSY':''}`;
+    $('status').textContent=`${data.displayName}: ${online?'ONLINE':'OFFLINE'} // CH ${data.channel}${busy?' // BUSY':''}`;
     $('connection').textContent=[port,data.error].filter(Boolean).join(' — ');
     if(!initialized){$('channel').value=data.channel;initialized=true;await refreshPorts()}
-    $('received').textContent=data.received.map(row=>`${row.sender} > ${row.text}${row.symbols?' ['+row.symbols+']':''}`).join('\n')||'WAITING SIGNAL';
+    $('received').textContent=data.received.map(row=>`${row.displayName||row.sender} > ${row.text}${row.symbols?' ['+row.symbols+']':''}`).join('\n')||'WAITING SIGNAL';
     const log=data.events.map(row=>row.text).join('\n');
     if($('log').textContent!==log){$('log').textContent=log;$('log').scrollTop=$('log').scrollHeight}
   }catch(error){online=false;$('status').textContent='BRIDGE OFFLINE';$('connection').textContent=error.message}

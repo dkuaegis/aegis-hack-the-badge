@@ -1,6 +1,7 @@
 """Run with admin/.venv/bin/python admin/test_bridge.py; no hardware or live DB."""
 
 import asyncio
+import json
 import os
 import queue
 import tempfile
@@ -10,7 +11,7 @@ from unittest.mock import patch
 
 from aiohttp.test_utils import TestClient, TestServer
 from serial.tools.list_ports_common import ListPortInfo
-from morse import CODES, LETTERS, MorseBridge, normalize_text, transmission
+from morse import CODES, LETTERS, MorseBridge, badge_label, normalize_text, transmission
 
 
 class Adapter:
@@ -41,10 +42,10 @@ class Adapter:
         if self.device == "BADGE":
             response = b"ERR unknown command\n"
         elif command == "HELLO" or command.startswith("CHANNEL "):
-            response = f"READY 3 {self.channel} 112233\n".encode()
+            response = f"READY 4 {self.channel} 112233\n".encode()
         elif command.startswith("TX "):
             _, symbol, duration = command.split()
-            response = f"RX AABBCC {symbol} {duration}\n".encode()
+            response = f"RX AABBCC {symbol} {duration} 1\n".encode()
             if not self.no_ack:
                 response += b"OK TX\n"
         else:
@@ -81,9 +82,16 @@ async def test_morse():
     decoder = MorseBridge()
     with patch("morse.time.monotonic", return_value=100.0) as clock:
         for symbol, duration, delay in transmission("CQ AEGIS 0123456789"):
-            decoder.receive(f"RX ABCDEF {ord(symbol)} {duration}")
+            decoder.receive(f"RX ABCDEF {ord(symbol)} {duration} 1")
             clock.return_value += delay
         assert decoder.snapshot()["received"][0]["text"] == "CQ AEGIS 0123456789 "
+    assert decoder.snapshot()["received"][0]["displayName"] == "BADGE #01"
+    decoder.receive("RX 112233 46 100 1")
+    decoder.receive("RX 445566 46 100 65535")
+    received = decoder.snapshot()["received"]
+    assert [row["sender"] for row in received] == ["ABCDEF", "112233", "445566"]
+    assert [row["displayName"] for row in received] == ["BADGE #01", "BADGE #01", "ADMIN"]
+    assert badge_label("ABCDEF", 0) == "ABCDEF"
     radio = MorseBridge("TEST", 6)
     adapters = []
     def connect(*_args, **_kwargs):
@@ -109,10 +117,12 @@ async def test_morse():
             await radio.set_channel(1)
             assert not radio.lines
             # Idle-gap decoding when the explicit boundary packet is lost.
-            radio.receive("RX ABCDEF 45 300")
+            radio.receive("RX ABCDEF 45 300 1")
             radio.lines["ABCDEF"]["end"] -= 1
             assert radio.snapshot()["received"][0]["text"] == "T "
-            for invalid in ("RX ABCDEF 32 100", "RX ABCDEF 46 0", "RX BAD 46 100"):
+            for invalid in ("RX ABCDEF 32 100 1", "RX ABCDEF 46 0 1", "RX BAD 46 100 1",
+                            "RX ABCDEF 46 100", "RX ABCDEF 46 100 1000",
+                            "RX ABCDEF 46 100 -1", "RX ABCDEF 46 100 ADMIN"):
                 try:
                     radio.receive(invalid)
                     raise AssertionError("invalid packet accepted")
@@ -271,12 +281,55 @@ async def test_scores_and_api(bridge):
         assert response.status == 200
 
 
+async def test_badge_identity(bridge):
+    one, two = bridge.sessions.values()
+    status = {
+        "id": one.id, "number": 1, "solvedMask": 0, "solved": 0,
+        "total": 5, "serialSolved": 0, "serialProblems": 4,
+        "hiddenSolved": False, "volume": 10, "screen": "home",
+        "flappyHigh": 0, "flappyName": "---", "firewallHigh": 0,
+        "firewallName": "---", "uptimeMs": 123,
+    }
+    for badge in (one, two):
+        badge.authenticated = True
+        badge.handle_line("STATUS " + json.dumps({**status, "id": badge.id}))
+        bridge.store_score(badge.id, "flappy", 50, "TEST")
+    assert {row["badge_id"] for row in bridge.score_rows()} == {one.id, two.id}
+    assert all(row["number"] == 1 for row in bridge.score_rows())
+    for number in (True, -1, 1000, 65535, "1", None):
+        one.handle_line("STATUS " + json.dumps({**status, "number": number}))
+        assert one.status["number"] == 1
+    one.authenticated = False
+    one.handle_line("STATUS " + json.dumps({**status, "number": 2}))
+    assert one.status["number"] == 1
+    one.authenticated = True
+    one.handle_line("STATUS " + json.dumps({**status, "number": 2}))
+    async with TestClient(TestServer(bridge.create_app()),
+                          headers={"Host": "127.0.0.1:8080"}) as client:
+        response = await client.get("/api/badges")
+        assert response.status == 200
+        badges = await response.json()
+        assert [(b["id"], b["displayName"]) for b in badges] == [
+            (one.id, "BADGE #02"), (two.id, "BADGE #01")]
+        # A restart with no live sessions still shows NVS-derived cached labels.
+        with patch.object(bridge, "sessions", {}):
+            bridge.init_score_db()
+            response = await client.get("/api/leaderboard")
+            rows = (await response.json())["games"]["flappy"]
+            assert {(r["badgeId"], r["displayName"]) for r in rows} == {
+                (one.id, "BADGE #02"), (two.id, "BADGE #01")}
+            assert not any(r["online"] for r in rows)
+    one.handle_line("STATUS " + json.dumps({**status, "number": 0}))
+    assert next(row for row in bridge.score_rows() if row["badge_id"] == one.id)["number"] == 0
+
+
 async def main():
     with tempfile.TemporaryDirectory() as directory:
         os.environ["AEGIS_SCORE_DB"] = str(Path(directory) / "scores.db")
         os.environ.pop("AEGIS_MORSE_PORT", None)
         import bridge
         await test_scores_and_api(bridge)
+        await test_badge_identity(bridge)
         await test_morse()
         await test_morse_devices(bridge)
     print("bridge score/API/Morse transport and device selection tests: OK")

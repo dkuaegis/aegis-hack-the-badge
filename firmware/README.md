@@ -126,7 +126,7 @@ dit 100 ms, dah 300 ms, 문자 간 300 ms, 단어 간 700 ms를 기준으로 하
 문자/단어 경계도 함께 전송해 A-Z와 0-9를 OLED에서 자동 번역합니다.
 화면의 `TX+`는 ESP-NOW 무선 송신 완료, `TXX`는 송신 실패, `TX!`는 무선 초기화
 실패입니다. `TX+`만으로 상대 배지의 애플리케이션 수신까지 보장되지는 않습니다.
-Morse 패킷 v3를 사용하므로 통신할 모든 배지에 같은 최신
+Morse 패킷 v4를 사용하므로 통신할 모든 배지와 ADMIN 어댑터에 같은 최신
 펌웨어를 업로드해야 합니다. 같은 순간 여러 배지가 송신하면 일반 무전과 마찬가지로
 신호가 겹칠 수 있으므로 한 번에 한 명씩 송신해야 합니다. 도달 거리는 행사장
 구조와 2.4 GHz 혼잡도에 따라 달라지므로 전체 배포 전에 현장에서 확인하세요.
@@ -158,6 +158,7 @@ Morse 패킷 v3를 사용하므로 통신할 모든 배지에 같은 최신
 | 파일 | 역할 |
 | --- | --- |
 | [`platformio.ini`](platformio.ini) | 보드, flash/PSRAM, USB CDC, 라이브러리 설정 |
+| [`upload_all.py`](upload_all.py) | 한 번 빌드하고 지정한 여러 배지에 USB 순차 업로드 |
 | [`src/main.cpp`](src/main.cpp) | OLED UI, 버튼·LED·부저, USB/BLE 셸, NVS, Hidden Access |
 | [`src/problems.h`](src/problems.h) | 1~4번 기본 문제, 필드 크기와 미니게임 보상 문구 |
 | [`src/pins.h`](src/pins.h) | Rev.3 PCB GPIO 매핑 |
@@ -240,6 +241,56 @@ pio device monitor --port /dev/ttyACM0
 실제 포트 이름은 `pio device list` 결과를 사용합니다. Serial monitor나 다른
 프로그램이 같은 포트를 열고 있으면 닫은 뒤 업로드합니다.
 
+### 여러 배지 일괄 업로드
+
+외부 전원이 있는 USB **데이터** 허브에 배지를 각각 연결하고,
+[`upload_all.py`](upload_all.py)를 실행합니다. Python 3와 기존 PlatformIO만
+필요하며 추가 Python 패키지는 설치하지 않습니다. PATH의 `pio`/`platformio`와
+PlatformIO IDE의 기본 설치 위치를 자동으로 찾습니다.
+
+저장소 루트에서 먼저 포트를 확인합니다. 인자 없이 실행해도 목록만 표시합니다.
+
+```bash
+python3 firmware/upload_all.py --list
+```
+
+목록에서 **배지 포트만** 골라 한 명령에 나열합니다. 아래 포트 이름은 예시이므로
+실제 목록으로 바꾸세요. 모스 브리지용 DevkitC-1도 같은 ESP32-S3 USB 장치로
+보일 수 있으므로 대상에서 제외합니다. USB 정보만으로 용도를 구별할 수 없어
+연결된 전체 장치를 자동으로 선택하지 않습니다.
+
+```bash
+# macOS: 대상만 먼저 확인 (빌드·업로드 없음)
+python3 firmware/upload_all.py --dry-run /dev/cu.usbmodem1101 /dev/cu.usbmodem1201
+
+# macOS: 한 번 실행해 두 배지에 순차 업로드
+python3 firmware/upload_all.py /dev/cu.usbmodem1101 /dev/cu.usbmodem1201
+
+# Linux
+python3 firmware/upload_all.py /dev/ttyACM0 /dev/ttyACM1
+```
+
+```powershell
+# Windows
+py -3 firmware/upload_all.py --list
+py -3 firmware/upload_all.py COM5 COM6 COM7
+```
+
+스크립트는 모든 대상 포트를 확인한 뒤 `esp32-s3-rev3`를 한 번 빌드하고,
+각 포트에 `pio run -t nobuild -t upload --upload-port PORT`를 실행합니다.
+bootloader와 partition table을 포함하는 기존 PlatformIO 업로드 구성을
+재사용하며, NVS의 풀이 상태·편집한 문제·배지 번호는 기존 업로드처럼 유지됩니다.
+운영 배포에는 아래 [운영 키 설정](#2-운영-키로-펌웨어-빌드업로드)을 마친
+**같은 터미널**에서 실행하세요. `PLATFORMIO_BUILD_FLAGS`도 그대로 전달됩니다.
+실행 중에는 같은 프로젝트에서 다른 빌드·업로드를 실행하거나 설정을 바꾸지 마세요.
+
+빌드가 실패하면 업로드를 시작하지 않습니다. 개별 업로드 실패 시 나머지 배지는
+계속 진행하며, 마지막에 포트별 `OK`/`FAIL`과 성공·실패 대수를 표시합니다.
+하나라도 실패하면 종료 코드 `1`, 모두 성공하면 `0`입니다. 실패한 배지는
+아래 BOOT/EN 절차와 케이블·포트 점유를 확인하고, `--list`로 현재 포트를
+다시 확인한 뒤 해당 포트만 지정해 재실행하세요. 같은 포트를 중복 지정해도
+한 번만 업로드합니다.
+
 ### BOOT/EN 복구 업로드
 
 USB CDC 포트가 나타나지 않거나 `Connecting...` 단계에서 실패하면 다음
@@ -278,11 +329,31 @@ BLE와 LED 검사는 가능합니다. 이 경우 OLED 관련 확인만 건너뜁
 
 ## NVS와 초기화 정책
 
+### 배지 표시 번호
+
+관리자 대시보드에서 배지를 선택하고 하단 BLE 셸에 `number 1`을 입력하면
+NVS의 `badge/number`에 번호를 저장합니다. 번호 범위는 1~999이며
+OLED Home/Status, USB 배너, 관리자 화면, 리더보드와 모스 수신 화면에
+`BADGE #01` 형식으로 표시됩니다. `number 0`은 번호를 해제하고 MAC 기반
+기존 이름을 표시합니다. 번호는 각 실물 배지에 서로 다르게 지정하세요.
+
+같은 펌웨어를 모든 배지에 업로드한 뒤 번호만 한 번씩 지정할 수 있습니다.
+빌드 시 번호를 고정하고 싶으면 `platformio.ini`의 배지 환경 `build_flags`에
+`-DBADGE_NUMBER=1`을 추가하세요. 이 값은 `badge/number`가 없는 최초 부팅에만
+NVS에 기록되며, 이미 저장한 번호를 덮어쓰지 않습니다.
+
+인증, 문제 풀이와 점수 기록의 ID는 기존 Wi-Fi MAC 기반 S/N을 계속 사용합니다.
+BLE 검색 이름과 Mission 04의 `Device ID`도 이 S/N을 유지합니다.
+모스 패킷의 번호는 표시용 메타데이터이며, 수신자 구분은 실제 송신 MAC으로 합니다.
+브리지 개발보드의 표시 번호는 전용 펌웨어에서 ADMIN으로 고정되므로
+그 보드에서 보낸 신호는 배지에 `RX ADMIN`으로 나타납니다.
+
 일반적인 `pio run -t upload`는 NVS 영역을 지우지 않습니다. 따라서 다음
 항목은 새 펌웨어를 올린 뒤에도 남을 수 있습니다.
 
 - 해결한 문제와 Hidden Access 상태
 - 관리자 대시보드에서 편집한 1~4번 문제
+- 배지 표시 번호(`BADGE #01` 등)
 
 풀이 상태만 지우려면 관리자 대시보드의 `RESET SOLVED` 또는 관리자 셸의
 `reset`을 사용합니다. `src/problems.h`의 기본 문제로 완전히 되돌리려면
@@ -370,6 +441,7 @@ BLE 관리 채널은 연결마다 새 challenge를 만들고 fleet key 기반 HM
 | `reset` | 전체 풀이 상태 초기화 |
 | `reboot` | 재부팅 |
 | `volume 1`~`10` | 모든 버저 효과음의 PWM 음량을 설정하고 NVS에 저장 |
+| `number 1`~`999` | 배지 표시 번호를 NVS에 저장 (`number 0`: 번호 해제) |
 | `1`~`4`, `hint`, `exit`, `clear`, `aegis` | USB 사용자 셸과 동일 |
 | `problem get 1`~`4` | 대시보드가 사용하는 문제 조회 명령 |
 
@@ -533,6 +605,8 @@ clang++ -std=c++17 -Ifirmware/src firmware/test/test_logic.cpp -o /tmp/badge-log
 /tmp/badge-logic-test
 python3 firmware/test/test_victory.py
 python3 firmware/test/test_name_entry.py
+python3 firmware/test/test_badge_identity.py
+python3 firmware/test/test_upload_all.py
 ```
 
 ## Wokwi 통합 시뮬레이션

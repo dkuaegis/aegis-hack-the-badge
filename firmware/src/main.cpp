@@ -27,6 +27,12 @@
 #define AEGIS_BOOT_SOUND_ENABLED 1
 #endif
 
+#ifndef BADGE_NUMBER
+#define BADGE_NUMBER 0 // Optional first-boot NVS seed; 0 means unassigned.
+#endif
+static_assert(BADGE_NUMBER >= 0 && BADGE_NUMBER <= BADGE_NUMBER_MAX,
+              "BADGE_NUMBER must be 0-999");
+
 namespace {
 constexpr uint32_t SERIAL_BAUD = 115200;
 constexpr uint32_t BUTTON_DEBOUNCE_MS = 30;
@@ -112,6 +118,8 @@ char serialLine[192] = {};
 uint8_t serialLength = 0;
 char badgeId[19] = {};
 uint8_t deviceMac[6] = {};
+uint16_t badgeNumber = 0;
+char badgeLabel[19] = {};
 BLECharacteristic *bleTx = nullptr;
 QueueHandle_t bleCommands = nullptr;
 QueueHandle_t morsePackets = nullptr;
@@ -256,6 +264,7 @@ struct TetrisState {
 
 struct MorseLine {
   uint32_t sender = 0;
+  uint16_t badgeNumber = 0;
   uint8_t bits = 0;
   uint8_t length = 0;
   char symbols[7] = {};
@@ -539,6 +548,22 @@ void beep(uint16_t frequency = 880, uint16_t duration = 70) {
   buzzerTone(frequency, duration);
 }
 
+bool setBadgeNumber(uint16_t number) {
+  if (number > BADGE_NUMBER_MAX ||
+      preferences.putUShort("number", number) != sizeof(number)) return false;
+  badgeNumber = number;
+  formatBadgeLabel(badgeLabel, sizeof(badgeLabel), badgeNumber, macSuffix24(deviceMac));
+  return true;
+}
+
+void loadBadgeIdentity() {
+  badgeNumber = preferences.getUShort("number", 0);
+  if (badgeNumber > BADGE_NUMBER_MAX) badgeNumber = 0;
+  formatBadgeLabel(badgeLabel, sizeof(badgeLabel), badgeNumber, macSuffix24(deviceMac));
+  if (!preferences.isKey("number") && BADGE_NUMBER != 0 &&
+      !setBadgeNumber(BADGE_NUMBER)) Serial.println("ERR badge number NVS write failed");
+}
+
 void drawBootFrame() {
   oled.drawDisc(64, 32, 30);
   oled.setDrawColor(0);
@@ -663,7 +688,7 @@ void drawHomeFrame() {
   char progress[8];
   snprintf(progress, sizeof(progress), "%02u / %02u", serialSolvedCount(),
            static_cast<unsigned>(SERIAL_PROBLEM_COUNT));
-  header("AEGIS // MSGCTF");
+  header(badgeLabel);
   oled.setFont(u8g2_font_9x15B_tf);
   centered(27, progress);
   oled.drawFrame(42, 31, 44, 6);
@@ -766,7 +791,7 @@ void drawStatusFrame() {
            hiddenSolved ? solvedCount() : serialSolvedCount(),
            static_cast<unsigned>(hiddenSolved ? TOTAL_CHALLENGE_COUNT
                                               : SERIAL_PROBLEM_COUNT));
-  header("BADGE STATUS");
+  header(badgeLabel);
   oled.setFont(u8g2_font_9x15B_tf);
   centered(hiddenSolved ? 25 : 29, total);
   oled.setFont(u8g2_font_6x10_tf);
@@ -918,6 +943,7 @@ void solveAllForAdmin(uint32_t now) {
 void printBanner(PlayerTarget target) {
   playerLine(target, "");
   playerLine(target, "=== Aegis Hack The Badge / Rev.3 ===");
+  playerLine(target, badgeLabel);
   playerLine(target, "문제 본문: Serial / 보기와 예시: OLED");
   playerLine(target, "명령: 1-4, status, help, hint, exit, clear, aegis");
 }
@@ -1042,6 +1068,7 @@ void handleLegacyAuth(PlayerTarget target, char *input) {
   } else if (strcmp(input, "dump") == 0) {
     playerLine(target, "[AUTH CONFIGURATION]");
     playerLine(target, "인증 방식 : legacy-v1");
+    playerPrintf(target, "Badge     : %s", badgeLabel);
     playerPrintf(target, "Device ID : AEGIS-%06lX",
                  static_cast<unsigned long>(macSuffix24(deviceMac)));
   } else if (strcmp(input, "log") == 0) {
@@ -1105,7 +1132,7 @@ void handleProblemInput(PlayerTarget target, char *input) {
       playerLine(target, "사용 가능: help, info, log, hint, exit");
     } else if (strcmp(input, "info") == 0) {
       playerLine(target, "[DEVICE INFORMATION]");
-      playerLine(target, "장치명      : AEGIS BADGE Rev.3");
+      playerPrintf(target, "장치명      : %s", badgeLabel);
       playerLine(target, "펌웨어      : 3.x");
       playerLine(target, "동작 모드   : PLAYER");
       playerLine(target, "디버그 모드 : ENABLED");
@@ -1128,7 +1155,7 @@ void handleProblemInput(PlayerTarget target, char *input) {
       playerLine(target, "사용 가능: help, info, hint, exit");
     } else if (strcmp(input, "info") == 0) {
       playerLine(target, "[DEVICE INFORMATION]");
-      playerLine(target, "장치명 : AEGIS BADGE Rev.3");
+      playerPrintf(target, "장치명 : %s", badgeLabel);
       playerLine(target, "빌드   : rev3-prod");
       playerLine(target, "로드된 모듈: display, storage, serial, diag");
     } else if (strcmp(input, "diag") == 0) {
@@ -2006,14 +2033,14 @@ void appendMorseSymbol(MorseLine &line, char symbol, uint32_t startedAt,
 
 void drawMorseLinkFrame() {
   char title[24];
-  char sender[16];
+  char sender[32];
+  char label[19];
   char current[16];
   const char txState = !morse.ready ? '!' :
                        morse.lastSendStatus > 0 ? '+' :
                        morse.lastSendStatus < 0 ? 'X' : '-';
-  snprintf(sender, sizeof(sender), "RX %06lX TX%c",
-           static_cast<unsigned long>(morse.rx.sender & 0xffffff),
-           txState);
+  formatBadgeLabel(label, sizeof(label), morse.rx.badgeNumber, morse.rx.sender);
+  snprintf(sender, sizeof(sender), "RX %s TX%c", morse.rx.sender ? label : "---", txState);
   snprintf(current, sizeof(current), "NOW %s",
            morse.rx.length && !morse.rx.letterDone ? morse.rx.symbols : "-");
   snprintf(title, sizeof(title), "MORSE LINK // CH%02u", morse.channel);
@@ -2153,7 +2180,7 @@ void broadcastMorse(char symbol, uint16_t durationMs = 0) {
   }
   const MorsePacket packet{MORSE_PACKET_MAGIC, MORSE_PACKET_VERSION,
                            symbol, durationMs,
-                           morse.ownId, 0};
+                           morse.ownId, 0, badgeNumber};
   const esp_err_t result = esp_now_send(
       MORSE_BROADCAST, reinterpret_cast<const uint8_t *>(&packet),
       sizeof(packet));
@@ -2195,6 +2222,7 @@ void updateMorseRadio(uint32_t now) {
       morse.rx = MorseLine{};
       morse.rx.sender = packet.sender;
     }
+    morse.rx.badgeNumber = packet.badgeNumber;
     if (packet.symbol == '.' || packet.symbol == '-') {
       const uint16_t duration = min<uint16_t>(packet.durationMs, 1000);
       appendMorseSymbol(morse.rx, packet.symbol, packet.receivedAt, duration);
@@ -2444,19 +2472,19 @@ void bleSendLine(const char *line) {
 }
 
 void sendBleStatus() {
-  char line[320];
+  char line[352];
   const ScoreRecord &flappy =
       highScores[static_cast<uint8_t>(ScoreGame::Flappy)];
   const ScoreRecord &firewall =
       highScores[static_cast<uint8_t>(ScoreGame::Firewall)];
   snprintf(line, sizeof(line),
-           "STATUS {\"id\":\"%s\",\"solvedMask\":%u,\"solved\":%u,"
+           "STATUS {\"id\":\"%s\",\"number\":%u,\"solvedMask\":%u,\"solved\":%u,"
            "\"total\":%u,\"serialSolved\":%u,\"serialProblems\":%u,"
            "\"hiddenSolved\":%s,\"volume\":%u,\"screen\":\"%s\","
            "\"flappyHigh\":%u,\"flappyName\":\"%s\","
            "\"firewallHigh\":%u,\"firewallName\":\"%s\","
            "\"uptimeMs\":%lu}",
-           badgeId, solvedMask, solvedCount(),
+           badgeId, badgeNumber, solvedMask, solvedCount(),
            static_cast<unsigned>(TOTAL_CHALLENGE_COUNT), serialSolvedCount(),
            static_cast<unsigned>(SERIAL_PROBLEM_COUNT),
            isSolved(solvedMask, HIDDEN_ACCESS_INDEX) ? "true" : "false",
@@ -2686,6 +2714,7 @@ void handleBleShell(char *command) {
   } else if (strcmp(command, "help") == 0) {
     bleSendLine("USER: 1-4 hint exit status clear aegis");
     bleSendLine("ADMIN: solve all / reset / reboot / volume 1-10 / problem get 1-4");
+    bleSendLine("ADMIN: number 1-999 (NVS); number 0 clears the label");
   } else if (strcmp(command, "hint") == 0) {
     bleSendLine("Select problem 1-4 first.");
   } else if (strcmp(command, "clear") == 0) {
@@ -2822,6 +2851,19 @@ void handleBleCommand(char *command) {
     setProblem(command + 12);
   } else if (strncmp(command, "score ", 6) == 0) {
     handleScoreCommand(command);
+  } else if (strncmp(command, "number ", 7) == 0) {
+    char *end = nullptr;
+    const long number = strtol(command + 7, &end, 10);
+    if (end == command + 7 || *end != '\0' || number < 0 || number > BADGE_NUMBER_MAX) {
+      bleSendLine("ERR number must be 0-999");
+    } else if (!setBadgeNumber(static_cast<uint16_t>(number))) {
+      bleSendLine("ERR badge number NVS write failed");
+    } else {
+      bleSendLine(badgeLabel);
+      if (screen == Screen::Home) drawHome();
+      if (screen == Screen::Status) drawStatus();
+      sendBleStatus();
+    }
   } else if (strcmp(command, "solve all") == 0) {
     solveAllForAdmin(millis());
     bleSendLine("OK solve all");
@@ -2902,6 +2944,7 @@ void setup() {
   digitalWrite(Pins::BUZZER, LOW);
   initBuzzer();
   preferences.begin("badge", false);
+  loadBadgeIdentity();
   buzzerVolume = preferences.getUChar("volume", 10);
   if (buzzerVolume < 1 || buzzerVolume > 10) buzzerVolume = 10;
 

@@ -28,7 +28,8 @@ function renderBoard(rootId,entries){
   entries.slice(0,10).forEach((entry,index)=>{
     const row=document.createElement('div');
     row.className='row'+(index===0?' first':'')+(entry.online?'':' offline');
-    const values=[String(index+1).padStart(2,'0'),String(entry.nickname).slice(0,10),uniqueId(entry.badgeId),String(entry.score)];
+    row.title=entry.badgeId;
+    const values=[String(index+1).padStart(2,'0'),String(entry.nickname).slice(0,10),entry.displayName||uniqueId(entry.badgeId),String(entry.score)];
     values.forEach((value,column)=>{const cell=document.createElement(column===1?'strong':'span');cell.className=['rank','name','device','score'][column];cell.textContent=value;row.append(cell)});
     root.append(row);
   });
