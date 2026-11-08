@@ -15,6 +15,7 @@ import tempfile
 import time
 import unicodedata
 from collections import deque
+from contextlib import contextmanager
 from pathlib import Path
 from morse import MorseBridge, badge_label, serial_ports
 from private_config import load_private_config
@@ -40,10 +41,15 @@ STATUS_SCREENS = {
 LOCAL_HOSTS = {"127.0.0.1:8080", "localhost:8080"}
 
 
+@contextmanager
 def score_db(path=SCORE_DB_PATH):
     connection = sqlite3.connect(path)
     connection.row_factory = sqlite3.Row
-    return connection
+    try:
+        with connection:
+            yield connection
+    finally:
+        connection.close()
 
 
 def init_score_db(path=SCORE_DB_PATH):
@@ -319,6 +325,14 @@ def self_test():
     with tempfile.TemporaryDirectory() as directory:
         database = Path(directory) / "scores.db"
         init_score_db(database)
+        with score_db(database) as connection:
+            pass
+        try:
+            connection.execute("SELECT 1")
+        except sqlite3.ProgrammingError:
+            pass
+        else:
+            raise AssertionError("score database connection left open")
         assert best_scores(database)["flappy"]["score"] == 0
         assert store_score("AEGIS-TEST", "flappy", 7, "ZERO", database)
         assert not store_score("AEGIS-TEST", "flappy", 6, "LOW", database)
