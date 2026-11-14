@@ -12,8 +12,8 @@
   </a>
 </p>
 
-해당 프로젝트는 EasyEDA로 제작되었고 EasyEDA 측의 제작 지원을 받았습니다. <br>
-PCB 제작은 JLCPCB 측의 지원을 받았습니다.
+본 프로젝트는 EasyEDA의 후원을 받아 진행했으며, EasyEDA Pro용 프로젝트 가져오기 패키지를 제공합니다. <br>
+PCB 제작은 JLCPCB의 지원을 받았습니다.
 
 ## 프로젝트 소개
 
