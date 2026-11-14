@@ -17,6 +17,8 @@
 #include <stdarg.h>
 
 #include "badge_secrets.h"
+#include "badapple.h"
+#include "doom_badge.h"
 #include "logic.h"
 #include "morse_protocol.h"
 #include "logo.h"
@@ -42,7 +44,12 @@ constexpr uint8_t FLAPPY_REWARD_SCORE = 5;
 constexpr uint32_t FLAPPY_FRAME_MS = 40;
 constexpr float FLAPPY_PIPE_SPEED = 31.0f;
 constexpr float FLAPPY_SPEED_STEP = 1.0f;
-constexpr uint8_t HOME_MENU_COUNT = 6;
+constexpr uint8_t HOME_MENU_COUNT =
+#if defined(AEGIS_DOOM) || defined(AEGIS_BADAPPLE)
+    7;
+#else
+    6;
+#endif
 constexpr uint32_t FIREWALL_FRAME_MS = 30;
 constexpr uint8_t FIREWALL_COLS = 8;
 constexpr uint8_t FIREWALL_ROWS = 3;
@@ -100,8 +107,13 @@ constexpr size_t BLE_COMMAND_MAX = 768;
 constexpr size_t BLE_NOTIFY_CHUNK = 20;
 
 Preferences preferences;
+#if defined(AEGIS_DOOM) || defined(AEGIS_BADAPPLE)
+U8G2_SSD1315_128X64_NONAME_F_HW_I2C oled(U8G2_R0, U8X8_PIN_NONE,
+                                         Pins::OLED_SCL, Pins::OLED_SDA);
+#else
 U8G2_SSD1315_128X64_NONAME_1_HW_I2C oled(U8G2_R0, U8X8_PIN_NONE,
                                          Pins::OLED_SCL, Pins::OLED_SDA);
+#endif
 
 uint8_t solvedMask = 0;
 Problem problems[SERIAL_PROBLEM_COUNT] = {};
@@ -175,6 +187,12 @@ void playerPrintf(PlayerTarget target, const char *format, ...) {
 enum class Screen : uint8_t {
   Home, Problems, Hint, Status, Game, FirewallGame, TetrisGame, MorseLink,
   MorseChannel, HiddenGranted, Complete
+#ifdef AEGIS_DOOM
+  , Doom, DoomError
+#endif
+#ifdef AEGIS_BADAPPLE
+  , BadApple, BadAppleError
+#endif
 };
 enum class GamePhase : uint8_t { Intro, Running, NameEntry, Over };
 enum class FirewallPhase : uint8_t { Intro, Running, NameEntry, Over };
@@ -458,6 +476,13 @@ void buzzerTone(uint16_t frequency, uint16_t duration = 0) {
   buzzerStopAt = duration ? millis() + duration : 0;
 }
 
+#if defined(AEGIS_DOOM) || defined(AEGIS_BADAPPLE)
+void mediaTone(uint16_t frequency) {
+  if (frequency) buzzerTone(frequency);
+  else buzzerStop();
+}
+#endif
+
 void updateBuzzer(uint32_t now) {
   if (buzzerStopAt != 0 && static_cast<int32_t>(now - buzzerStopAt) >= 0) {
     buzzerStop();
@@ -682,7 +707,14 @@ void playBootAnimation() {
 void drawHomeFrame() {
   static const char *const items[HOME_MENU_COUNT] = {
       "MISSIONS", "FLAPPY HACKER", "FIREWALL BREAKER", "TETRIS STACK",
-      "MORSE LINK", "STATUS"};
+      "MORSE LINK",
+#ifdef AEGIS_DOOM
+      "DOOM",
+#endif
+#ifdef AEGIS_BADAPPLE
+      "BAD APPLE",
+#endif
+      "STATUS"};
   char progress[8];
   snprintf(progress, sizeof(progress), "%02u / %02u", serialSolvedCount(),
            static_cast<unsigned>(SERIAL_PROBLEM_COUNT));
@@ -697,6 +729,26 @@ void drawHomeFrame() {
 }
 
 void drawHome() { render(drawHomeFrame); }
+
+#ifdef AEGIS_DOOM
+const char *doomError = nullptr;
+void drawDoomErrorFrame() {
+  header("DOOM");
+  centered(34, doomError);
+  footer("LEFT: HOME");
+}
+void drawDoomError() { render(drawDoomErrorFrame); }
+#endif
+
+#ifdef AEGIS_BADAPPLE
+const char *badAppleError = nullptr;
+void drawBadAppleErrorFrame() {
+  header("BAD APPLE");
+  centered(34, badAppleError);
+  footer("LEFT: HOME");
+}
+void drawBadAppleError() { render(drawBadAppleErrorFrame); }
+#endif
 
 void drawProblemsFrame() {
   char title[24];
@@ -2343,6 +2395,60 @@ void updateUi(uint32_t now) {
   ok.update(now);
   right.update(now);
 
+#ifdef AEGIS_DOOM
+  if (screen == Screen::Doom) {
+    static uint32_t exitStartedAt = 0;
+    if (left.stable && right.stable) {
+      if (exitStartedAt == 0) exitStartedAt = now;
+      if (now - exitStartedAt >= LONG_PRESS_MS) {
+        doomEnd();
+        exitStartedAt = 0;
+        screen = Screen::Home;
+        drawHome();
+      }
+    } else {
+      exitStartedAt = 0;
+    }
+    if (screen == Screen::Doom) doomTick();
+    return;
+  }
+  if (screen == Screen::DoomError) {
+    if (left.pressed) {
+      screen = Screen::Home;
+      drawHome();
+    }
+    return;
+  }
+#endif
+
+#ifdef AEGIS_BADAPPLE
+  if (screen == Screen::BadApple) {
+    static uint32_t exitStartedAt = 0;
+    if (left.stable && right.stable) {
+      if (exitStartedAt == 0) exitStartedAt = now;
+      if (now - exitStartedAt >= LONG_PRESS_MS) {
+        badAppleEnd();
+        exitStartedAt = 0;
+        screen = Screen::Home;
+        drawHome();
+      }
+    } else {
+      exitStartedAt = 0;
+    }
+    if (screen == Screen::BadApple)
+      badAppleTick(now, left.pressed, ok.pressed, right.pressed,
+                   left.stable && right.stable);
+    return;
+  }
+  if (screen == Screen::BadAppleError) {
+    if (left.pressed) {
+      screen = Screen::Home;
+      drawHome();
+    }
+    return;
+  }
+#endif
+
   if (screen == Screen::Game) {
     updateGame(now);
     return;
@@ -2385,6 +2491,21 @@ void updateUi(uint32_t now) {
         morse.channel = MORSE_DEFAULT_CHANNEL;
         clearMorseHistory();
         enterMorseLink();
+#ifdef AEGIS_DOOM
+      } else if (menuItem == 5) {
+        buzzerStop();
+        doomError = doomBegin(oled, mediaTone);
+        screen = doomError ? Screen::DoomError : Screen::Doom;
+        if (doomError) drawDoomError();
+#endif
+#ifdef AEGIS_BADAPPLE
+      } else if (menuItem == 5) {
+        if (morse.ready) stopMorseRadio();
+        buzzerStop();
+        badAppleError = badAppleBegin(oled, mediaTone);
+        screen = badAppleError ? Screen::BadAppleError : Screen::BadApple;
+        if (badAppleError) drawBadAppleError();
+#endif
       } else {
         screen = Screen::Status;
         drawStatus();
@@ -2446,6 +2567,10 @@ const char *screenName() {
     case Screen::TetrisGame: return "tetris-game";
     case Screen::MorseLink: return "morse-link";
     case Screen::MorseChannel: return "morse-channel";
+#ifdef AEGIS_DOOM
+    case Screen::Doom: return "doom";
+    case Screen::DoomError: return "doom-error";
+#endif
     case Screen::HiddenGranted: return "hidden-granted";
     case Screen::Complete: return "complete";
   }
@@ -3000,5 +3125,11 @@ void loop() {
   }
   updateVictory(now);
   updateTrophyLedSweep(now);
+#ifdef AEGIS_DOOM
+  if (doomRunning() && screen != Screen::Doom) doomEnd();
+#endif
+#ifdef AEGIS_BADAPPLE
+  if (badAppleRunning() && screen != Screen::BadApple) badAppleEnd();
+#endif
   delay(1);
 }

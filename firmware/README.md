@@ -23,6 +23,8 @@ ESP32-S3-WROOM-1-N8R8용 펌웨어입니다. 기존
 
 - USB CDC Serial(115200): 한국어 문제 설명, 문제별 대화형 명령, FLAG 제출
 - 128x64 OLED: Cyber/Terminal/Badge UI, 문제 보기/예시, Flappy Hacker와 Firewall Breaker 미니게임
+- 선택 빌드 `esp32-s3-rev3-doom`: 기존 UI Home에 원본 Doom 엔진(shareware E1M1) 추가
+- 선택 빌드 `esp32-s3-rev3-badapple`: 기존 UI Home에 영상·부저 음악과 배지 합주 추가
 - LED1-LED5: 4개 Serial 문제와 `Hidden Access` 풀이 상태
 - NVS: 전원을 꺼도 풀이 상태 유지
 - Trophy Mode: 기본 4문제와 Hidden Access까지 5개 완료 시 기존 OLED `AEGIS{PWN3D!}`, 승리 fanfare, LED 왕복 애니메이션을 유지하고 USB Serial에 대형 `Congratulations!` ASCII art와 최종 `MSGCTF{...}` FLAG 출력
@@ -54,6 +56,107 @@ Mission 04의 응답은 `challenge XOR device-key`이며, 과거 인증 기록�
 해결되지 않고, 올바른 `auth XXXX`가 인증되어야 즉시 해결됩니다.
 
 ## 보너스 게임과 Trophy Mode
+
+### Doom 선택 빌드
+
+`esp32-s3-rev3-doom`은 기존 문제/UI/BLE/모스 기능을 포함한 채 Home에 `DOOM`을
+추가합니다. 일반 배포용 `esp32-s3-rev3`도 선택할 수 있습니다.
+ESP32-S3 N8R8의 8 MB PSRAM 중 Doom 엔진이 6 MB를 예약합니다. 화면은
+128×64 흑백 OLED에 게임 영역을 확대하고 경계를 강조해 표시합니다. 세 버튼만 사용하므로 조작은
+다음처럼 단순화했습니다.
+
+| 입력 | Doom 동작 |
+| --- | --- |
+| `LEFT` / `RIGHT` | 왼쪽 / 오른쪽 회전 |
+| `OK` | 전진 |
+| `LEFT`+`OK` | 발사 |
+| `RIGHT`+`OK` | 문 열기 / 사용 |
+| `LEFT`+`RIGHT` 짧게 | Enter |
+| 세 버튼 동시 | Esc |
+| `LEFT`+`RIGHT` 700 ms | Home 복귀 |
+
+시작하면 E1M1로 바로 진입합니다. WAD의 음악 중 주 선율을 배지의 수동
+부저로 재생합니다. 부저는 한 번에 한 음만 낼 수 있어 원곡의 화음과 드럼,
+효과음은 재생하지 않습니다. 게임 화면에서는 원본 상태바 대신 게임 영역을
+64픽셀 높이 전체에 표시합니다.
+OLED 전송 속도와 동시 BLE·ESP-NOW 사용에 따른 실제 프레임 속도는 실기기에서
+확인해야 합니다. PSRAM이 부족하거나 WAD가 없으면 오류 화면에서 `LEFT`로
+Home에 돌아갑니다.
+
+원본 게임 데이터 `doom1.wad`는 Git에 포함되지 않습니다. 로컬
+`firmware/data/doom1.wad`에 **Doom shareware 1.9** WAD를 놓으세요.
+확인된 파일은 4,196,020바이트, MD5 `f0cefca49926d00903cf57551d901abe`입니다.
+저장소 루트에서 다음을 실행합니다(`PORT`를 실제 배지 포트로 변경):
+
+```bash
+cd firmware
+pio run -e esp32-s3-rev3-doom
+pio run -e esp32-s3-rev3-doom -t buildfs
+pio run -e esp32-s3-rev3-doom -t upload --upload-port PORT
+pio run -e esp32-s3-rev3-doom -t uploadfs --upload-port PORT
+```
+
+이 빌드의 파티션은 기존 NVS 주소를 유지하므로 문제 풀이·배지 번호는 유지됩니다.
+OTA 두 번째 앱 슬롯을 WAD 저장 영역으로 바꾸며, Doom용 `uploadfs`는 그
+저장 영역을 다시 씁니다. 모든 배지에 Doom을 쓰려면 각 배지에 펌웨어와
+파일시스템을 모두 업로드해야 합니다.
+
+Doom 엔진은 [rear16/ESP-DOOM](https://github.com/rear16/ESP-DOOM) GPL-2.0
+코드를 사용합니다. Doom 선택 빌드를 배포할 때는 결합된 펌웨어의 소스 제공과
+GPL 조건을 확인하세요. Doom/`doom1.wad`의 권리는 id Software에 있습니다.
+
+### Bad Apple 선택 빌드
+
+`esp32-s3-rev3-badapple`은 기존 Home UI에 `BAD APPLE`을 추가합니다. 128×64
+흑백 영상 6,573프레임(30fps, 약 219초)과 부저용 음악을 별도 LittleFS에
+저장합니다. **배지 한 대만으로도 SOLO 재생**이 됩니다. 여러 대에서는 각
+부저가 한 성부씩 맡아 멜로디·화음·베이스를 함께 냅니다. 원본 MIDI의 기존
+8번 트랙은 베이스 옥타브 복제이므로, 화음 성부는 멜로디보다 3도 아래 음으로
+별도 편성했습니다. 녹음된 보컬/반주 음원 재생은 아닙니다.
+
+| 조작 | 동작 |
+| --- | --- |
+| Home에서 `BAD APPLE` 선택 | 재생 모드 화면 |
+| `LEFT`/`RIGHT` | SOLO / LEAD / JOIN HARMONY / JOIN BASS 선택 |
+| `OK` | SOLO 즉시 재생 또는 합주 준비/시작 |
+| `LEFT`+`RIGHT` 700 ms | Home 복귀 |
+
+합주할 때는 모든 배지에 같은 Bad Apple 펌웨어와 파일시스템을 올립니다.
+보조 배지에서 `JOIN HARMONY`/`JOIN BASS`를 먼저 선택하고 `OK`를 눌러
+대기시킵니다. 대표 배지에서 `LEAD`를 선택해 `OK`를 누르면 채널 1의
+ESP-NOW 시작 신호를 보내고 2초 후 함께 재생합니다. 대표 배지는 재생 중에도
+주기적으로 시각을 보내 시간 차이를 보정합니다. 영화/음표 데이터는 각 배지에
+미리 저장되어 있어 무선으로 영상이나 음표를 스트리밍하지 않습니다.
+원본 편곡에 따라 화음 성부는 약 28초부터, 베이스는 약 14초부터 들립니다.
+SOLO의 초반 킥 드럼은 부저에서 한 박자 내내 울리지 않도록 짧은 박자 소리로 냅니다.
+14~19초의 빠른 반음 하강 효과음은 부저에서 음역이 뒤집혀 들려 주선율에서 제외합니다.
+
+현재 로컬 `firmware/badapple_data/video.rle`(2,296,671바이트)와
+`music.bin`(10,952바이트)을 준비했습니다. 영상은
+[hackffm/ESP32_BadApple](https://github.com/hackffm/ESP32_BadApple)의
+`data/video.hs`를 해제한 RLE 스트림입니다. 음악은
+[rkk-2s/bad-apple](https://github.com/rkk-2s/bad-apple)의
+`alstroemeria_records_bad_apple.mid`를
+`tools/encode_badapple_music.py`로 변환했습니다. 원본 미디어와 변환 결과는
+Git에 포함하지 않습니다. 새 checkout에서는 해당 파일을 준비한 뒤 빌드하세요.
+미디어 SHA-256은 `video.rle`:
+`66b830b1175cad1d2d9dc7ef45a1fff26ce1047642432b14cc7043aed67c3f7b`,
+원본 MIDI: `b0bc6648604bee2b1ea3c17f8f730e1886df9559f35f2b271ba5564da987ad08`입니다.
+
+```bash
+cd firmware
+pio run -e esp32-s3-rev3-badapple
+pio run -e esp32-s3-rev3-badapple -t buildfs
+pio run -e esp32-s3-rev3-badapple -t upload --upload-port PORT
+pio run -e esp32-s3-rev3-badapple -t uploadfs --upload-port PORT
+```
+
+이 빌드의 앱 바이너리는 1,414,752바이트이고 정적 내부 RAM은 71,116바이트입니다.
+기존 Doom 빌드와 동일한 파티션 배치를 쓰므로 `uploadfs`는 Doom WAD 저장
+영역을 Bad Apple 영상·음악으로 바꿉니다. Doom으로 되돌릴 때는 Doom
+펌웨어와 Doom `uploadfs`를 다시 올리세요. 문제 풀이·배지 번호가 있는 NVS는
+같은 주소에 유지됩니다. OLED 실측 프레임 속도와 무선 합주 음질은 실기기에서
+확인해야 합니다.
 
 `FLAPPY HACKER`는 파이프를 통과할 때마다 1 px/s씩 빨라집니다.
 Home의 `FIREWALL BREAKER`는 3×8 블록 행이 위로 스크롤되고 맨 아래에
@@ -158,7 +261,7 @@ Morse 패킷 v4를 사용하므로 통신할 모든 배지와 ADMIN 어댑터에
 | 파일 | 역할 |
 | --- | --- |
 | [`platformio.ini`](platformio.ini) | 보드, flash/PSRAM, USB CDC, 라이브러리 설정 |
-| [`upload_all.py`](upload_all.py) | 한 번 빌드하고 지정한 여러 배지에 USB 순차 업로드 |
+| [`upload_all.py`](upload_all.py) | 기본·Doom·Bad Apple 중 선택해 여러 배지에 USB 순차 업로드 |
 | [`src/main.cpp`](src/main.cpp) | OLED UI, 버튼·LED·부저, USB/BLE 셸, NVS, Hidden Access |
 | [`src/problems.h`](src/problems.h) | 1~4번 기본 문제, 필드 크기와 미니게임 보상 문구 |
 | [`src/pins.h`](src/pins.h) | Rev.3 PCB GPIO 매핑 |
@@ -254,10 +357,20 @@ PlatformIO IDE의 기본 설치 위치를 자동으로 찾습니다.
 python3 firmware/upload_all.py --list
 ```
 
-목록에서 **배지 포트만** 골라 한 명령에 나열합니다. 아래 포트 이름은 예시이므로
-실제 목록으로 바꾸세요. 모스 브리지용 DevkitC-1도 같은 ESP32-S3 USB 장치로
-보일 수 있으므로 대상에서 제외합니다. USB 정보만으로 용도를 구별할 수 없어
-연결된 전체 장치를 자동으로 선택하지 않습니다.
+`--firmware`로 `default`, `doom`, `badapple` 중 하나를 선택합니다. `--all`은
+연결된 ESP32-S3 기본 USB 포트를 모두 후보로 모으고, 목록을 보여준 뒤 `y`를
+입력해야 업로드합니다. **모스 브리지용 DevkitC-1도 같은 USB ID로 잡히므로**
+배지만 연결하거나 확인 화면에서 비배지 포트가 보이면 취소하고 아래처럼 포트를
+직접 지정하세요. USB 정보만으로 배지와 다른 ESP32-S3 장치를 구별할 수 없습니다.
+
+```bash
+python3 firmware/upload_all.py --firmware doom --all --dry-run
+python3 firmware/upload_all.py --firmware doom --all
+python3 firmware/upload_all.py --firmware badapple --all
+python3 firmware/upload_all.py --firmware default --all
+```
+
+아래 포트 이름은 예시이므로 실제 목록으로 바꾸세요.
 
 ```bash
 # macOS: 대상만 먼저 확인 (빌드·업로드 없음)
@@ -265,6 +378,7 @@ python3 firmware/upload_all.py --dry-run /dev/cu.usbmodem1101 /dev/cu.usbmodem12
 
 # macOS: 한 번 실행해 두 배지에 순차 업로드
 python3 firmware/upload_all.py /dev/cu.usbmodem1101 /dev/cu.usbmodem1201
+python3 firmware/upload_all.py --firmware badapple /dev/cu.usbmodem1101 /dev/cu.usbmodem1201
 
 # Linux
 python3 firmware/upload_all.py /dev/ttyACM0 /dev/ttyACM1
@@ -276,8 +390,12 @@ py -3 firmware/upload_all.py --list
 py -3 firmware/upload_all.py COM5 COM6 COM7
 ```
 
-스크립트는 모든 대상 포트를 확인한 뒤 `esp32-s3-rev3`를 한 번 빌드하고,
+스크립트는 모든 대상 포트를 확인한 뒤 선택한 펌웨어를 한 번 빌드하고,
 각 포트에 `pio run -t nobuild -t upload --upload-port PORT`를 실행합니다.
+Doom과 Bad Apple은 필요한 데이터 파일을 확인한 뒤 파일시스템을 먼저 한 번
+빌드하고, 각 배지에 `uploadfs`도 실행합니다. 두 업로드가 모두 성공해야
+해당 포트를 성공으로 표시합니다. Doom은 `firmware/data/doom1.wad`, Bad Apple은
+`firmware/badapple_data/video.rle`과 `music.bin`이 필요합니다.
 bootloader와 partition table을 포함하는 기존 PlatformIO 업로드 구성을
 재사용하며, NVS의 풀이 상태·편집한 문제·배지 번호는 기존 업로드처럼 유지됩니다.
 운영 배포에는 아래 [비공개 설정](#1-비공개-설정)을 먼저 완료하세요.

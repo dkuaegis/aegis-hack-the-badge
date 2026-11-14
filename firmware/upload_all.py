@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Build the Rev.3 firmware once and upload it to explicitly selected USB ports."""
+"""Build a selected Rev.3 firmware once and upload it to selected USB ports."""
 
 import argparse
 import json
@@ -10,6 +10,15 @@ import subprocess
 import sys
 
 ROOT = Path(__file__).resolve().parent
+FIRMWARE = {
+    "default": "esp32-s3-rev3",
+    "doom": "esp32-s3-rev3-doom",
+    "badapple": "esp32-s3-rev3-badapple",
+}
+ASSETS = {
+    "doom": ("data/doom1.wad",),
+    "badapple": ("badapple_data/video.rle", "badapple_data/music.bin"),
+}
 
 
 def find_platformio():
@@ -29,10 +38,14 @@ def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("ports", nargs="*", help="배지 포트 목록 (COM5 COM6 등)")
     parser.add_argument("--list", action="store_true", help="연결된 포트만 표시")
+    parser.add_argument("--firmware", choices=FIRMWARE, default="default",
+                        help="업로드할 펌웨어 (기본값: default)")
+    parser.add_argument("--all", action="store_true",
+                        help="연결된 ESP32-S3 USB 포트를 모두 후보로 선택")
     parser.add_argument("--dry-run", action="store_true", help="대상 확인만 수행; 빌드·업로드 생략")
     args = parser.parse_args(argv)
-    if args.list and args.ports:
-        parser.error("--list와 업로드 포트는 함께 지정할 수 없습니다.")
+    if (args.list and (args.ports or args.all)) or (args.all and args.ports):
+        parser.error("--list, --all, 업로드 포트는 함께 지정할 수 없습니다.")
 
     pio = find_platformio()
     result = subprocess.run(
@@ -40,33 +53,56 @@ def main(argv=None):
         check=True, stdout=subprocess.PIPE, text=True,
     )
     devices = json.loads(result.stdout)
-    if not args.ports:
+    if not args.ports and not args.all:
         for device in devices:
             print(f"{device['port']}  |  {device.get('description', '')}  |  {device.get('hwid', '')}")
         if not devices:
             print("연결된 Serial 포트가 없습니다.")
-        print("배지 포트만 지정해 다시 실행하세요: python3 firmware/upload_all.py PORT1 PORT2")
+        print("배지 포트를 지정하거나 --all을 사용하세요.")
         return 0
 
     # Exact names prevent PlatformIO wildcard matching or automatic port selection.
     available = {os.path.normcase(device["port"]): device["port"] for device in devices}
     ports = []
-    for requested in args.ports:
+    requested_ports = ([device["port"] for device in devices
+                        if "VID:PID=303A:1001" in (device.get("hwid") or "").upper()]
+                       if args.all else args.ports)
+    for requested in requested_ports:
         port = available.get(os.path.normcase(requested))
         if not port or any(char in port for char in "*?[]"):
             parser.error(f"연결된 정확한 포트를 지정하세요: {requested} (--list로 확인)")
         if port not in ports:
             ports.append(port)
 
-    print(f"업로드 대상 {len(ports)}대: {', '.join(ports)}", flush=True)
+    if not ports:
+        parser.error("연결된 ESP32-S3 USB 포트가 없습니다. --list로 확인하세요.")
+    print(f"펌웨어: {args.firmware} / 업로드 대상 {len(ports)}대: {', '.join(ports)}", flush=True)
     if args.dry_run:
         print("확인만 완료했습니다. 빌드·업로드하지 않았습니다.")
         return 0
+    if args.all:
+        print("같은 USB ID의 비배지 장치도 포함될 수 있습니다. 대상 포트를 확인하세요.")
+        try:
+            answer = input("나열된 모든 포트에 업로드할까요? [y/N] ")
+        except EOFError:
+            answer = ""
+        if answer.strip().lower() != "y":
+            print("업로드를 취소했습니다.")
+            return 0
 
-    command = [pio, "run", "-d", str(ROOT), "-e", "esp32-s3-rev3"]
+    missing = [name for name in ASSETS.get(args.firmware, ())
+               if not (ROOT / name).is_file() or not (ROOT / name).stat().st_size]
+    if missing:
+        print(f"필수 데이터가 없습니다: {', '.join(missing)}", file=sys.stderr)
+        return 1
+
+    command = [pio, "run", "-d", str(ROOT), "-e", FIRMWARE[args.firmware]]
     print("배지 펌웨어를 한 번 빌드합니다.", flush=True)
     if subprocess.run(command).returncode:
         print("빌드 실패: 어떤 배지에도 업로드하지 않았습니다.", file=sys.stderr)
+        return 1
+    if args.firmware != "default" and subprocess.run(command + ["-t", "buildfs"]).returncode:
+        print("파일시스템 빌드 실패: 어떤 배지에도 업로드하지 않았습니다.", file=sys.stderr)
         return 1
 
     results = []
@@ -77,6 +113,10 @@ def main(argv=None):
             code = subprocess.run(
                 command + ["-t", "nobuild", "-t", "upload", "--upload-port", port]
             ).returncode
+            if not code and args.firmware != "default":
+                code = subprocess.run(
+                    command + ["-t", "uploadfs", "--upload-port", port]
+                ).returncode
         except OSError as error:
             print(f"{port}: {error}", file=sys.stderr)
             code = 1

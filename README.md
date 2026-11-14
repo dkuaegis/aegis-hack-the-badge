@@ -162,6 +162,10 @@ Serial 명령:
 OLED 하단의 `LEFT`, `OK`, `RIGHT` 버튼으로 메뉴 이동과 Flappy Hacker를
 조작합니다. 미니게임에서 목표 점수를 넘기면 OLED에 추가 힌트가
 표시됩니다.
+원본 Doom 엔진을 Home에 추가하는 선택 빌드는
+[`firmware/README.md`](firmware/README.md#doom-선택-빌드)를 참고하세요.
+Bad Apple 영상·부저 음악과 배지 합주를 추가하는 선택 빌드는
+[`firmware/README.md`](firmware/README.md#bad-apple-선택-빌드)를 참고하세요.
 
 ## 관리자 사용 설명서
 

@@ -19,3 +19,6 @@ zerocoke_sub
 
 # Local work products
 tmp/
+
+# Local-only assets
+/assets/

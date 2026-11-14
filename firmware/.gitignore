@@ -1,3 +1,7 @@
 .pio/
 .vscode/
+data/*.wad
+badapple_data/*.rle
+badapple_data/*.bin
+badapple_data/*.mid
 
